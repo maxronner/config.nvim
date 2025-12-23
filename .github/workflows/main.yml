@@ -1,0 +1,33 @@
+name: Neovim healthcheck
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly   # or stable if you prefer
+
+      - name: Run checkhealth
+        env:
+          XDG_CONFIG_HOME: ${{ github.workspace }}
+          XDG_DATA_HOME: /tmp/nvim-data
+          XDG_STATE_HOME: /tmp/nvim-state
+          XDG_CACHE_HOME: /tmp/nvim-cache
+        run: |
+          nvim --headless \
+          "+checkhealth nvim" \
+          "+checkhealth lazy" \
+          "+checkhealth lspconfig" \
+          "+checkhealth nvim-treesitter" \
+          "+qall"
+

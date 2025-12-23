@@ -11,25 +11,38 @@ return {
       group = maxronner_Fugitive,
       pattern = "*",
       callback = function()
-        if vim.bo.ft ~= "fugitive" then return end
+        if vim.bo.ft ~= "fugitive" then
+          return
+        end
 
         local bufnr = vim.api.nvim_get_current_buf()
         local opts = { buffer = bufnr, remap = false }
 
         vim.keymap.set("n", "<leader>p", function()
-          vim.cmd.Git('push')
+          vim.cmd.Git("push")
         end, vim.tbl_extend("force", opts, { desc = "Fugitive: Push" }))
 
         vim.keymap.set("n", "<leader>u", function()
-          vim.cmd.Git({ 'pull' })
+          vim.cmd.Git({ "pull" })
         end, vim.tbl_extend("force", opts, { desc = "Fugitive: Pull" }))
 
+        vim.keymap.set(
+          "n",
+          "<leader>U",
+          ":Git submodule update --remote --rebase",
+          vim.tbl_extend("force", opts, { desc = "Fugitive: Submodule update --remote --rebase" })
+        )
+
         vim.keymap.set("n", "<leader>P", function()
-          vim.cmd.Git({ 'pull', '--rebase' })
+          vim.cmd.Git({ "pull", "--rebase" })
         end, vim.tbl_extend("force", opts, { desc = "Fugitive: Pull --rebase" }))
 
-        vim.keymap.set("n", "<leader>t", ":Git push -u origin ",
-          vim.tbl_extend("force", opts, { desc = "Fugitive: Push with upstream" }))
+        vim.keymap.set(
+          "n",
+          "<leader>t",
+          ":Git push -u origin ",
+          vim.tbl_extend("force", opts, { desc = "Fugitive: Push with upstream" })
+        )
 
         for _, buf in ipairs(vim.api.nvim_list_bufs()) do
           if vim.api.nvim_get_option_value("modified", { buf = buf }) then
@@ -39,5 +52,5 @@ return {
         end
       end,
     })
-  end
+  end,
 }

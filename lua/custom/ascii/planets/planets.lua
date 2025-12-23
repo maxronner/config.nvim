@@ -1,0 +1,43 @@
+local M = {
+  ["saturn"] = {
+    [[                                                ]],
+    [[                                          _.oo. ]],
+    [[                  _.u[[/;:,.         .odMMMMMM' ]],
+    [[               .o888UU[[[/;:-.  .o@P^    MMM^   ]],
+    [[              oN88888UU[[[/;::-.        dP^     ]],
+    [[             dNMMNN888UU[[[/;:--.   .o@P^       ]],
+    [[            ,MMMMMMN888UU[[/;::-. o@^           ]],
+    [[            NNMMMNN888UU[[[/~.o@P^              ]],
+    [[            888888888UU[[[/o@^-..               ]],
+    [[           oI8888UU[[[/o@P^:--..                ]],
+    [[        .@^  YUU[[[/o@^;::---..                 ]],
+    [[      oMP     ^/o@P^;:::---..                   ]],
+    [[   .dMMM    .o@^ ^;::---...                     ]],
+    [[  dMMMMMMM@^`       `^^^^                       ]],
+    [[ YMMMUP^                                        ]],
+    [[  ^^                                            ]],
+    [[                                                ]],
+  },
+  ["earth"] = {
+    [[                                ]],
+    [[             ,,,,,,             ]],
+    [[         o#'9MMHb':'-,o,        ]],
+    [[      .oH":HH$' "' ' -*R&o,     ]],
+    [[     dMMM*""'`'      .oM"HM?.   ]],
+    [[   ,MMM'          "HLbd< ?&H\   ]],
+    [[  .:MH ."\          ` MM  MM&b  ]],
+    [[ . "*H    -        &MMMMMMMMMH: ]],
+    [[ .    dboo        MMMMMMMMMMMM. ]],
+    [[ .   dMMMMMMb      *MMMMMMMMMP. ]],
+    [[ .    MMMMMMMP        *MMMMMP . ]],
+    [[      `#MMMMM           MM6P ,  ]],
+    [[  '    `MMMP"           HM*`,   ]],
+    [[   '    :MM             .- ,    ]],
+    [[    '.   `#?..  .       ..'     ]],
+    [[       -.   .         .-        ]],
+    [[         ''-.oo,oo.-''          ]],
+    [[                                ]],
+  }
+}
+
+return M

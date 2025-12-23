@@ -2,32 +2,69 @@ name: Neovim healthcheck
 
 on:
   push:
+    branches: ["main"]
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   health:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # pin runner for determinism
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            clang \
+            nodejs \
+            python3 \
+            python3-pip
 
       - name: Install Neovim
         uses: rhysd/action-setup-vim@v1
         with:
           neovim: true
-          version: nightly   # or stable if you prefer
+          version: stable
+
+      - name: Cache Neovim data
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/nvim
+          key: nvim-${{ runner.os }}-${{ hashFiles('**/lazy-lock.json') }}
+          restore-keys: |
+            nvim-${{ runner.os }}-
+
+      - name: Install plugins (fail on error)
+        env:
+          XDG_CONFIG_HOME: ${{ github.workspace }}
+          XDG_DATA_HOME: ${{ runner.temp }}/nvim/data
+          XDG_STATE_HOME: ${{ runner.temp }}/nvim/state
+        run: |
+          set -euo pipefail
+          nvim --headless "+Lazy sync" "+qa"
 
       - name: Run checkhealth
         env:
           XDG_CONFIG_HOME: ${{ github.workspace }}
-          XDG_DATA_HOME: /tmp/nvim-data
-          XDG_STATE_HOME: /tmp/nvim-state
-          XDG_CACHE_HOME: /tmp/nvim-cache
+          XDG_DATA_HOME: ${{ runner.temp }}/nvim/data
+          XDG_STATE_HOME: ${{ runner.temp }}/nvim/state
         run: |
-          nvim --headless \
-          "+checkhealth nvim" \
-          "+checkhealth lazy" \
-          "+checkhealth lspconfig" \
-          "+checkhealth nvim-treesitter" \
-          "+qall"
+          set -euo pipefail
 
+          nvim --headless "+checkhealth" "+w! health.log" +qa
+          cat health.log
+
+          # Fail on real errors, ignore known provider noise
+          if grep -E "ERROR" health.log \
+            | grep -Ev "(ruby|perl|node|python).*provider"; then
+            echo "Healthcheck errors detected"
+            exit 1
+          fi

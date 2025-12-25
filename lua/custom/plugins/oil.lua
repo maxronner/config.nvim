@@ -91,6 +91,7 @@ return {
       },
     })
     vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Oil: open parent directory" })
+    vim.keymap.set("n", "<leader>-", require("oil").toggle_float, { desc = "Oil: toggle float" })
 
     vim.api.nvim_create_autocmd("User", {
       pattern = "OilEnter",

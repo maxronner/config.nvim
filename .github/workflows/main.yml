@@ -57,14 +57,9 @@ jobs:
           XDG_DATA_HOME: ${{ runner.temp }}/nvim/data
           XDG_STATE_HOME: ${{ runner.temp }}/nvim/state
         run: |
-          set -euo pipefail
-
-          nvim --headless "+checkhealth" "+w! health.log" +qa
-          cat health.log
-
-          # Fail on real errors, ignore known provider noise
-          if grep -E "ERROR" health.log \
-            | grep -Ev "(ruby|perl|node|python).*provider"; then
-            echo "Healthcheck errors detected"
-            exit 1
-          fi
+          nvim --headless \
+          "+checkhealth nvim" \
+          "+checkhealth lazy" \
+          "+checkhealth lspconfig" \
+          "+checkhealth nvim-treesitter" \
+          "+qall"

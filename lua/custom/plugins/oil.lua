@@ -70,6 +70,9 @@ return {
           if name == ".." then
             return true
           end
+          if name == ".gitignore" then
+            return false
+          end
           local dir = require("oil").get_current_dir(bufnr)
           local is_dotfile = vim.startswith(name, ".") and name ~= ".."
           -- if no local directory (e.g. for ssh connections), just hide dotfiles

@@ -5,12 +5,12 @@ set.wrap = true
 set.linebreak = true
 set.breakindent = true
 set.spell = true
-set.spelllang = "en"
+set.spelllang = "en,sv"
 
-if require("zk.util").notebook_root(vim.fn.expand('%:p')) ~= nil then
+if require("zk.util").notebook_root(vim.fn.expand("%:p")) ~= nil then
   local map = vim.keymap.set
   local opts = { noremap = true, silent = false, buffer = 0 }
-  local current_dir = vim.fn.expand('%:p:h')
+  local current_dir = vim.fn.expand("%:p:h")
 
   -- Open the link under cursor (LSP definition)
   map("n", "<CR>", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Open the link under cursor" }))
@@ -21,13 +21,19 @@ if require("zk.util").notebook_root(vim.fn.expand('%:p')) ~= nil then
     vim.cmd(string.format("ZkNew { dir = '%s', title = '%s' }", current_dir, title))
   end, vim.tbl_extend("force", opts, { desc = "New note in current dir" }))
 
-  map("v", "<leader>znt",
+  map(
+    "v",
+    "<leader>znt",
     string.format(":'<,'>ZkNewFromTitleSelection { dir = '%s' }<CR>", current_dir),
-    vim.tbl_extend("force", opts, { desc = "New note from title selection" }))
+    vim.tbl_extend("force", opts, { desc = "New note from title selection" })
+  )
 
-  map("v", "<leader>znc",
+  map(
+    "v",
+    "<leader>znc",
     string.format(":'<,'>ZkNewFromContentSelection { dir = '%s', title = vim.fn.input('Title: ') }<CR>", current_dir),
-    vim.tbl_extend("force", opts, { desc = "New note from content selection" }))
+    vim.tbl_extend("force", opts, { desc = "New note from content selection" })
+  )
 
   -- Open notes linking to current buffer (backlinks)
   map("n", "<leader>zb", "<Cmd>ZkBacklinks<CR>", vim.tbl_extend("force", opts, { desc = "Show backlinks" }))

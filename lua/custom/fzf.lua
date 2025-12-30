@@ -1,10 +1,14 @@
 local fzf = require("fzf-lua")
 
 local fd_excludes = table.concat({
-  "--exclude", ".git",
-  "--exclude", "node_modules",
-  "--exclude", "dist",
-  "--exclude", "build",
+  "--exclude",
+  ".git",
+  "--exclude",
+  "node_modules",
+  "--exclude",
+  "dist",
+  "--exclude",
+  "build",
 }, " ")
 
 local rg_excludes = table.concat({
@@ -24,7 +28,7 @@ fzf.setup({
   files = {
     git_icons = true,
     file_icons = true,
-    fd_opts = fzf.defaults.files.fd_opts .. " " .. fd_excludes
+    fd_opts = fzf.defaults.files.fd_opts .. " " .. fd_excludes,
   },
 
   grep = {

@@ -7,27 +7,33 @@ local fmt = require("luasnip.extras.fmt").fmt
 local rep = require("luasnip.extras").rep
 
 ls.add_snippets("all", {
-  s("curtime",
+  s("hello", t("Hello World!")),
+  s(
+    "curtime",
     f(function()
-      return os.date('%Y-%m-%d %H:%M:%S')
+      return os.date("%Y-%m-%d %H:%M:%S")
     end)
   ),
-  s("date",
+  s(
+    "date",
     f(function()
-      return os.date('%Y-%m-%d')
+      return os.date("%Y-%m-%d")
     end)
   ),
-  s("time",
+  s(
+    "time",
     f(function()
-      return os.date('%H:%M:%S')
+      return os.date("%H:%M:%S")
     end)
   ),
-  s("mr",
+  s(
+    "mr",
     f(function()
       return "Max Ronner"
     end)
   ),
-  s("es",
+  s(
+    "es",
     f(function()
       return "Best regards, Max Ronnner"
     end)

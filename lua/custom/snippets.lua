@@ -1,4 +1,4 @@
-local ls = require "luasnip"
+local ls = require("luasnip")
 vim.snippet.expand = ls.lsp_expand
 
 require("luasnip.loaders.from_vscode").lazy_load()
@@ -33,20 +33,20 @@ vim.snippet.stop = ls.unlink_current
 -- ================================================
 --      My Configuration
 -- ================================================
-ls.config.set_config {
+ls.config.set_config({
   history = true,
   updateevents = "TextChanged,TextChangedI",
   override_builtin = true,
-}
+})
 
 for _, ft_path in ipairs(vim.api.nvim_get_runtime_file("lua/custom/snippets/*.lua", true)) do
   loadfile(ft_path)()
 end
 
 vim.keymap.set({ "i", "s" }, "<c-k>", function()
-  return vim.snippet.active { direction = 1 } and vim.snippet.jump(1)
+  return vim.snippet.active({ direction = 1 }) and vim.snippet.jump(1)
 end, { silent = true, desc = "Next snippet" })
 
 vim.keymap.set({ "i", "s" }, "<c-j>", function()
-  return vim.snippet.active { direction = -1 } and vim.snippet.jump(-1)
+  return vim.snippet.active({ direction = -1 }) and vim.snippet.jump(-1)
 end, { silent = true, desc = "Previous snippet" })

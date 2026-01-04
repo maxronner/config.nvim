@@ -43,6 +43,7 @@ xmap("/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection
 xmap("?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })
 
 ---- Editing ----
+imap("<C-d>", "<Del>", { desc = "Delete char (insert mode)" })
 nmap("<leader>|", "gMea<CR><Esc>", { desc = "Split line at midpoint" })
 nmap_leader("lf", vim.lsp.buf.format, { desc = "LSP: Format buffer" })
 nmap("<leader>qd", vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })

@@ -19,7 +19,10 @@ return {
       require("codecompanion").setup({
         interactions = {
           chat = {
-            adapter = "gemini",
+            adapter = {
+              name = "gemini",
+              model = "gemini-flash-lite-latest",
+            },
           },
           inline = {
             adapter = "gemini",

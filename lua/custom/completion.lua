@@ -1,19 +1,19 @@
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
-vim.opt.shortmess:append "c"
+vim.opt.shortmess:append("c")
 
 require("custom.snippets")
 
-local lspkind = require "lspkind"
-lspkind.init {
+local lspkind = require("lspkind")
+lspkind.init({
   symbol_map = {
     Copilot = "",
     Supermaven = "",
   },
-}
+})
 vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#6CC644" })
 vim.api.nvim_set_hl(0, "CmpItemKindSupermaven", { fg = "#6CC644" })
 
-local kind_formatter = lspkind.cmp_format {
+local kind_formatter = lspkind.cmp_format({
   mode = "symbol_text",
   menu = {
     buffer = "[buf]",
@@ -25,11 +25,11 @@ local kind_formatter = lspkind.cmp_format {
     tn = "[TabNine]",
     eruby = "[erb]",
   },
-}
+})
 
-local cmp = require "cmp"
+local cmp = require("cmp")
 
-cmp.setup {
+cmp.setup({
   sources = {
     {
       name = "lazydev",
@@ -43,13 +43,13 @@ cmp.setup {
     { name = "buffer" },
   },
   mapping = {
-    ["<C-n>"] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
-    ["<C-p>"] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
+    ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+    ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
     ["<C-y>"] = cmp.mapping(
-      cmp.mapping.confirm {
+      cmp.mapping.confirm({
         behavior = cmp.ConfirmBehavior.Insert,
         select = true,
-      },
+      }),
       { "i", "c" }
     ),
   },
@@ -57,7 +57,7 @@ cmp.setup {
   -- Enable luasnip to handle snippet expansion for nvim-cmp
   snippet = {
     expand = function(args)
-      vim.snippet.expand(args.body)
+      require("luasnip").lsp_expand(args.body)
     end,
   },
 
@@ -95,7 +95,7 @@ cmp.setup {
     -- completion = cmp.config.window.bordered(),
     -- documentation = cmp.config.window.bordered(),
   },
-}
+})
 
 -- Setup up vim-dadbod
 cmp.setup.filetype({ "sql" }, {

@@ -49,6 +49,9 @@ return {
             end,
           },
         },
+        prompt_library = {
+          ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
+        },
       })
       vim.keymap.set(
         { "n", "v" },
@@ -85,7 +88,7 @@ return {
       -- Expand 'cc' into 'CodeCompanion' in the command line
       vim.cmd([[cab cc CodeCompanion]])
 
-      require("custom.codecompanion-spinner").spinner:init()
+      require("custom.codecompanion.codecompanion-spinner").spinner:init()
     end,
   },
 }

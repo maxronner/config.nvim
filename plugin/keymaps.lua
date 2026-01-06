@@ -38,6 +38,14 @@ nmap_leader("qq", function()
     vim.cmd("copen")
   end
 end, { desc = "Toggle quickfix window" })
+nmap_leader("qc", function()
+  vim.fn.setqflist({}, "r")
+end, { desc = "Clear quickfix list" })
+nmap_leader("qa", function()
+  vim.fn.setqflist({
+    { filename = vim.fn.bufname(), lnum = vim.fn.line("."), text = vim.fn.getline(".") },
+  }, "a")
+end, { desc = "Add quickfix item" })
 
 xmap("/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection" })
 xmap("?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })

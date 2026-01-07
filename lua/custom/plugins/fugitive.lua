@@ -29,8 +29,8 @@ return {
         vim.keymap.set(
           "n",
           "<leader>U",
-          ":Git submodule update --remote --rebase",
-          vim.tbl_extend("force", opts, { desc = "Fugitive: Submodule update --remote --rebase" })
+          ":Git submodule update --init --recursive",
+          vim.tbl_extend("force", opts, { desc = "Fugitive: Initialize and update all git submodules recursively" })
         )
 
         vim.keymap.set("n", "<leader>P", function()

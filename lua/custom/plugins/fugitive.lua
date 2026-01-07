@@ -29,7 +29,7 @@ return {
         vim.keymap.set(
           "n",
           "<leader>U",
-          ":Git submodule update --init --recursive",
+          ":Git submodule update --remote --recursive",
           vim.tbl_extend("force", opts, { desc = "Fugitive: Initialize and update all git submodules recursively" })
         )
 

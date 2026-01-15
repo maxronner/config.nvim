@@ -45,6 +45,17 @@ return {
     end,
   },
   {
+    "rebelot/kanagawa.nvim",
+  },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      style = "moon", -- The theme comes in three styles, `storm`, a darker variant `night` and `day`
+    },
+  },
+  {
     "catgoose/nvim-colorizer.lua",
     config = function()
       require("colorizer").setup({
@@ -103,9 +114,6 @@ return {
         },
       })
     end,
-  },
-  {
-    "rebelot/kanagawa.nvim",
   },
   {
     "MeanderingProgrammer/render-markdown.nvim",

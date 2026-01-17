@@ -1,4 +1,5 @@
 local fzf = require("fzf-lua")
+local actions = require("fzf-lua.actions")
 
 local fd_excludes = table.concat({
   "--exclude",
@@ -29,10 +30,20 @@ fzf.setup({
     git_icons = true,
     file_icons = true,
     fd_opts = fzf.defaults.files.fd_opts .. " " .. fd_excludes,
+    actions = {
+      ["ctrl-q"] = {
+        fn = actions.file_sel_to_qf,
+      },
+    },
   },
 
   grep = {
     rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 " .. rg_excludes,
+    actions = {
+      ["ctrl-q"] = {
+        fn = actions.file_sel_to_qf,
+      },
+    },
   },
 })
 

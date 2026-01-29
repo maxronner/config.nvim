@@ -3,7 +3,7 @@ return {
     "monaqa/dial.nvim",
     config = function()
       local augend = require("dial.augend")
-      require("dial.config").augends:register_group {
+      require("dial.config").augends:register_group({
         default = {
           augend.integer.alias.decimal,
           augend.integer.alias.hex,
@@ -13,12 +13,16 @@ return {
           augend.date.alias["%Y-%m-%d"],
           augend.date.alias["%m/%d"],
           augend.date.alias["%H:%M"],
+          augend.constant.new({
+            elements = { "on", "off" },
+            word = true,
+          }),
         },
         visual = {
           augend.constant.alias.alpha,
           augend.constant.alias.Alpha,
         },
-      }
+      })
 
       vim.keymap.set("n", "<C-c>", function()
         require("dial.map").manipulate("increment", "normal")

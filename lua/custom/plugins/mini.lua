@@ -119,7 +119,12 @@ return {
   },
   {
     "nvim-mini/mini.move",
-    keys = { "M-j", "M-k", "M-h", "M-l" },
+    keys = {
+      { "<M-j>", mode = { "n", "v" } },
+      { "<M-k>", mode = { "n", "v" } },
+      { "<M-h>", mode = { "n", "v" } },
+      { "<M-l>", mode = { "n", "v" } },
+    },
     config = function()
       require("mini.move").setup()
     end,

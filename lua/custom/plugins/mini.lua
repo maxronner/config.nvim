@@ -162,6 +162,13 @@ return {
     event = "VeryLazy",
     config = function()
       require("mini.cursorword").setup()
+      local function disable_current_word_highlight()
+        vim.api.nvim_set_hl(0, "MiniCursorwordCurrent", {})
+      end
+      disable_current_word_highlight()
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = disable_current_word_highlight,
+      })
     end,
   },
   {

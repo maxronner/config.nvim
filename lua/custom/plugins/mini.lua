@@ -145,9 +145,15 @@ return {
   },
   {
     "nvim-mini/mini.trailspace",
-    event = "BufWritePre",
+    event = "BufReadPre",
     config = function()
       require("mini.trailspace").setup()
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        callback = function()
+          MiniTrailspace.trim()
+          MiniTrailspace.trim_last_lines()
+        end,
+      })
     end,
   },
   {

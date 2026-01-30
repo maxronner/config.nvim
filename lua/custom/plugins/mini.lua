@@ -172,6 +172,13 @@ return {
     end,
   },
   {
+    "nvim-mini/mini.cmdline",
+    event = "CmdlineEnter",
+    config = function()
+      require("mini.cmdline").setup()
+    end,
+  },
+  {
     "nvim-mini/mini.starter",
     lazy = false,
     config = function()

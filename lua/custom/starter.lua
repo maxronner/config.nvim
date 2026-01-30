@@ -79,15 +79,27 @@ local items = {
   },
 }
 
-local function get_footer()
+local footer = {
+  count = 0,
+  loaded = 0,
+  startuptime = 0,
+}
+
+local function set_footer()
   local stats = require("lazy").stats()
-  local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-  return " Neovim loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms"
+  footer.count = stats.count
+  footer.loaded = stats.loaded
+  footer.startuptime = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+end
+
+local function get_footer()
+  return " Neovim loaded " .. footer.loaded .. "/" .. footer.count .. " plugins in " .. footer.startuptime .. "ms"
 end
 
 vim.api.nvim_create_autocmd("User", {
   pattern = "LazyVimStarted",
   callback = function()
+    set_footer()
     if _G.MiniStarter then
       MiniStarter.refresh()
     end

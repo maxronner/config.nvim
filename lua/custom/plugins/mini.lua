@@ -1,27 +1,8 @@
 return {
   {
-    "echasnovski/mini.nvim",
+    "nvim-mini/mini.indentscope",
+    event = "BufReadPre",
     config = function()
-      require("mini.ai").setup()
-      require("mini.cmdline").setup({
-        autocomplete = {
-          delay = 200,
-        },
-      })
-      require("mini.surround").setup()
-      require("mini.pairs").setup()
-      require("mini.comment").setup()
-      require("mini.move").setup()
-      require("mini.operators").setup()
-      require("mini.bracketed").setup()
-      require("mini.trailspace").setup()
-      require("mini.splitjoin").setup()
-      require("mini.statusline").setup()
-      require("mini.align").setup()
-      require("mini.icons").setup()
-      require("mini.jump").setup()
-      require("mini.cursorword").setup()
-      require("mini.starter").setup(require("custom.starter"))
       require("mini.indentscope").setup({
         draw = {
           delay = 0,
@@ -38,7 +19,23 @@ return {
           end
         end,
       })
-
+    end,
+  },
+  {
+    "nvim-mini/mini.surround",
+    keys = {
+      { "sa", mode = { "n", "x" } },
+      { "sd", mode = { "n", "x" } },
+      { "sr", mode = { "n", "x" } },
+    },
+    config = function()
+      require("mini.surround").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.clue",
+    event = "VeryLazy",
+    config = function()
       local miniclue = require("mini.clue")
       miniclue.setup({
         triggers = {
@@ -90,29 +87,97 @@ return {
           },
         },
       })
-
-      local map = require("mini.map")
-      map.setup({
-        integrations = {
-          map.gen_integration.builtin_search(),
-          map.gen_integration.gitsigns(),
-          map.gen_integration.diagnostic(),
-        },
-        symbols = {
-          encode = nil,
-          scroll_view = "┃",
-          scroll_line = "▶",
-        },
-        window = {
-          show_integration_count = false,
-          width = 8,
-        },
-      })
-      vim.keymap.set("n", "<leader>m", MiniMap.toggle, { desc = "Toggle MiniMap" })
-
-      vim.keymap.set("n", "<leader>bd", function()
-        require("mini.bufremove").delete(0, false)
-      end, { desc = "Delete buffer without closing window" })
+    end,
+  },
+  {
+    "nvim-mini/mini.comment",
+    keys = { "gc" },
+    config = function()
+      require("mini.comment").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.ai",
+    event = "VeryLazy",
+    config = function()
+      require("mini.ai").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.align",
+    keys = { "ga", "gA" },
+    config = function()
+      require("mini.align").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.bracketed",
+    keys = { "[", "]" },
+    config = function()
+      require("mini.bracketed").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.move",
+    keys = { "M-j", "M-k", "M-h", "M-l" },
+    config = function()
+      require("mini.move").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.jump",
+    event = "VeryLazy",
+    config = function()
+      require("mini.jump").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.operators",
+    keys = { "gr", "gm", "gs", "gx", "g==" },
+    config = function()
+      require("mini.operators").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.trailspace",
+    event = "BufWritePre",
+    config = function()
+      require("mini.trailspace").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.splitjoin",
+    keys = { "gS" },
+    config = function()
+      require("mini.splitjoin").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.cursorword",
+    event = "VeryLazy",
+    config = function()
+      require("mini.cursorword").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.starter",
+    lazy = false,
+    config = function()
+      require("mini.starter").setup(require("custom.starter"))
+    end,
+  },
+  {
+    "nvim-mini/mini.statusline",
+    lazy = false,
+    config = function()
+      require("mini.statusline").setup()
+    end,
+  },
+  {
+    "nvim-mini/mini.icons",
+    lazy = false,
+    config = function()
+      require("mini.icons").setup()
     end,
   },
 }

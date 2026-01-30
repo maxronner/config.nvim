@@ -1,11 +1,9 @@
 return {
   {
     "hrsh7th/nvim-cmp",
-    lazy = false,
-    priority = 100,
+    event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
       "onsails/lspkind.nvim",
-      "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-cmdline",
@@ -20,21 +18,25 @@ return {
       {
         "supermaven-inc/supermaven-nvim",
         config = function()
-          require("supermaven-nvim").setup {
+          require("supermaven-nvim").setup({
             keymaps = {
               accept_suggestion = "<C-a>",
               clear_suggestion = "<C-]>",
               accept_word = "<C-f>",
             },
             disable_inline_completion = false,
-          }
-          vim.keymap.set("n", "<leader>iq", "<cmd>SupermavenToggle<CR>",
-            { noremap = true, silent = true, desc = "Supermaven: Toggle" })
+          })
+          vim.keymap.set(
+            "n",
+            "<leader>iq",
+            "<cmd>SupermavenToggle<CR>",
+            { noremap = true, silent = true, desc = "Supermaven: Toggle" }
+          )
         end,
       },
     },
     config = function()
-      require "custom.completion"
+      require("custom.completion")
     end,
   },
 }

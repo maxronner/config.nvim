@@ -1,6 +1,7 @@
 return {
   {
     "folke/todo-comments.nvim",
+    event = "VeryLazy",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
       -- your configuration comes here
@@ -8,7 +9,14 @@ return {
       -- refer to the configuration section below
       keys = {
         {},
-        { "n", "[#", function() require("todo-comments").jump_prev() end, { desc = "Previous todo comment" } },
+        {
+          "n",
+          "[#",
+          function()
+            require("todo-comments").jump_prev()
+          end,
+          { desc = "Previous todo comment" },
+        },
       },
     },
     config = function()
@@ -25,5 +33,5 @@ return {
 
       vim.keymap.set("n", "<leader>ft", ":TodoFzfLua<CR>", { desc = "Fzf: TODOs" })
     end,
-  }
+  },
 }

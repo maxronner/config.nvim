@@ -1,5 +1,6 @@
 return {
   "zk-org/zk-nvim",
+  event = "VeryLazy",
   config = function()
     require("zk").setup({
       picker = "telescope",
@@ -26,7 +27,10 @@ return {
       ["<leader>zn"] = { "<Cmd>ZkNew<CR>", "Zettelkasten: New Note" },
       ["<leader>zo"] = { "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", "Zettelkasten: Open Note" },
       ["<leader>zt"] = { "<Cmd>ZkTags<CR>", "Zettelkasten: Show Tags" },
-      ["<leader>zf"] = { "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>", "Zettelkasten: Search Notes" },
+      ["<leader>zf"] = {
+        "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>",
+        "Zettelkasten: Search Notes",
+      },
       ["<leader>zs"] = { "<Cmd>ZkSync<CR>", "Zettelkasten: Git Sync" },
       ["<leader>zi"] = { "<Cmd>ZkInsertLink<CR>", "Zettelkasten: Insert Link" },
       -- Visual mode search for selection
@@ -39,7 +43,6 @@ return {
       local keymap = key:gsub("_v$", "")
       vim.keymap.set(mode, keymap, map[1], vim.tbl_extend("force", opts, { desc = map[2] }))
     end
-
 
     vim.api.nvim_create_user_command("ZkNew", function()
       require("zk.commands").get("ZkNew")({
@@ -107,5 +110,5 @@ return {
     end, {
       desc = "Pull, stage, commit, and push ZK notes using zk-sync.sh",
     })
-  end
+  end,
 }

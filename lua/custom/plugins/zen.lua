@@ -1,6 +1,7 @@
 return {
   {
     "folke/zen-mode.nvim",
+    event = "VeryLazy",
     dependencies = {
       {
         "folke/twilight.nvim",
@@ -8,9 +9,9 @@ return {
           exclude = {
             "markdown",
             "help",
-          }
-        }
-      }
+          },
+        },
+      },
     },
     opts = {
       window = {
@@ -20,7 +21,7 @@ return {
           number = false,
           relativenumber = false,
           signcolumn = "no",
-          colorcolumn = ""
+          colorcolumn = "",
         },
       },
       plugins = {
@@ -37,6 +38,6 @@ return {
     },
     keys = {
       { "<leader>zm", "<cmd>ZenMode<CR>", desc = "Toggle Zen Mode" },
-    }
-  }
+    },
+  },
 }

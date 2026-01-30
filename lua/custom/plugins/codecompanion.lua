@@ -3,6 +3,14 @@ return {
     "olimorris/codecompanion.nvim",
     opts = {},
     enabled = true,
+    cmd = { "CodeCompanion", "CodeCompanionActions", "CodeCompanionChat" },
+    keys = {
+      { "<leader>ia", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Actions" },
+      { "<leader>it", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat Toggle" },
+      { "<leader>in", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat New" },
+      { "<leader>ic", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion: Chat Add" },
+      { "<leader>ig", "<cmd>CodeCompanion /commit<cr>", mode = "n", desc = "CodeCompanion: Generate Git Commit" },
+    },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -53,37 +61,6 @@ return {
           ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
         },
       })
-      vim.keymap.set(
-        { "n", "v" },
-        "<leader>ia",
-        "<cmd>CodeCompanionActions<cr>",
-        { noremap = true, silent = true, desc = "CodeCompanion: Actions" }
-      )
-      vim.keymap.set(
-        { "n", "v" },
-        "<leader>it",
-        "<cmd>CodeCompanionChat Toggle<cr>",
-        { noremap = true, silent = true, desc = "CodeCompanion: Chat Toggle" }
-      )
-      vim.keymap.set(
-        { "n", "v" },
-        "<leader>in",
-        "<cmd>CodeCompanionChat<cr>",
-        { noremap = true, silent = true, desc = "CodeCompanion: Chat New" }
-      )
-      vim.keymap.set(
-        "v",
-        "<leader>ic",
-        "<cmd>CodeCompanionChat Add<cr>",
-        { noremap = true, silent = true, desc = "CodeCompanion: Chat Add" }
-      )
-
-      vim.keymap.set(
-        "n",
-        "<leader>ig",
-        ":CodeCompanion /commit<CR>",
-        { noremap = true, silent = true, desc = "CodeCompanion: Generate Git Commit" }
-      )
 
       -- Expand 'cc' into 'CodeCompanion' in the command line
       vim.cmd([[cab cc CodeCompanion]])

@@ -1,7 +1,9 @@
 return {
   {
     "neovim/nvim-lspconfig",
+    event = "BufReadPre",
     dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
       {
         -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
         -- used for completion, annotations and signatures of Neovim apis

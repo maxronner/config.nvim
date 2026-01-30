@@ -17,6 +17,9 @@ end
 local nxmap_leader = function(suffix, rhs, opts)
   vim.keymap.set({ "n", "x" }, "<Leader>" .. suffix, rhs, opts)
 end
+local xmap_leader = function(suffix, rhs, opts)
+  vim.keymap.set("x", "<Leader>" .. suffix, rhs, opts)
+end
 
 -- Cursor stays in place when joining lines / scrolling
 nmap("J", "mzJ`z", { desc = "Join line below with cursor stay" })
@@ -58,6 +61,8 @@ nmap("<leader>qd", vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" 
 nmap("<C-Del>", "dw", { desc = "Delete word (normal mode)" })
 imap("<C-Del>", "<C-o>dw", { desc = "Delete word (insert mode)" })
 nxmap_leader("d", '"_d', { desc = "Delete (black hole register)" })
+nmap_leader("P", [["_ddP]], { desc = "Paste over" })
+xmap_leader("P", [["_dP]], { desc = "Paste over" })
 
 ---- Search ----
 nmap("<C-s>", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Substitute word under cursor" })

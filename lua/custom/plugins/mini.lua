@@ -172,7 +172,10 @@ return {
         vim.api.nvim_set_hl(0, "MiniCursorwordCurrent", {})
       end
       disable_current_word_highlight()
+
+      local group = vim.api.nvim_create_augroup("MiniCursorword", { clear = false })
       vim.api.nvim_create_autocmd("ColorScheme", {
+        group = group,
         callback = disable_current_word_highlight,
       })
     end,

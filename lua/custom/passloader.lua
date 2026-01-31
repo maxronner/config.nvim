@@ -1,11 +1,11 @@
 local function is_gpg_locked(err_msg)
   return err_msg:match("decryption failed")
-      or err_msg:match("no secret key")
-      or err_msg:match("No secret key")
-      or err_msg:match("No agent running")
-      or err_msg:match("can't open")
-      or err_msg:match("Permission denied")
-      or err_msg:match("Inappropriate ioctl")
+    or err_msg:match("no secret key")
+    or err_msg:match("No secret key")
+    or err_msg:match("No agent running")
+    or err_msg:match("can't open")
+    or err_msg:match("Permission denied")
+    or err_msg:match("Inappropriate ioctl")
 end
 
 local function get_pass_entry(entry)
@@ -48,10 +48,10 @@ local function get_pass_entry_async(entry, callback)
 end
 
 local M = {}
-M.keys = {}              -- var -> value
-M.lazy_entries = {}      -- var -> pass path
+M.keys = {} -- var -> value
+M.lazy_entries = {} -- var -> pass path
 M.pending_callbacks = {} -- var -> list of callbacks
-M.loading = {}           -- var -> true if loading
+M.loading = {} -- var -> true if loading
 
 --- Register once for both sync and async
 local function register_lazy_key(pass_entry, var)
@@ -148,8 +148,9 @@ function M.export_var_async(var, cb)
 end
 
 -- Register all keys once
-register_lazy_key("Credentials/keys/openai", "OPENAI_API_KEY")
-register_lazy_key("Credentials/keys/gemini", "GEMINI_API_KEY")
-register_lazy_key("Credentials/keys/tavily", "TAVILY_API_KEY")
+register_lazy_key("api/llm/openai", "OPENAI_API_KEY")
+register_lazy_key("api/llm/gemini", "GEMINI_API_KEY")
+register_lazy_key("api/llm/anthropic", "ANTHROPIC_API_KEY")
+register_lazy_key("api/llm/tavily", "TAVILY_API_KEY")
 
 return M

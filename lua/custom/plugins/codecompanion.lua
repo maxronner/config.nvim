@@ -24,19 +24,17 @@ return {
       },
     },
     config = function()
+      local default_adapter = "anthropic"
       require("codecompanion").setup({
         interactions = {
           chat = {
-            adapter = {
-              name = "gemini",
-              model = "gemini-flash-lite-latest",
-            },
+            adapter = default_adapter,
           },
           inline = {
-            adapter = "gemini",
+            adapter = default_adapter,
           },
           cmd = {
-            adapter = "gemini",
+            adapter = default_adapter,
           },
         },
         adapters = {
@@ -52,6 +50,13 @@ return {
               return require("codecompanion.adapters").extend("openai", {
                 env = {
                   api_key = require("custom.passloader").get_var("OPENAI_API_KEY"),
+                },
+              })
+            end,
+            anthropic = function()
+              return require("codecompanion.adapters").extend("anthropic", {
+                env = {
+                  api_key = require("custom.passloader").get_var("ANTHROPIC_API_KEY"),
                 },
               })
             end,

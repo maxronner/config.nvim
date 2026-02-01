@@ -60,7 +60,14 @@ return {
 
     local new = require("zk.commands").get("ZkNew")
     vim.api.nvim_create_user_command("ZkNew", function()
-      new({ dir = "notes", no_input = true })
+      local title = vim.fn.input("Title: ")
+      if title == "" then
+        return
+      end
+      new({
+        dir = "notes",
+        title = title,
+      })
     end, {})
 
     vim.api.nvim_create_user_command("ZkDaily", function()

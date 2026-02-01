@@ -1,7 +1,7 @@
 return {
   {
     "folke/zen-mode.nvim",
-    event = "VeryLazy",
+    cmd = { "ZenMode" },
     dependencies = {
       {
         "folke/twilight.nvim",

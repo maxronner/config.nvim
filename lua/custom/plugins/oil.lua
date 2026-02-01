@@ -1,13 +1,25 @@
 return {
   "stevearc/oil.nvim",
-  event = "VeryLazy",
-  ---@module 'oil'
-  ---@type oil.SetupOpts
+  cmd = "Oil",
+  keys = {
+    {
+      "-",
+      function()
+        require("oil").open()
+      end,
+      desc = "Oil: open parent directory",
+    },
+    {
+      "<leader>-",
+      function()
+        require("oil").toggle_float()
+      end,
+      desc = "Oil: open float",
+    },
+  },
   opts = {},
-  -- Optional dependencies
   dependencies = {
     { "echasnovski/mini.icons", opts = {} },
-    -- { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
     {
       "j-hui/fidget.nvim",
       event = "VeryLazy",
@@ -16,7 +28,6 @@ return {
   },
 
   config = function()
-    -- helper function to parse output
     local function parse_output(proc)
       local result = proc:wait()
       local ret = {}
@@ -30,7 +41,6 @@ return {
       return ret
     end
 
-    -- build git status cache
     local function new_git_status()
       return setmetatable({}, {
         __index = function(self, key)
@@ -94,8 +104,6 @@ return {
         border = "rounded",
       },
     })
-    vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Oil: open parent directory" })
-    vim.keymap.set("n", "<leader>-", require("oil").toggle_float, { desc = "Oil: toggle float" })
 
     vim.api.nvim_create_autocmd("User", {
       pattern = "OilEnter",

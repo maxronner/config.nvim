@@ -1,7 +1,68 @@
 return {
   {
     "monaqa/dial.nvim",
-    event = "VeryLazy",
+    keys = {
+      {
+        "<C-c>",
+        function()
+          require("dial.map").manipulate("increment", "normal")
+        end,
+        desc = "Dial: Increment",
+      },
+      {
+        "<C-x>",
+        function()
+          require("dial.map").manipulate("decrement", "normal")
+        end,
+        desc = "Dial: Decrement",
+      },
+      {
+        "g<C-c>",
+        function()
+          require("dial.map").manipulate("increment", "gnormal")
+        end,
+        desc = "Dial: Increment (gnormal)",
+      },
+      {
+        "g<C-x>",
+        function()
+          require("dial.map").manipulate("decrement", "gnormal")
+        end,
+        desc = "Dial: Decrement (gnormal)",
+      },
+      {
+        "<C-c>",
+        function()
+          require("dial.map").manipulate("increment", "visual")
+        end,
+        desc = "Dial: Increment (visual)",
+        mode = "v",
+      },
+      {
+        "<C-x>",
+        function()
+          require("dial.map").manipulate("decrement", "visual")
+        end,
+        desc = "Dial: Decrement (visual)",
+        mode = "v",
+      },
+      {
+        "g<C-c>",
+        function()
+          require("dial.map").manipulate("increment", "gvisual")
+        end,
+        desc = "Dial: Increment (gvisual)",
+        mode = "v",
+      },
+      {
+        "g<C-x>",
+        function()
+          require("dial.map").manipulate("decrement", "gvisual")
+        end,
+        desc = "Dial: Decrement (gvisual)",
+        mode = "v",
+      },
+    },
     config = function()
       local augend = require("dial.augend")
       require("dial.config").augends:register_group({
@@ -24,31 +85,6 @@ return {
           augend.constant.alias.Alpha,
         },
       })
-
-      vim.keymap.set("n", "<C-c>", function()
-        require("dial.map").manipulate("increment", "normal")
-      end)
-      vim.keymap.set("n", "<C-x>", function()
-        require("dial.map").manipulate("decrement", "normal")
-      end)
-      vim.keymap.set("n", "g<C-c>", function()
-        require("dial.map").manipulate("increment", "gnormal")
-      end)
-      vim.keymap.set("n", "g<C-x>", function()
-        require("dial.map").manipulate("decrement", "gnormal")
-      end)
-      vim.keymap.set("v", "<C-c>", function()
-        require("dial.map").manipulate("increment", "visual")
-      end)
-      vim.keymap.set("v", "<C-x>", function()
-        require("dial.map").manipulate("decrement", "visual")
-      end)
-      vim.keymap.set("v", "g<C-c>", function()
-        require("dial.map").manipulate("increment", "gvisual")
-      end)
-      vim.keymap.set("v", "g<C-x>", function()
-        require("dial.map").manipulate("decrement", "gvisual")
-      end)
     end,
   },
 }

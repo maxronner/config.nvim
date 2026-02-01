@@ -3,7 +3,6 @@ return {
     "ibhagwan/fzf-lua",
     enabled = true,
     cmd = "FzfLua",
-    event = "VeryLazy",
     keys = {
       {
         "<leader>/",

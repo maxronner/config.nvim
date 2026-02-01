@@ -1,6 +1,44 @@
 return {
   "zk-org/zk-nvim",
-  event = "VeryLazy",
+  cmd = {
+    "ZkCd",
+    "ZkNew",
+    "ZkSync",
+    "ZkTags",
+    "ZkDaily",
+    "ZkIndex",
+    "ZkLinks",
+    "ZkMatch",
+    "ZkNotes",
+    "ZkWeekly",
+    "ZkBuffers",
+    "ZkBacklinks",
+    "ZkYesterday",
+    "ZkInsertLink",
+    "ZkInsertLinkAtSelection",
+    "ZkNewFromTitleSelection",
+    "ZkNewFromContentSelection",
+  },
+  keys = {
+    { "<leader>zd", "<Cmd>ZkDaily<CR>", desc = "Zettelkasten: Daily Note" },
+    { "<leader>zD", "<Cmd>ZkYesterday<CR>", desc = "Zettelkasten: Yesterday" },
+    { "<leader>zn", "<Cmd>ZkNew<CR>", desc = "Zettelkasten: New Note" },
+    { "<leader>zo", "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", desc = "Zettelkasten: Open Note" },
+    { "<leader>zt", "<Cmd>ZkTags<CR>", desc = "Zettelkasten: Show Tags" },
+    {
+      "<leader>zf",
+      "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>",
+      desc = "Zettelkasten: Search Notes",
+    },
+    { "<leader>zs", "<Cmd>ZkSync<CR>", desc = "Zettelkasten: Git Sync" },
+    { "<leader>zi", "<Cmd>ZkInsertLink<CR>", desc = "Zettelkasten: Insert Link" },
+    {
+      "<leader>zf",
+      ":'<,'>ZkMatch<CR>",
+      desc = "Zettelkasten: Search for Selection",
+      mode = "v",
+    },
+  },
   config = function()
     require("zk").setup({
       picker = "telescope",
@@ -20,54 +58,22 @@ return {
       },
     })
 
-    local opts = { noremap = true, silent = false }
-    local global_leader_maps = {
-      ["<leader>zd"] = { "<Cmd>ZkDaily<CR>", "Zettelkasten: Daily Note" },
-      ["<leader>zD"] = { "<Cmd>ZkYesterday<CR>", "Zettelkasten: Yesterday" },
-      ["<leader>zn"] = { "<Cmd>ZkNew<CR>", "Zettelkasten: New Note" },
-      ["<leader>zo"] = { "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", "Zettelkasten: Open Note" },
-      ["<leader>zt"] = { "<Cmd>ZkTags<CR>", "Zettelkasten: Show Tags" },
-      ["<leader>zf"] = {
-        "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>",
-        "Zettelkasten: Search Notes",
-      },
-      ["<leader>zs"] = { "<Cmd>ZkSync<CR>", "Zettelkasten: Git Sync" },
-      ["<leader>zi"] = { "<Cmd>ZkInsertLink<CR>", "Zettelkasten: Insert Link" },
-      -- Visual mode search for selection
-      ["<leader>zf_v"] = { ":'<,'>ZkMatch<CR>", "Zettelkasten: Search for Selection", mode = "v" },
-    }
-
-    for key, map in pairs(global_leader_maps) do
-      local mode = map.mode or "n"
-      -- Remove _v suffix from key when setting visual mode mapping
-      local keymap = key:gsub("_v$", "")
-      vim.keymap.set(mode, keymap, map[1], vim.tbl_extend("force", opts, { desc = map[2] }))
-    end
-
+    local new = require("zk.commands").get("ZkNew")
     vim.api.nvim_create_user_command("ZkNew", function()
-      require("zk.commands").get("ZkNew")({
-        dir = "notes",
-        no_input = true,
-      })
+      new({ dir = "notes", no_input = true })
     end, {})
 
     vim.api.nvim_create_user_command("ZkDaily", function()
-      require("zk.commands").get("ZkNew")({
-        dir = "journal/daily",
-        no_input = true,
-      })
+      new({ dir = "journal/daily", no_input = true })
     end, {})
 
     vim.api.nvim_create_user_command("ZkWeekly", function()
-      require("zk.commands").get("ZkNew")({
-        dir = "journal/weekly",
-        no_input = true,
-      })
+      new({ dir = "journal/weekly", no_input = true })
     end, {})
 
     vim.api.nvim_create_user_command("ZkYesterday", function()
       local date = os.date("%Y-%m-%d", os.time() - 86400)
-      require("zk.commands").get("ZkNew")({
+      new({
         date = date,
         dir = "journal/daily",
         no_input = true,

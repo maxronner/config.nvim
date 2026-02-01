@@ -1,5 +1,15 @@
 return {
   {
+    "williamboman/mason.nvim",
+    cmd = "Mason",
+    dependencies = {
+      "williamboman/mason-lspconfig.nvim",
+      "WhoIsSethDaniel/mason-tool-installer.nvim",
+    },
+    opts = {}, -- equivalent to require("mason").setup({})
+  },
+
+  {
     "neovim/nvim-lspconfig",
     event = "BufReadPre",
     dependencies = {
@@ -17,11 +27,6 @@ return {
           },
         },
       },
-
-      -- Tooling package management
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
-      "WhoIsSethDaniel/mason-tool-installer.nvim",
 
       -- Autoformatting and linting
       "stevearc/conform.nvim",

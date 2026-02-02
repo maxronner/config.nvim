@@ -1,10 +1,14 @@
 return {
   "tpope/vim-fugitive",
   config = function()
-    vim.keymap.set("n", "<leader>gg", vim.cmd.Git, { desc = "Fugitive: Open window" })
-    vim.keymap.set("n", "<leader>gb", ":Git blame<CR>", { desc = "Fugitive: Blame" })
-    vim.keymap.set("n", "<leader>qg", ":Gclog<CR>", { desc = "Fugitive: Log to quickfix" })
-    vim.keymap.set("n", "<leader>gi", ":Git init<CR>", { desc = "Fugitive: Git init" })
+    vim.keymap.set("n", "<leader>gg", function()
+      local success = pcall(vim.cmd.Git)
+      if not success then
+        vim.cmd.Git({ "init" })
+        vim.cmd.Git()
+      end
+    end, { desc = "Fugitive: Open window" })
+    vim.keymap.set("n", "<leader>gl", ":Gclog<CR>", { desc = "Fugitive: Log to quickfix" })
 
     local FugitiveConfig = vim.api.nvim_create_augroup("FugitiveConfig", {})
     local autocmd = vim.api.nvim_create_autocmd

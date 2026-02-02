@@ -5,6 +5,7 @@ return {
     enabled = true,
     cmd = { "CodeCompanion", "CodeCompanionActions", "CodeCompanionChat" },
     keys = {
+      { "<leader>ir", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "CodeCompanion: New" },
       { "<leader>ia", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Actions" },
       { "<leader>it", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat Toggle" },
       { "<leader>in", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat New" },

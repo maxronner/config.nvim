@@ -1,8 +1,6 @@
 return {
   {
     "olimorris/codecompanion.nvim",
-    opts = {},
-    enabled = true,
     cmd = { "CodeCompanion", "CodeCompanionActions", "CodeCompanionChat" },
     keys = {
       { "<leader>ir", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "CodeCompanion: New" },
@@ -24,54 +22,52 @@ return {
         ft = { "markdown", "codecompanion" },
       },
     },
-    config = function()
-      local default_adapter = "anthropic"
-      require("codecompanion").setup({
-        interactions = {
-          chat = {
-            adapter = default_adapter,
-          },
-          inline = {
-            adapter = default_adapter,
-          },
-          cmd = {
-            adapter = default_adapter,
-          },
+    opts = {
+      interactions = {
+        chat = {
+          adapter = "anthropic",
         },
-        adapters = {
-          http = {
-            gemini = function()
-              return require("codecompanion.adapters").extend("gemini", {
-                env = {
-                  api_key = require("custom.passloader").get_var("GEMINI_API_KEY"),
-                },
-              })
-            end,
-            openai = function()
-              return require("codecompanion.adapters").extend("openai", {
-                env = {
-                  api_key = require("custom.passloader").get_var("OPENAI_API_KEY"),
-                },
-              })
-            end,
-            anthropic = function()
-              return require("codecompanion.adapters").extend("anthropic", {
-                env = {
-                  api_key = require("custom.passloader").get_var("ANTHROPIC_API_KEY"),
-                },
-              })
-            end,
-          },
+        inline = {
+          adapter = "anthropic",
         },
-        prompt_library = {
-          ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
+        cmd = {
+          adapter = "anthropic",
         },
-      })
-
-      -- Expand 'cc' into 'CodeCompanion' in the command line
+      },
+      adapters = {
+        http = {
+          gemini = function()
+            return require("codecompanion.adapters").extend("gemini", {
+              env = {
+                api_key = require("custom.passloader").get_var("GEMINI_API_KEY"),
+              },
+            })
+          end,
+          openai = function()
+            return require("codecompanion.adapters").extend("openai", {
+              env = {
+                api_key = require("custom.passloader").get_var("OPENAI_API_KEY"),
+              },
+            })
+          end,
+          anthropic = function()
+            return require("codecompanion.adapters").extend("anthropic", {
+              env = {
+                api_key = require("custom.passloader").get_var("ANTHROPIC_API_KEY"),
+              },
+            })
+          end,
+        },
+      },
+      prompt_library = {
+        ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
+      },
+    },
+    init = function()
       vim.cmd([[cab cc CodeCompanion]])
-
-      require("custom.codecompanion.codecompanion-spinner").spinner:init()
+      vim.schedule(function()
+        require("custom.codecompanion.codecompanion-spinner").spinner:init()
+      end)
     end,
   },
 }

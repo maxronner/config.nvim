@@ -57,7 +57,7 @@ return {
   },
   {
     "catgoose/nvim-colorizer.lua",
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("colorizer").setup({
         filetypes = { "*" }, -- Filetype options.  Accepts table like `user_default_options`

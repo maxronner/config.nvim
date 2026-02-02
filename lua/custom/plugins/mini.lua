@@ -1,7 +1,7 @@
 return {
   {
     "nvim-mini/mini.indentscope",
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("mini.indentscope").setup({
         draw = {
@@ -145,7 +145,7 @@ return {
   },
   {
     "nvim-mini/mini.trailspace",
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("mini.trailspace").setup()
       vim.api.nvim_create_autocmd("BufWritePre", {

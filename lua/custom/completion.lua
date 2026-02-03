@@ -10,8 +10,6 @@ lspkind.init({
     Supermaven = "",
   },
 })
-vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#6CC644" })
-vim.api.nvim_set_hl(0, "CmpItemKindSupermaven", { fg = "#6CC644" })
 
 local kind_formatter = lspkind.cmp_format({
   mode = "symbol_text",
@@ -24,6 +22,7 @@ local kind_formatter = lspkind.cmp_format({
     gh_issues = "[issues]",
     tn = "[TabNine]",
     eruby = "[erb]",
+    supermaven = "[llm]",
   },
 })
 
@@ -89,18 +88,7 @@ cmp.setup({
     },
   },
   window = {
-    -- TODO: I don't like this at all for completion window, it takes up way too much space.
-    --  However, I think the docs one could be OK, but I need to fix the highlights for it
-    --
-    -- completion = cmp.config.window.bordered(),
-    -- documentation = cmp.config.window.bordered(),
-  },
-})
-
--- Setup up vim-dadbod
-cmp.setup.filetype({ "sql" }, {
-  sources = {
-    { name = "vim-dadbod-completion" },
-    { name = "buffer" },
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
   },
 })

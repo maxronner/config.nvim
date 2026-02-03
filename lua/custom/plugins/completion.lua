@@ -17,6 +17,7 @@ return {
       },
       {
         "supermaven-inc/supermaven-nvim",
+        event = { "BufReadPre, BufNewFile" },
         cmd = {
           "SupermavenStart",
           "SupermavenStop",
@@ -29,22 +30,20 @@ return {
           "SupermavenUsePro",
           "SupermavenUseFree",
         },
-        config = function()
-          require("supermaven-nvim").setup({
-            keymaps = {
-              accept_suggestion = "<C-a>",
-              clear_suggestion = "<C-]>",
-              accept_word = "<C-f>",
-            },
-            disable_inline_completion = false,
-          })
-          vim.keymap.set(
-            "n",
+        keys = {
+          {
             "<leader>iq",
             "<cmd>SupermavenToggle<CR>",
-            { noremap = true, silent = true, desc = "Supermaven: Toggle" }
-          )
-        end,
+            desc = "Supermaven: Toggle",
+          },
+        },
+        opts = {
+          keymaps = {
+            accept_suggestion = "<C-a>",
+            clear_suggestion = "<C-]>",
+            accept_word = "<C-f>",
+          },
+        },
       },
     },
     config = function()

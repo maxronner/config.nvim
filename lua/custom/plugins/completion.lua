@@ -17,7 +17,7 @@ return {
       },
       {
         "supermaven-inc/supermaven-nvim",
-        event = { "BufReadPre, BufNewFile" },
+        event = { "BufReadPre", "BufNewFile" },
         cmd = {
           "SupermavenStart",
           "SupermavenStop",

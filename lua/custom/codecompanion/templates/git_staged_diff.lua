@@ -1,6 +1,13 @@
 return {
   interaction = "chat",
   description = "Analyze git diff --staged",
+  opts = {
+    alias = "staged_diff",
+    adapter = {
+      name = "gemini",
+      model = "gemini-2.5-flash",
+    },
+  },
   prompts = {
     {
       role = "system",
@@ -14,6 +21,10 @@ Focus on:
 - Security or performance concerns
 
 Assume an experienced author.
+
+Wrap output commit with:
+```gitcommit
+```
 ]],
     },
     {
@@ -29,6 +40,7 @@ Analyze the following staged diff:
 
 ```diff
 ]] .. diff .. [[
+```
 ]]
       end,
     },

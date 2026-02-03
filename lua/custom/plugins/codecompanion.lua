@@ -8,7 +8,7 @@ return {
       { "<leader>it", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat Toggle" },
       { "<leader>in", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat New" },
       { "<leader>ic", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion: Chat Add" },
-      { "<leader>ig", "<cmd>CodeCompanion /commit<cr>", mode = "n", desc = "CodeCompanion: Generate Git Commit" },
+      { "<leader>ig", "<cmd>CodeCompanion /staged_diff<cr>", mode = "n", desc = "CodeCompanion: Analyze Staged Diff" },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",

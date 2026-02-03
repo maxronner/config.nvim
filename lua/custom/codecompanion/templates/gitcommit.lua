@@ -1,8 +1,8 @@
 return {
   interaction = "chat",
-  description = "Analyze git diff --staged",
+  description = "Generate conventional commit message",
   opts = {
-    alias = "diffreview",
+    alias = "gitcommit",
     adapter = {
       name = "gemini",
       model = "gemini-2.5-flash",
@@ -12,15 +12,9 @@ return {
     {
       role = "system",
       content = [[
-You are reviewing a staged Git diff.
-
-Focus on:
-- Intent
-- Correctness
-- Edge cases
-- Security or performance concerns
-
-Assume an experienced author.
+Wrap gitcommit with:
+```gitcommit
+```
 ]],
     },
     {
@@ -32,7 +26,7 @@ Assume an experienced author.
         end
 
         return [[
-Analyze the following staged diff:
+You are an expert at following the Conventional Commit specification. Given the git diff listed below, please generate a commit message for me:
 
 ```diff
 ]] .. diff .. [[

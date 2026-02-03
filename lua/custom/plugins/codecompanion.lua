@@ -8,7 +8,8 @@ return {
       { "<leader>it", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat Toggle" },
       { "<leader>in", "<cmd>CodeCompanionChat<cr>", mode = { "n", "v" }, desc = "CodeCompanion: Chat New" },
       { "<leader>ic", "<cmd>CodeCompanionChat Add<cr>", mode = "v", desc = "CodeCompanion: Chat Add" },
-      { "<leader>ig", "<cmd>CodeCompanion /staged_diff<cr>", mode = "n", desc = "CodeCompanion: Analyze Staged Diff" },
+      { "<leader>ig", "<cmd>CodeCompanion /gitcommit<cr>", mode = "n", desc = "CodeCompanion: Analyze Staged Diff" },
+      { "<leader>id", "<cmd>CodeCompanion /diffreview<cr>", mode = "n", desc = "CodeCompanion: Review Diff" },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -61,6 +62,7 @@ return {
       },
       prompt_library = {
         ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
+        ["Generate Conventional Commit Message"] = require("custom.codecompanion.templates.gitcommit"),
       },
     },
     init = function()

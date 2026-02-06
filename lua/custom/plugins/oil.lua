@@ -20,11 +20,6 @@ return {
   opts = {},
   dependencies = {
     { "echasnovski/mini.icons", opts = {} },
-    {
-      "j-hui/fidget.nvim",
-      event = "VeryLazy",
-      opts = {},
-    },
   },
 
   config = function()
@@ -103,14 +98,6 @@ return {
       confirmation = {
         border = "rounded",
       },
-    })
-
-    vim.api.nvim_create_autocmd("User", {
-      pattern = "OilEnter",
-      once = true,
-      callback = function()
-        require("fidget").notify("show hidden: g.", vim.log.levels.INFO, { title = "Oil.nvim" })
-      end,
     })
   end,
 }

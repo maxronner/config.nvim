@@ -1,12 +1,19 @@
 return {
   {
-    "williamboman/mason.nvim",
-    cmd = "Mason",
+    "mason-org/mason-lspconfig.nvim",
     dependencies = {
-      "williamboman/mason-lspconfig.nvim",
+      {
+        "mason-org/mason.nvim",
+        cmd = "Mason",
+        opts = {},
+      },
       "WhoIsSethDaniel/mason-tool-installer.nvim",
     },
-    opts = {}, -- equivalent to require("mason").setup({})
+    opts = {
+      ensure_installed = {
+        "lua_ls@3.16.4",
+      },
+    },
   },
 
   {
@@ -57,7 +64,6 @@ return {
       local servers = {
         bashls = true,
         gopls = {
-          manual_install = true,
           settings = {
             gopls = {
               hints = {
@@ -73,6 +79,7 @@ return {
           },
         },
         lua_ls = {
+          manual_install = true,
           server_capabilities = {
             semanticTokensProvider = false,
           },
@@ -121,13 +128,6 @@ return {
         },
       }
 
-      -- formatters/linters/debuggers/etc for mason-tool-installer
-      local tools = {
-        "stylua",
-        "ruff",
-        "delve",
-      }
-
       local ensure_installed = vim.tbl_filter(function(key)
         local t = servers[key]
         if type(t) == "table" then
@@ -136,10 +136,13 @@ return {
           return t
         end
       end, vim.tbl_keys(servers))
-
-      require("mason").setup()
       require("mason-tool-installer").setup({
-        ensure_installed = vim.list_extend(ensure_installed, tools),
+        ensure_installed = vim.list_extend(ensure_installed, {
+          "stylua",
+          "shfmt",
+          "ruff",
+          "delve",
+        }),
       })
 
       for name, cfg in pairs(servers) do

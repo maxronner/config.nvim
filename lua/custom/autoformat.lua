@@ -2,33 +2,34 @@ local setup = function()
   local conform = require("conform")
   conform.setup({
     formatters_by_ft = {
-      lua = { "stylua" },
+      css = { "prettier" },
       elixir = { "mix", "format" },
       erlang = { "mix", "format" },
-      javascript = { "prettier" },
-      typescript = { "prettier" },
-      css = { "prettier" },
-      scss = { "prettier" },
-      html = { "prettier" },
-      json = { "prettier" },
-      yaml = { "prettier" },
-      markdown = { "prettier" },
-      sh = { "shfmt" },
-      rust = { "rustfmt" },
-      python = { "black" },
-      javascriptreact = { "prettier" },
-      typescriptreact = { "prettier" },
+      go = { "gofmt" },
       graphql = { "prettier" },
+      html = { "prettier" },
+      javascript = { "prettier" },
+      javascriptreact = { "prettier" },
+      json = { "prettier" },
+      lua = { "stylua" },
+      markdown = { "prettier" },
+      python = { "black" },
+      rust = { "rustfmt" },
+      scss = { "prettier" },
+      sh = { "shfmt" },
+      typescript = { "prettier" },
+      typescriptreact = { "prettier" },
+      yaml = { "prettier" },
     },
   })
   vim.api.nvim_create_autocmd("BufWritePre", {
     group = vim.api.nvim_create_augroup("custom-conform", { clear = true }),
     callback = function(args)
-      require("conform").format {
+      require("conform").format({
         bufnr = args.buf,
         lsp_fallback = true,
         quiet = true,
-      }
+      })
     end,
   })
 end

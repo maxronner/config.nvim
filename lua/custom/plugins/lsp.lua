@@ -10,11 +10,7 @@ return {
       },
       "WhoIsSethDaniel/mason-tool-installer.nvim",
     },
-    opts = {
-      ensure_installed = {
-        "lua_ls@3.16.4",
-      },
-    },
+    opts = {},
   },
 
   {
@@ -80,9 +76,19 @@ return {
           },
         },
         lua_ls = {
-          manual_install = true,
           server_capabilities = {
             semanticTokensProvider = false,
+          },
+          settings = {
+            Lua = {
+              workspace = {
+                checkThirdParty = false,
+                library = {
+                  vim.env.VIMRUNTIME,
+                  { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+                },
+              },
+            },
           },
         },
         rust_analyzer = true,

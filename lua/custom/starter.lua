@@ -100,7 +100,7 @@ vim.api.nvim_create_autocmd("User", {
   pattern = "LazyVimStarted",
   callback = function()
     set_footer()
-    if _G.MiniStarter then
+    if _G.MiniStarter and vim.bo.filetype == "ministarter" then
       MiniStarter.refresh()
     end
   end,

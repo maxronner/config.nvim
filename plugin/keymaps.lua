@@ -90,3 +90,14 @@ nmap_leader(
 
 -- Terminal mode
 tmap("<Esc>", "<C-\\><C-n>", { desc = "Escape terminal mode" })
+
+---- Buffers ----
+nmap_leader("bc", function()
+  vim.ui.input({ prompt = "Command: " }, function(c)
+    if c and c ~= "" then
+      vim.cmd("vnew")
+      OpenScratch()
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(c))
+    end
+  end)
+end, { desc = "Run command in new buffer" })

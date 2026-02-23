@@ -279,7 +279,7 @@ create_theme({
   Todo = { fg = C11, bold = true }, -- bright yellow — attention
   Note = { fg = C12, bold = true }, -- bright blue
   Question = { fg = C6 },
-  Comment = { fg = grey(12), italic = true },
+  Comment = { fg = grey(8), italic = true },
 
   -- ── Navigation / UI chrome ────────────────────────────────────────────
   Directory = { fg = C4 }, -- teal — directories feel like links
@@ -433,8 +433,8 @@ create_theme({
   ["@markup.strikethrough"] = { strikethrough = true },
 
   -- ── Punctuation ───────────────────────────────────────────────────────
-  ["@punctuation.bracket"] = { fg = C8 }, -- ( ) [ ] { } — recede
-  ["@punctuation.delimiter"] = { fg = C8 }, -- , ; : — recede
+  ["@punctuation.bracket"] = { fg = grey(12) }, -- ( ) [ ] { } — recede
+  ["@punctuation.delimiter"] = { fg = grey(12) }, -- , ; : — recede
   ["@punctuation.special"] = { fg = C5 }, -- $( ) interpolation — magenta pop
 
   -- ── String specials ───────────────────────────────────────────────────

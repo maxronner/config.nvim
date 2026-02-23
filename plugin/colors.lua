@@ -36,6 +36,8 @@ local function detect_background()
   vim.g.theme_background = lum > 127 and "light" or "dark"
 end
 
+detect_background()
+
 vim.api.nvim_create_user_command("ReloadTheme", function()
   reload_fzf_env()
   detect_background()

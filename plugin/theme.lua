@@ -77,8 +77,8 @@ do
     -- Fallbacks are the "bright" counterpart in the conventional ANSI layout.
     C5 = fg_slot(5, 13) -- Statement/Keyword  → bright magenta
     C6 = fg_slot(6, 14) -- Special/Info       → bright cyan/rose
-    C9 = fg_slot(9, 1) -- Boolean/Exception  → normal red (already bright)
-    C12 = fg_slot(12, 4) -- Function/Include   → normal blue/teal
+    C9 = fg_slot(9, 1) -- (reserved bright slot)
+    C12 = fg_slot(12, 4) -- (reserved bright slot)
   end
 end
 
@@ -184,47 +184,47 @@ end
 
 create_theme({
   -- ── Primitives ────────────────────────────────────────────────────────
-  -- Constants: cyan/teal slot — distinct from strings and keywords
-  Constant = { fg = C4 },
+  -- Constants: gold slot — literals feel warm
+  Constant = { fg = C3 },
   -- Literals (numbers, chars, booleans): yellow — warm, stands out from text
   Literal = { fg = C3 },
   Number = "Literal",
   Float = "Literal",
   Character = "Literal",
-  Boolean = { fg = C9 }, -- bright red — booleans feel decisive
+  Boolean = { fg = C6 }, -- rose — booleans are special values
   -- Strings: green slot — classic, easy to scan
-  String = { fg = C2 },
+  String = { fg = C3 },
   -- String internals
-  SpecialChar = { fg = C10 }, -- escape seqs: bright green, related but distinct
+  SpecialChar = { fg = C2 }, -- escape seqs: pine — related to keywords
 
   -- ── Identifiers ───────────────────────────────────────────────────────
   Identifier = {}, -- plain text color
   Variable = "Identifier",
-  -- Functions: bright cyan/teal — active, prominent
-  Function = { fg = C12 },
+  -- Functions: rose — active, prominent
+  Function = { fg = C6 },
 
   -- ── Statements ────────────────────────────────────────────────────────
-  -- Keywords: magenta/purple — control flow pops without being alarming
-  Statement = { fg = C5 },
+  -- Keywords: pine — structural blue for control flow
+  Statement = { fg = C2 },
   Conditional = "Statement",
   Repeat = "Statement",
-  Label = { fg = C13 }, -- bright magenta — label vs keyword distinction
-  Operator = { fg = C14 }, -- bright cyan/rose — operators feel active
+  Label = { fg = C4 }, -- foam — labels feel structural
+  Operator = { fg = C8 }, -- subtle — operators recede
   Keyword = "Statement",
-  Exception = { fg = C9 }, -- bright red — exceptions are errors
+  Exception = { fg = C2 }, -- pine — exceptions are control flow
 
   -- ── Preprocessor ──────────────────────────────────────────────────────
   PreProc = { fg = C13 }, -- bright magenta
-  Include = { fg = C12 }, -- bright blue — imports feel like paths
+  Include = { fg = C2 }, -- pine — imports are keywords
   Define = { fg = C5 }, -- magenta
   Macro = { fg = C13 }, -- bright magenta — macros are special
   PreCondit = { fg = C13 },
 
   -- ── Types ─────────────────────────────────────────────────────────────
-  -- Types: blue slot — solid, structural
-  Type = { fg = C2, bold = true },
-  StorageClass = { fg = C5 }, -- magenta — storage modifiers (static, extern)
-  Structure = { fg = C2 }, -- blue — struct/class definitions
+  -- Types: foam slot — structural teal
+  Type = { fg = C4, bold = true },
+  StorageClass = { fg = C4 }, -- foam — storage modifiers (static, extern)
+  Structure = { fg = C4 }, -- foam — struct/class definitions
   Typedef = { fg = C12 }, -- bright blue — typedef feels like renaming
 
   -- ── Diagnostics ───────────────────────────────────────────────────────
@@ -234,13 +234,13 @@ create_theme({
   Hint = { fg = C4 },
   Success = { fg = C2 },
 
-  ErrorMsg = { "Error", bold = true },
+  ErrorMsg = { fg = C9, bold = true },
   WarningMsg = "Warning",
   InfoMsg = "Info",
   HintMsg = "Hint",
   SuccessMsg = "Success",
 
-  DiagnosticError = "Error",
+  DiagnosticError = { fg = C9 },
   DiagnosticWarn = "Warning",
   DiagnosticInfo = "Info",
   DiagnosticHint = "Hint",
@@ -261,6 +261,22 @@ create_theme({
   DiagnosticUnnecessary = { fg = C8 }, -- muted/faded
   DiagnosticDeprecated = { fg = C8, strikethrough = true },
 
+  DiagnosticVirtualTextError = "DiagnosticError",
+  DiagnosticVirtualTextWarn = "DiagnosticWarn",
+  DiagnosticVirtualTextInfo = "DiagnosticInfo",
+  DiagnosticVirtualTextHint = "DiagnosticHint",
+  DiagnosticVirtualTextOk = "DiagnosticOk",
+
+  -- ── Health ────────────────────────────────────────────────────────────
+  healthError = "Error",
+  healthSuccess = "Success",
+  healthWarning = "Warning",
+
+  -- ── Redraw debug ──────────────────────────────────────────────────────
+  RedrawDebugClear = { fg = C0, bg = C3 }, -- gold bg
+  RedrawDebugComposed = { fg = C0, bg = C2 }, -- pine bg
+  RedrawDebugRecompose = { fg = C0, bg = C1 }, -- love bg
+
   -- ── Spelling ──────────────────────────────────────────────────────────
   SpellBad = { "Error", undercurl = true },
   SpellCap = { "Warning", undercurl = true },
@@ -268,18 +284,18 @@ create_theme({
   SpellLocal = { "Hint", undercurl = true },
 
   -- ── Special ───────────────────────────────────────────────────────────
-  Special = { fg = C6 }, -- cyan/rose slot
+  Special = { fg = C4 }, -- foam — special tokens feel structural
   SpecialKey = { fg = C8 }, -- muted — non-printable chars
-  Tag = { fg = C4 }, -- teal
+  Tag = { fg = C4 }, -- foam
   Delimiter = { fg = C8 }, -- muted — brackets/parens recede
-  SpecialComment = { fg = C8, italic = true },
+  SpecialComment = { fg = C5, italic = true }, -- iris — special comments stand out
 
   -- ── Prose / markup ────────────────────────────────────────────────────
-  Title = { fg = C2, bold = true },
-  Todo = { fg = C11, bold = true }, -- bright yellow — attention
-  Note = { fg = C12, bold = true }, -- bright blue
-  Question = { fg = C6 },
-  Comment = { fg = grey(8), italic = true },
+  Title = { fg = C4, bold = true }, -- foam — structural heading
+  Todo = { fg = C6, bold = true }, -- rose — todo markers
+  Note = { fg = C4, bold = true }, -- foam — notes
+  Question = { fg = C3 }, -- gold — questions feel like warnings
+  Comment = { fg = grey(10), italic = true }, -- subtle
 
   -- ── Navigation / UI chrome ────────────────────────────────────────────
   Directory = { fg = C4 }, -- teal — directories feel like links
@@ -294,6 +310,16 @@ create_theme({
   GreyFg2 = { fg = grey(6) },
   GreyFg3 = { fg = grey(12) },
 
+  -- ── Base text ─────────────────────────────────────────────────────────
+  Normal = { fg = C7 }, -- plain buffer text (let terminal handle bg)
+  NormalNC = { fg = C7 }, -- non-current window text
+
+  -- ── Messages ──────────────────────────────────────────────────────────
+  ModeMsg = { fg = C8 }, -- --INSERT-- etc. mode indicator (subtle)
+  MoreMsg = { fg = C5 }, -- --More-- prompt (iris)
+  Debug = { fg = C6 }, -- debug output (rose)
+  Underlined = { fg = C5, underline = true }, -- underlined text (iris)
+
   -- ── Cursor / selection ────────────────────────────────────────────────
   Cursor = { reverse = true },
   Visual = { bg = grey(5) },
@@ -307,8 +333,8 @@ create_theme({
   ColorColumn = { bg = grey(3) },
 
   -- ── Search ────────────────────────────────────────────────────────────
-  Search = { fg = C0, bg = C11 }, -- bright yellow bg, dark fg
-  CurSearch = { fg = C0, bg = C3, bold = true },
+  Search = { fg = C14, bg = C11 }, -- bright rose fg, gold bg
+  CurSearch = { fg = C14, bg = C3, bold = true },
   IncSearch = "CurSearch",
 
   -- ── Completion / wildmenu ─────────────────────────────────────────────
@@ -332,11 +358,17 @@ create_theme({
 
   StatusLine = { bg = grey(3), fg = C7 },
   StatusLineNC = { bg = grey(1), fg = C8 },
+  StatusLineTerm = { fg = C0, bg = C2, bold = true }, -- terminal window: pine bg
+  StatusLineTermNC = { fg = C0, bg = C2 }, -- inactive terminal window
 
   -- ── Floats / borders ──────────────────────────────────────────────────
   NormalFloat = "GreyBg2",
   FloatBorder = { fg = C8 },
   FloatTitle = { fg = C4, bold = true },
+
+  -- ── Winbar ────────────────────────────────────────────────────────────
+  WinBar = { fg = C8 }, -- breadcrumb bar (focused)
+  WinBarNC = { fg = C8 }, -- breadcrumb bar (unfocused)
 
   -- ── Window structure ──────────────────────────────────────────────────
   NonText = "GreyFg1",
@@ -347,33 +379,33 @@ create_theme({
   Border = "GreyFg2",
 
   -- ── Gutter ────────────────────────────────────────────────────────────
-  LineNr = "GreyFg2",
-  LineNrAbove = "GreyFg1",
-  LineNrBelow = "GreyFg1",
+  LineNr = "GreyFg3",
+  LineNrAbove = "GreyFg2",
+  LineNrBelow = "GreyFg2",
   SignColumn = {},
   FoldColumn = "GreyFg2",
   Folded = { fg = C8, bg = grey(2) },
 
   -- ── Diff ──────────────────────────────────────────────────────────────
-  DiffAdd = { bg = rgb(0, 1, 0) },
-  DiffDelete = { bg = rgb(1, 0, 0), fg = C8 },
+  DiffAdd = { bg = rgb(0, 1, 0), fg = C10 },
+  DiffDelete = { bg = rgb(1, 0, 0), fg = C9 },
   DiffChange = { bg = rgb(0, 0, 1) },
   DiffText = { bg = rgb(0, 0, 2), bold = true },
 
   -- ── Treesitter ────────────────────────────────────────────────────────
   ["@variable"] = "Identifier",
-  ["@variable.builtin"] = { fg = C6 }, -- rose/cyan — self, this
+  ["@variable.builtin"] = { fg = C1 }, -- love — self, this are special
   ["@variable.parameter"] = { fg = C7 }, -- plain — params are just vars
-  ["@variable.member"] = { fg = C14 }, -- bright cyan — field access
+  ["@variable.member"] = { fg = C4 }, -- foam — field access
 
   ["@constant"] = "Constant",
-  ["@constant.builtin"] = { fg = C9 }, -- bright red — nil, true, false
-  ["@constant.macro"] = { fg = C13 }, -- bright magenta
+  ["@constant.builtin"] = { fg = C3, bold = true }, -- gold bold — nil, true, false
+  ["@constant.macro"] = { fg = C3 }, -- gold — macro constants
 
   ["@string"] = "String",
   ["@string.escape"] = "SpecialChar",
   ["@string.special"] = "SpecialChar",
-  ["@string.regexp"] = { fg = C6 }, -- rose — regex is special
+  ["@string.regexp"] = { fg = C5 }, -- iris — regex is meta/special
 
   ["@character"] = "Character",
   ["@number"] = "Number",
@@ -381,27 +413,31 @@ create_theme({
   ["@boolean"] = "Boolean",
 
   ["@function"] = "Function",
-  ["@function.builtin"] = { fg = C3, bold = true }, -- yellow bold — builtins distinct from regular fns
-  ["@function.macro"] = { fg = C13 },
-  ["@function.method"] = { fg = C12 }, -- bright teal
+  ["@function.builtin"] = { fg = C6, bold = true }, -- rose bold — builtins distinct from regular fns
+  ["@function.macro"] = { fg = C6 }, -- rose — macros are function-like
+  ["@function.method"] = { fg = C6 }, -- rose
 
-  ["@constructor"] = { fg = C2 }, -- blue/green — constructors ~ types
+  ["@constructor"] = { fg = C4 }, -- foam — constructors ~ types
   ["@operator"] = "Operator",
 
   ["@keyword"] = "Keyword",
   ["@keyword.import"] = "Include",
-  ["@keyword.return"] = { fg = C9 }, -- bright red — return stands out
+  ["@keyword.return"] = { fg = C2 }, -- pine — return is control flow
   ["@keyword.exception"] = "Exception",
   ["@keyword.conditional"] = "Conditional",
   ["@keyword.repeat"] = "Repeat",
-  ["@keyword.operator"] = { fg = C14 }, -- and, or, not
+  ["@keyword.operator"] = { fg = C8 }, -- subtle — and, or, not recede
 
   ["@type"] = "Type",
-  ["@type.builtin"] = { fg = C2 },
-  ["@type.definition"] = { fg = C2, bold = true },
+  ["@type.builtin"] = { fg = C4, bold = true }, -- foam bold
+  ["@type.definition"] = { fg = C4, bold = true }, -- foam bold
 
-  ["@attribute"] = { fg = C13 }, -- bright magenta — decorators
-  ["@property"] = { fg = C14 }, -- bright cyan
+  ["@module"] = "Identifier", -- module/namespace: plain text
+  ["@module.builtin"] = { fg = C7, bold = true }, -- built-in modules (io, os, etc.)
+
+  ["@attribute"] = { fg = C5 }, -- iris — decorators
+  ["@attribute.builtin"] = { fg = C5, bold = true }, -- iris bold — built-in attributes
+  ["@property"] = { fg = C4 }, -- foam — properties are structural
 
   ["@comment"] = "Comment",
   ["@comment.todo"] = "Todo",
@@ -410,36 +446,46 @@ create_theme({
   ["@comment.error"] = { fg = C1, italic = true },
 
   ["@tag"] = { fg = C2 }, -- HTML/JSX tags: blue
-  ["@tag.attribute"] = { fg = C6 }, -- tag attrs: rose
+  ["@tag.attribute"] = { fg = C5 }, -- iris — tag attrs are meta/params
   ["@tag.delimiter"] = { fg = C8 }, -- <, >, /
 
-  ["@markup.heading"] = { fg = C2, bold = true },
-  ["@markup.heading.1"] = { fg = C2, bold = true },
+  ["@markup.heading"] = { fg = C4, bold = true }, -- foam — all headings
+  ["@markup.heading.1"] = { fg = C4, bold = true },
   ["@markup.heading.2"] = { fg = C4, bold = true },
-  ["@markup.heading.3"] = { fg = C5, bold = true },
-  ["@markup.heading.4"] = { fg = C6, bold = true },
-  ["@markup.heading.5"] = { fg = C3, bold = true },
-  ["@markup.heading.6"] = { fg = C8, bold = true },
+  ["@markup.heading.3"] = { fg = C4, bold = true },
+  ["@markup.heading.4"] = { fg = C4, bold = true },
+  ["@markup.heading.5"] = { fg = C4, bold = true },
+  ["@markup.heading.6"] = { fg = C4, bold = true },
   ["@markup.link"] = { fg = C4, underline = true },
-  ["@markup.link.label"] = { fg = C12 },
-  ["@markup.link.url"] = { fg = C6, underline = true },
+  ["@markup.link.label"] = { fg = C4 }, -- foam
+  ["@markup.link.url"] = { fg = C6, underline = true }, -- rose — URLs are active
   ["@markup.raw"] = { fg = C3 },
   ["@markup.raw.block"] = { fg = C7 },
-  ["@markup.list"] = { fg = C5 },
-  ["@markup.list.checked"] = { fg = C2 },
+  ["@markup.list"] = { fg = C2 }, -- pine — list markers are structural
+  ["@markup.list.checked"] = { fg = C4 }, -- foam
   ["@markup.list.unchecked"] = { fg = C8 },
+  ["@markup.quote"] = "Identifier", -- blockquote body: plain text
   ["@markup.italic"] = { italic = true },
   ["@markup.strong"] = { bold = true },
   ["@markup.strikethrough"] = { strikethrough = true },
+  ["@markup.link.markdown_inline"] = { fg = C8 }, -- inline link brackets [ ]
+  ["@markup.link.label.markdown_inline"] = { fg = C4 }, -- inline link label text
+  ["@markup.raw.delimiter.markdown"] = { fg = C8 }, -- code fence delimiters
+  ["@conceal.markdown"] = { fg = C8 }, -- concealed markdown syntax
+
+  -- ── Diff (treesitter) ─────────────────────────────────────────────────
+  ["@diff.plus"] = { fg = C10 }, -- bright pine — added lines
+  ["@diff.minus"] = { fg = C1 }, -- love — removed lines
+  ["@diff.delta"] = { fg = C3 }, -- gold — changed lines
 
   -- ── Punctuation ───────────────────────────────────────────────────────
-  ["@punctuation.bracket"] = { fg = grey(12) }, -- ( ) [ ] { } — recede
-  ["@punctuation.delimiter"] = { fg = grey(12) }, -- , ; : — recede
-  ["@punctuation.special"] = { fg = C5 }, -- $( ) interpolation — magenta pop
+  ["@punctuation.bracket"] = { fg = grey(12) }, -- subtle — ( ) [ ] { } recede
+  ["@punctuation.delimiter"] = { fg = C8 }, -- subtle — , ; : recede
+  ["@punctuation.special"] = { fg = C8 }, -- subtle — $( ) interpolation
 
   -- ── String specials ───────────────────────────────────────────────────
   -- @string.special already links to SpecialChar (C10) above; add subtypes:
-  ["@string.special.symbol"] = { fg = C11, bold = true }, -- make/ruby symbols, var assignment LHS — bright yellow
+  ["@string.special.symbol"] = { fg = C7 }, -- text — symbols are identifiers
   ["@string.special.path"] = { fg = C4, underline = true }, -- file paths
   ["@string.special.url"] = { fg = C4, underline = true }, -- URLs
 
@@ -447,13 +493,16 @@ create_theme({
   ["@character.special"] = { fg = C13, bold = true }, -- make @ prefix, $@, $< etc — bright magenta
 
   -- ── Function calls ────────────────────────────────────────────────────
-  ["@function.call"] = { fg = C7 }, -- generic command words stay plain
-  ["@function.method.call"] = { fg = C4 }, -- method calls: teal
+  ["@function.call"] = { fg = C6 }, -- rose
+  ["@function.method.call"] = { fg = C6 }, -- rose
 
   -- ── Keyword variants ──────────────────────────────────────────────────
-  ["@keyword.function"] = { fg = C5 }, -- 'function' keyword (bash, lua)
-  ["@keyword.directive"] = { fg = C13 }, -- shebangs, preprocessor directives
-  ["@keyword.directive.define"] = { fg = C13 },
+  ["@keyword.function"] = { fg = C2 }, -- pine — 'function' keyword is a keyword
+  ["@keyword.storage"] = { fg = C4 }, -- foam — static, extern, const
+  ["@keyword.debug"] = { fg = C6 }, -- rose — debugger, breakpoint
+  ["@keyword.conditional.ternary"] = "Conditional", -- pine — ternary ?:
+  ["@keyword.directive"] = { fg = C5 }, -- iris — shebangs, preprocessor directives
+  ["@keyword.directive.define"] = { fg = C5 }, -- iris
 
   -- Language-specific overrides
   ["@constructor.lua"] = {},
@@ -466,10 +515,10 @@ create_theme({
   ["@lsp.type.struct"] = "Structure",
   ["@lsp.type.parameter"] = { fg = C7 },
   ["@lsp.type.variable"] = "Identifier",
-  ["@lsp.type.property"] = { fg = C14 },
+  ["@lsp.type.property"] = { fg = C4 }, -- foam
   ["@lsp.type.enumMember"] = "Constant",
   ["@lsp.type.function"] = "Function",
-  ["@lsp.type.method"] = { fg = C12 },
+  ["@lsp.type.method"] = { fg = C6 }, -- rose
   ["@lsp.type.macro"] = { fg = C13 },
   ["@lsp.type.decorator"] = { fg = C13 },
   ["@lsp.type.namespace"] = { fg = C7 },
@@ -477,6 +526,14 @@ create_theme({
   ["@lsp.mod.deprecated"] = { fg = C8, strikethrough = true },
   ["@lsp.mod.readonly"] = { fg = C4 },
   ["@lsp.mod.static"] = { bold = true },
+
+  -- ── LSP UI ────────────────────────────────────────────────────────────
+  LspCodeLens = { fg = C8 }, -- code lens annotation text
+  LspCodeLensSeparator = { fg = C8 }, -- separator between code lens items
+  LspInlayHint = { fg = C8 }, -- inlay hints (type/param names)
+  LspReferenceRead = { bg = grey(3) }, -- read-reference under cursor
+  LspReferenceText = { bg = grey(3) }, -- text-reference under cursor
+  LspReferenceWrite = { bg = grey(4) }, -- write-reference under cursor (slightly brighter)
 
   -- ── fugitive ──────────────────────────────────────────────────────────
   FugitiveblameHash = { fg = C4 },
@@ -512,6 +569,14 @@ create_theme({
   MiniStarterQuery = { "WarningMsg", bold = true },
   MiniStarterCurrent = { "WarningMsg", bold = true },
 
+  -- ── mini.tabline ──────────────────────────────────────────────────────
+  MiniTablineCurrent = { fg = C7, bg = grey(5), bold = true }, -- active tab
+  MiniTablineHidden = { fg = C8 }, -- inactive tab
+  MiniTablineModifiedCurrent = { fg = C0, bg = C7, bold = true }, -- active modified tab (inverted)
+  MiniTablineModifiedHidden = { fg = C0, bg = grey(6) }, -- inactive modified tab
+  MiniTablineModifiedVisible = { fg = C0, bg = C7 }, -- visible modified tab
+  MiniTablineVisible = { fg = C7 }, -- visible non-active tab
+
   -- ── mini.statusline ───────────────────────────────────────────────────
   MiniStatuslineModeNormal = { bg = C4, fg = C0, bold = true },
   MiniStatuslineModeInsert = { bg = C2, fg = C0, bold = true },
@@ -519,8 +584,8 @@ create_theme({
   MiniStatuslineModeReplace = { bg = C1, fg = C15, bold = true },
   MiniStatuslineModeCommand = { bg = C3, fg = C0, bold = true },
   MiniStatuslineModeOther = { bg = C6, fg = C0, bold = true },
-  MiniStatuslineDevinfo = { bg = grey(3), fg = grey(14) },
+  MiniStatuslineDevinfo = { bg = grey(4), fg = grey(14) },
   MiniStatuslineFilename = { bg = grey(3), fg = grey(14) },
-  MiniStatuslineFileinfo = { bg = grey(3), fg = grey(14) },
+  MiniStatuslineFileinfo = { bg = grey(2), fg = grey(14) },
   MiniStatuslineInactive = { bg = grey(1), fg = C8 },
 })

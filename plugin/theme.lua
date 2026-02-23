@@ -20,16 +20,16 @@
 --   C14 bright cyan / rose
 --   C15 bright white
 
-local C0  = 0
-local C1  = 1
-local C2  = 2
-local C3  = 3
-local C4  = 4
-local C5  = 5
-local C6  = 6
-local C7  = 7
-local C8  = 8
-local C9  = 9
+local C0 = 0
+local C1 = 1
+local C2 = 2
+local C3 = 3
+local C4 = 4
+local C5 = 5
+local C6 = 6
+local C7 = 7
+local C8 = 8
+local C9 = 9
 local C10 = 10
 local C11 = 11
 local C12 = 12
@@ -66,18 +66,19 @@ do
     --- @return integer
     local function fg_slot(slot, fallback)
       local hex = content:match('"color' .. slot .. '"%s*:%s*"#?([0-9a-fA-F]+)"')
-      if not hex or #hex < 6 then return slot end
+      if not hex or #hex < 6 then
+        return slot
+      end
       local contrast = math.abs(lum(hex) - bg_lum)
       return contrast < 60 and fallback or slot
     end
 
     -- Guard slots used for prominent foreground syntax colors.
     -- Fallbacks are the "bright" counterpart in the conventional ANSI layout.
-    C5  = fg_slot(5,  13)   -- Statement/Keyword  → bright magenta
-    C6  = fg_slot(6,  14)   -- Special/Info       → bright cyan/rose
-    C8  = fg_slot(8,   7)   -- Comment/muted      → normal white/fg
-    C9  = fg_slot(9,   1)   -- Boolean/Exception  → normal red (already bright)
-    C12 = fg_slot(12,  4)   -- Function/Include   → normal blue/teal
+    C5 = fg_slot(5, 13) -- Statement/Keyword  → bright magenta
+    C6 = fg_slot(6, 14) -- Special/Info       → bright cyan/rose
+    C9 = fg_slot(9, 1) -- Boolean/Exception  → normal red (already bright)
+    C12 = fg_slot(12, 4) -- Function/Include   → normal blue/teal
   end
 end
 
@@ -184,104 +185,104 @@ end
 create_theme({
   -- ── Primitives ────────────────────────────────────────────────────────
   -- Constants: cyan/teal slot — distinct from strings and keywords
-  Constant    = { fg = C4 },
+  Constant = { fg = C4 },
   -- Literals (numbers, chars, booleans): yellow — warm, stands out from text
-  Literal     = { fg = C3 },
-  Number      = "Literal",
-  Float       = "Literal",
-  Character   = "Literal",
-  Boolean     = { fg = C9 },         -- bright red — booleans feel decisive
+  Literal = { fg = C3 },
+  Number = "Literal",
+  Float = "Literal",
+  Character = "Literal",
+  Boolean = { fg = C9 }, -- bright red — booleans feel decisive
   -- Strings: green slot — classic, easy to scan
-  String      = { fg = C2 },
+  String = { fg = C2 },
   -- String internals
-  SpecialChar = { fg = C10 },        -- escape seqs: bright green, related but distinct
+  SpecialChar = { fg = C10 }, -- escape seqs: bright green, related but distinct
 
   -- ── Identifiers ───────────────────────────────────────────────────────
-  Identifier  = {},                  -- plain text color
-  Variable    = "Identifier",
+  Identifier = {}, -- plain text color
+  Variable = "Identifier",
   -- Functions: bright cyan/teal — active, prominent
-  Function    = { fg = C12 },
+  Function = { fg = C12 },
 
   -- ── Statements ────────────────────────────────────────────────────────
   -- Keywords: magenta/purple — control flow pops without being alarming
-  Statement   = { fg = C5 },
+  Statement = { fg = C5 },
   Conditional = "Statement",
-  Repeat      = "Statement",
-  Label       = { fg = C13 },        -- bright magenta — label vs keyword distinction
-  Operator    = { fg = C14 },        -- bright cyan/rose — operators feel active
-  Keyword     = "Statement",
-  Exception   = { fg = C9 },         -- bright red — exceptions are errors
+  Repeat = "Statement",
+  Label = { fg = C13 }, -- bright magenta — label vs keyword distinction
+  Operator = { fg = C14 }, -- bright cyan/rose — operators feel active
+  Keyword = "Statement",
+  Exception = { fg = C9 }, -- bright red — exceptions are errors
 
   -- ── Preprocessor ──────────────────────────────────────────────────────
-  PreProc     = { fg = C13 },        -- bright magenta
-  Include     = { fg = C12 },        -- bright blue — imports feel like paths
-  Define      = { fg = C5 },         -- magenta
-  Macro       = { fg = C13 },        -- bright magenta — macros are special
-  PreCondit   = { fg = C13 },
+  PreProc = { fg = C13 }, -- bright magenta
+  Include = { fg = C12 }, -- bright blue — imports feel like paths
+  Define = { fg = C5 }, -- magenta
+  Macro = { fg = C13 }, -- bright magenta — macros are special
+  PreCondit = { fg = C13 },
 
   -- ── Types ─────────────────────────────────────────────────────────────
   -- Types: blue slot — solid, structural
-  Type        = { fg = C2, bold = true },
-  StorageClass = { fg = C5 },        -- magenta — storage modifiers (static, extern)
-  Structure   = { fg = C2 },         -- blue — struct/class definitions
-  Typedef     = { fg = C12 },        -- bright blue — typedef feels like renaming
+  Type = { fg = C2, bold = true },
+  StorageClass = { fg = C5 }, -- magenta — storage modifiers (static, extern)
+  Structure = { fg = C2 }, -- blue — struct/class definitions
+  Typedef = { fg = C12 }, -- bright blue — typedef feels like renaming
 
   -- ── Diagnostics ───────────────────────────────────────────────────────
-  Error       = { fg = C1 },
-  Warning     = { fg = C3 },
-  Info        = { fg = C6 },
-  Hint        = { fg = C4 },
-  Success     = { fg = C2 },
+  Error = { fg = C1 },
+  Warning = { fg = C3 },
+  Info = { fg = C6 },
+  Hint = { fg = C4 },
+  Success = { fg = C2 },
 
-  ErrorMsg    = { "Error", bold = true },
-  WarningMsg  = "Warning",
-  InfoMsg     = "Info",
-  HintMsg     = "Hint",
-  SuccessMsg  = "Success",
+  ErrorMsg = { "Error", bold = true },
+  WarningMsg = "Warning",
+  InfoMsg = "Info",
+  HintMsg = "Hint",
+  SuccessMsg = "Success",
 
-  DiagnosticError           = "Error",
-  DiagnosticWarn            = "Warning",
-  DiagnosticInfo            = "Info",
-  DiagnosticHint            = "Hint",
-  DiagnosticOk              = "Success",
+  DiagnosticError = "Error",
+  DiagnosticWarn = "Warning",
+  DiagnosticInfo = "Info",
+  DiagnosticHint = "Hint",
+  DiagnosticOk = "Success",
 
-  DiagnosticUnderlineError  = { "DiagnosticError", undercurl = true },
-  DiagnosticUnderlineWarn   = { "DiagnosticWarn",  undercurl = true },
-  DiagnosticUnderlineHint   = { "DiagnosticHint",  undercurl = true },
-  DiagnosticUnderlineInfo   = { "DiagnosticInfo",  undercurl = true },
-  DiagnosticUnderlineOk     = { "DiagnosticOk",    undercurl = true },
+  DiagnosticUnderlineError = { "DiagnosticError", undercurl = true },
+  DiagnosticUnderlineWarn = { "DiagnosticWarn", undercurl = true },
+  DiagnosticUnderlineHint = { "DiagnosticHint", undercurl = true },
+  DiagnosticUnderlineInfo = { "DiagnosticInfo", undercurl = true },
+  DiagnosticUnderlineOk = { "DiagnosticOk", undercurl = true },
 
   DiagnosticSignError = "DiagnosticError",
-  DiagnosticSignWarn  = "DiagnosticWarn",
-  DiagnosticSignHint  = "DiagnosticHint",
-  DiagnosticSignInfo  = "DiagnosticInfo",
-  DiagnosticSignOk    = "DiagnosticOk",
+  DiagnosticSignWarn = "DiagnosticWarn",
+  DiagnosticSignHint = "DiagnosticHint",
+  DiagnosticSignInfo = "DiagnosticInfo",
+  DiagnosticSignOk = "DiagnosticOk",
 
-  DiagnosticUnnecessary = { fg = C8 },     -- muted/faded
-  DiagnosticDeprecated  = { fg = C8, strikethrough = true },
+  DiagnosticUnnecessary = { fg = C8 }, -- muted/faded
+  DiagnosticDeprecated = { fg = C8, strikethrough = true },
 
   -- ── Spelling ──────────────────────────────────────────────────────────
-  SpellBad    = { "Error",   undercurl = true },
-  SpellCap    = { "Warning", undercurl = true },
-  SpellRare   = { "Info",    undercurl = true },
-  SpellLocal  = { "Hint",    undercurl = true },
+  SpellBad = { "Error", undercurl = true },
+  SpellCap = { "Warning", undercurl = true },
+  SpellRare = { "Info", undercurl = true },
+  SpellLocal = { "Hint", undercurl = true },
 
   -- ── Special ───────────────────────────────────────────────────────────
-  Special       = { fg = C6 },             -- cyan/rose slot
-  SpecialKey    = { fg = C8 },             -- muted — non-printable chars
-  Tag           = { fg = C4 },             -- teal
-  Delimiter     = { fg = C8 },             -- muted — brackets/parens recede
+  Special = { fg = C6 }, -- cyan/rose slot
+  SpecialKey = { fg = C8 }, -- muted — non-printable chars
+  Tag = { fg = C4 }, -- teal
+  Delimiter = { fg = C8 }, -- muted — brackets/parens recede
   SpecialComment = { fg = C8, italic = true },
 
   -- ── Prose / markup ────────────────────────────────────────────────────
-  Title         = { fg = C2, bold = true },
-  Todo          = { fg = C11, bold = true },  -- bright yellow — attention
-  Note          = { fg = C12, bold = true },  -- bright blue
-  Question      = { fg = C6 },
-  Comment       = { fg = C8, italic = true },
+  Title = { fg = C2, bold = true },
+  Todo = { fg = C11, bold = true }, -- bright yellow — attention
+  Note = { fg = C12, bold = true }, -- bright blue
+  Question = { fg = C6 },
+  Comment = { fg = grey(12), italic = true },
 
   -- ── Navigation / UI chrome ────────────────────────────────────────────
-  Directory     = { fg = C4 },             -- teal — directories feel like links
+  Directory = { fg = C4 }, -- teal — directories feel like links
 
   -- Neutral greys (theme-adaptive via grey())
   GreyBg1 = { bg = grey(1) },
@@ -294,223 +295,232 @@ create_theme({
   GreyFg3 = { fg = grey(12) },
 
   -- ── Cursor / selection ────────────────────────────────────────────────
-  Cursor        = { reverse = true },
-  Visual        = { bg = grey(5) },
-  VisualNOS     = "Visual",
+  Cursor = { reverse = true },
+  Visual = { bg = grey(5) },
+  VisualNOS = "Visual",
 
-  CursorLine    = "GreyBg4",
-  CursorLineNr  = { "CursorLine", fg = C7, bold = true },
+  CursorLine = "GreyBg4",
+  CursorLineNr = { "CursorLine", fg = C7, bold = true },
   CursorLineSign = "CursorLine",
   CursorLineFold = "CursorLine",
-  CursorColumn  = "CursorLine",
-  ColorColumn   = { bg = grey(3) },
+  CursorColumn = "CursorLine",
+  ColorColumn = { bg = grey(3) },
 
   -- ── Search ────────────────────────────────────────────────────────────
-  Search    = { fg = C0, bg = C11 },       -- bright yellow bg, dark fg
-  CurSearch = { fg = C0, bg = C3,  bold = true },
+  Search = { fg = C0, bg = C11 }, -- bright yellow bg, dark fg
+  CurSearch = { fg = C0, bg = C3, bold = true },
   IncSearch = "CurSearch",
 
   -- ── Completion / wildmenu ─────────────────────────────────────────────
-  WildMenu  = { fg = C0, bg = C4, bold = true },
+  WildMenu = { fg = C0, bg = C4, bold = true },
   MatchParen = { fg = C3, bg = grey(5), bold = true },
   QuickFixLine = { fg = C4, bold = true },
 
-  Pmenu     = "GreyBg2",
+  Pmenu = "GreyBg2",
   PmenuSbar = "GreyBg2",
   PmenuThumb = "GreyBg4",
-  PmenuSel  = { fg = C15, bg = grey(5), bold = true },
+  PmenuSel = { fg = C15, bg = grey(5), bold = true },
   PmenuKind = { "Pmenu", fg = C4 },
   PmenuKindSel = { "PmenuSel", fg = C12 },
   PmenuExtra = { "Pmenu", fg = C8 },
   PmenuExtraSel = { "PmenuSel", fg = C8 },
 
   -- ── Tabs / statusline ─────────────────────────────────────────────────
-  TabLine     = "GreyBg2",
-  TabLineSel  = { bg = grey(4), fg = C7, bold = true },
+  TabLine = "GreyBg2",
+  TabLineSel = { bg = grey(4), fg = C7, bold = true },
   TabLineFill = "GreyBg1",
 
-  StatusLine   = { bg = grey(3), fg = C7 },
+  StatusLine = { bg = grey(3), fg = C7 },
   StatusLineNC = { bg = grey(1), fg = C8 },
 
   -- ── Floats / borders ──────────────────────────────────────────────────
-  NormalFloat  = "GreyBg2",
-  FloatBorder  = { fg = C8 },
-  FloatTitle   = { fg = C4, bold = true },
+  NormalFloat = "GreyBg2",
+  FloatBorder = { fg = C8 },
+  FloatTitle = { fg = C4, bold = true },
 
   -- ── Window structure ──────────────────────────────────────────────────
-  NonText      = "GreyFg1",
-  EndOfBuffer  = "GreyFg1",
-  Whitespace   = { fg = grey(3) },
-  VertSplit    = "GreyFg2",
+  NonText = "GreyFg1",
+  EndOfBuffer = "GreyFg1",
+  Whitespace = { fg = grey(3) },
+  VertSplit = "GreyFg2",
   WinSeparator = "GreyFg2",
-  Border       = "GreyFg2",
+  Border = "GreyFg2",
 
   -- ── Gutter ────────────────────────────────────────────────────────────
-  LineNr       = "GreyFg2",
-  LineNrAbove  = "GreyFg1",
-  LineNrBelow  = "GreyFg1",
-  SignColumn   = {},
-  FoldColumn   = "GreyFg2",
-  Folded       = { fg = C8, bg = grey(2) },
+  LineNr = "GreyFg2",
+  LineNrAbove = "GreyFg1",
+  LineNrBelow = "GreyFg1",
+  SignColumn = {},
+  FoldColumn = "GreyFg2",
+  Folded = { fg = C8, bg = grey(2) },
 
   -- ── Diff ──────────────────────────────────────────────────────────────
-  DiffAdd      = { bg = rgb(0, 1, 0) },
-  DiffDelete   = { bg = rgb(1, 0, 0), fg = C8 },
-  DiffChange   = { bg = rgb(0, 0, 1) },
-  DiffText     = { bg = rgb(0, 0, 2), bold = true },
+  DiffAdd = { bg = rgb(0, 1, 0) },
+  DiffDelete = { bg = rgb(1, 0, 0), fg = C8 },
+  DiffChange = { bg = rgb(0, 0, 1) },
+  DiffText = { bg = rgb(0, 0, 2), bold = true },
 
   -- ── Treesitter ────────────────────────────────────────────────────────
-  ["@variable"]              = "Identifier",
-  ["@variable.builtin"]      = { fg = C6 },             -- rose/cyan — self, this
-  ["@variable.parameter"]    = { fg = C7 },             -- plain — params are just vars
-  ["@variable.member"]       = { fg = C14 },            -- bright cyan — field access
+  ["@variable"] = "Identifier",
+  ["@variable.builtin"] = { fg = C6 }, -- rose/cyan — self, this
+  ["@variable.parameter"] = { fg = C7 }, -- plain — params are just vars
+  ["@variable.member"] = { fg = C14 }, -- bright cyan — field access
 
-  ["@constant"]              = "Constant",
-  ["@constant.builtin"]      = { fg = C9 },             -- bright red — nil, true, false
-  ["@constant.macro"]        = { fg = C13 },            -- bright magenta
+  ["@constant"] = "Constant",
+  ["@constant.builtin"] = { fg = C9 }, -- bright red — nil, true, false
+  ["@constant.macro"] = { fg = C13 }, -- bright magenta
 
-  ["@string"]                = "String",
-  ["@string.escape"]         = "SpecialChar",
-  ["@string.special"]        = "SpecialChar",
-  ["@string.regexp"]         = { fg = C6 },             -- rose — regex is special
+  ["@string"] = "String",
+  ["@string.escape"] = "SpecialChar",
+  ["@string.special"] = "SpecialChar",
+  ["@string.regexp"] = { fg = C6 }, -- rose — regex is special
 
-  ["@character"]             = "Character",
-  ["@number"]                = "Number",
-  ["@float"]                 = "Float",
-  ["@boolean"]               = "Boolean",
+  ["@character"] = "Character",
+  ["@number"] = "Number",
+  ["@float"] = "Float",
+  ["@boolean"] = "Boolean",
 
-  ["@function"]              = "Function",
-  ["@function.builtin"]      = { fg = C3, bold = true },  -- yellow bold — builtins distinct from regular fns
-  ["@function.macro"]        = { fg = C13 },
-  ["@function.method"]       = { fg = C12 },            -- bright teal
-  ["@function.method.call"]  = { fg = C4 },
+  ["@function"] = "Function",
+  ["@function.builtin"] = { fg = C3, bold = true }, -- yellow bold — builtins distinct from regular fns
+  ["@function.macro"] = { fg = C13 },
+  ["@function.method"] = { fg = C12 }, -- bright teal
 
-  ["@constructor"]           = { fg = C2 },             -- blue/green — constructors ~ types
-  ["@operator"]              = "Operator",
+  ["@constructor"] = { fg = C2 }, -- blue/green — constructors ~ types
+  ["@operator"] = "Operator",
 
-  ["@keyword"]               = "Keyword",
-  ["@keyword.import"]        = "Include",
-  ["@keyword.return"]        = { fg = C9 },             -- bright red — return stands out
-  ["@keyword.exception"]     = "Exception",
-  ["@keyword.conditional"]   = "Conditional",
-  ["@keyword.repeat"]        = "Repeat",
-  ["@keyword.operator"]      = { fg = C14 },            -- and, or, not
+  ["@keyword"] = "Keyword",
+  ["@keyword.import"] = "Include",
+  ["@keyword.return"] = { fg = C9 }, -- bright red — return stands out
+  ["@keyword.exception"] = "Exception",
+  ["@keyword.conditional"] = "Conditional",
+  ["@keyword.repeat"] = "Repeat",
+  ["@keyword.operator"] = { fg = C14 }, -- and, or, not
 
-  ["@type"]                  = "Type",
-  ["@type.builtin"]          = { fg = C2 },
-  ["@type.definition"]       = { fg = C2, bold = true },
+  ["@type"] = "Type",
+  ["@type.builtin"] = { fg = C2 },
+  ["@type.definition"] = { fg = C2, bold = true },
 
-  ["@attribute"]             = { fg = C13 },            -- bright magenta — decorators
-  ["@property"]              = { fg = C14 },            -- bright cyan
+  ["@attribute"] = { fg = C13 }, -- bright magenta — decorators
+  ["@property"] = { fg = C14 }, -- bright cyan
 
-  ["@comment"]               = "Comment",
-  ["@comment.todo"]          = "Todo",
-  ["@comment.note"]          = "Note",
-  ["@comment.warning"]       = { fg = C3, italic = true },
-  ["@comment.error"]         = { fg = C1, italic = true },
+  ["@comment"] = "Comment",
+  ["@comment.todo"] = "Todo",
+  ["@comment.note"] = "Note",
+  ["@comment.warning"] = { fg = C3, italic = true },
+  ["@comment.error"] = { fg = C1, italic = true },
 
-  ["@tag"]                   = { fg = C2 },             -- HTML/JSX tags: blue
-  ["@tag.attribute"]         = { fg = C6 },             -- tag attrs: rose
-  ["@tag.delimiter"]         = { fg = C8 },             -- <, >, /
+  ["@tag"] = { fg = C2 }, -- HTML/JSX tags: blue
+  ["@tag.attribute"] = { fg = C6 }, -- tag attrs: rose
+  ["@tag.delimiter"] = { fg = C8 }, -- <, >, /
 
-  ["@markup.heading"]        = { fg = C2, bold = true },
-  ["@markup.heading.1"]      = { fg = C2, bold = true },
-  ["@markup.heading.2"]      = { fg = C4, bold = true },
-  ["@markup.heading.3"]      = { fg = C5, bold = true },
-  ["@markup.heading.4"]      = { fg = C6, bold = true },
-  ["@markup.heading.5"]      = { fg = C3, bold = true },
-  ["@markup.heading.6"]      = { fg = C8, bold = true },
-  ["@markup.link"]           = { fg = C4, underline = true },
-  ["@markup.link.label"]     = { fg = C12 },
-  ["@markup.link.url"]       = { fg = C6, underline = true },
-  ["@markup.raw"]            = { fg = C3 },
-  ["@markup.raw.block"]      = { fg = C7 },
-  ["@markup.list"]           = { fg = C5 },
-  ["@markup.list.checked"]   = { fg = C2 },
+  ["@markup.heading"] = { fg = C2, bold = true },
+  ["@markup.heading.1"] = { fg = C2, bold = true },
+  ["@markup.heading.2"] = { fg = C4, bold = true },
+  ["@markup.heading.3"] = { fg = C5, bold = true },
+  ["@markup.heading.4"] = { fg = C6, bold = true },
+  ["@markup.heading.5"] = { fg = C3, bold = true },
+  ["@markup.heading.6"] = { fg = C8, bold = true },
+  ["@markup.link"] = { fg = C4, underline = true },
+  ["@markup.link.label"] = { fg = C12 },
+  ["@markup.link.url"] = { fg = C6, underline = true },
+  ["@markup.raw"] = { fg = C3 },
+  ["@markup.raw.block"] = { fg = C7 },
+  ["@markup.list"] = { fg = C5 },
+  ["@markup.list.checked"] = { fg = C2 },
   ["@markup.list.unchecked"] = { fg = C8 },
-  ["@markup.italic"]         = { italic = true },
-  ["@markup.strong"]         = { bold = true },
-  ["@markup.strikethrough"]  = { strikethrough = true },
+  ["@markup.italic"] = { italic = true },
+  ["@markup.strong"] = { bold = true },
+  ["@markup.strikethrough"] = { strikethrough = true },
 
   -- ── Punctuation ───────────────────────────────────────────────────────
-  ["@punctuation.bracket"]   = { fg = C8 },             -- ( ) [ ] { } — recede
-  ["@punctuation.delimiter"] = { fg = C8 },             -- , ; : — recede
-  ["@punctuation.special"]   = { fg = C5 },             -- $( ) interpolation — magenta pop
+  ["@punctuation.bracket"] = { fg = C8 }, -- ( ) [ ] { } — recede
+  ["@punctuation.delimiter"] = { fg = C8 }, -- , ; : — recede
+  ["@punctuation.special"] = { fg = C5 }, -- $( ) interpolation — magenta pop
 
   -- ── String specials ───────────────────────────────────────────────────
   -- @string.special already links to SpecialChar (C10) above; add subtypes:
   ["@string.special.symbol"] = { fg = C11, bold = true }, -- make/ruby symbols, var assignment LHS — bright yellow
-  ["@string.special.path"]   = { fg = C4, underline = true }, -- file paths
-  ["@string.special.url"]    = { fg = C4, underline = true }, -- URLs
+  ["@string.special.path"] = { fg = C4, underline = true }, -- file paths
+  ["@string.special.url"] = { fg = C4, underline = true }, -- URLs
 
   -- ── Character special ─────────────────────────────────────────────────
-  ["@character.special"]     = { fg = C13, bold = true }, -- make @ prefix, $@, $< etc — bright magenta
+  ["@character.special"] = { fg = C13, bold = true }, -- make @ prefix, $@, $< etc — bright magenta
 
   -- ── Function calls ────────────────────────────────────────────────────
-  ["@function.call"]         = { fg = C7 },             -- generic command words stay plain
-  ["@function.method.call"]  = { fg = C4 },             -- method calls: teal
+  ["@function.call"] = { fg = C7 }, -- generic command words stay plain
+  ["@function.method.call"] = { fg = C4 }, -- method calls: teal
 
   -- ── Keyword variants ──────────────────────────────────────────────────
-  ["@keyword.function"]      = { fg = C5 },             -- 'function' keyword (bash, lua)
-  ["@keyword.directive"]     = { fg = C13 },            -- shebangs, preprocessor directives
+  ["@keyword.function"] = { fg = C5 }, -- 'function' keyword (bash, lua)
+  ["@keyword.directive"] = { fg = C13 }, -- shebangs, preprocessor directives
   ["@keyword.directive.define"] = { fg = C13 },
 
   -- Language-specific overrides
-  ["@constructor.lua"]       = {},
-  ["@variable.member.go"]    = { fg = C7 },             -- go fields plain
+  ["@constructor.lua"] = {},
+  ["@variable.member.go"] = { fg = C7 }, -- go fields plain
 
   -- ── LSP semantic tokens ───────────────────────────────────────────────
-  ["@lsp.type.class"]        = "Type",
-  ["@lsp.type.enum"]         = "Type",
-  ["@lsp.type.interface"]    = { fg = C4 },
-  ["@lsp.type.struct"]       = "Structure",
-  ["@lsp.type.parameter"]    = { fg = C7 },
-  ["@lsp.type.variable"]     = "Identifier",
-  ["@lsp.type.property"]     = { fg = C14 },
-  ["@lsp.type.enumMember"]   = "Constant",
-  ["@lsp.type.function"]     = "Function",
-  ["@lsp.type.method"]       = { fg = C12 },
-  ["@lsp.type.macro"]        = { fg = C13 },
-  ["@lsp.type.decorator"]    = { fg = C13 },
-  ["@lsp.type.namespace"]    = { fg = C7 },
-  ["@lsp.type.comment"]      = "Comment",
-  ["@lsp.mod.deprecated"]    = { fg = C8, strikethrough = true },
-  ["@lsp.mod.readonly"]      = { fg = C4 },
-  ["@lsp.mod.static"]        = { bold = true },
+  ["@lsp.type.class"] = "Type",
+  ["@lsp.type.enum"] = "Type",
+  ["@lsp.type.interface"] = { fg = C4 },
+  ["@lsp.type.struct"] = "Structure",
+  ["@lsp.type.parameter"] = { fg = C7 },
+  ["@lsp.type.variable"] = "Identifier",
+  ["@lsp.type.property"] = { fg = C14 },
+  ["@lsp.type.enumMember"] = "Constant",
+  ["@lsp.type.function"] = "Function",
+  ["@lsp.type.method"] = { fg = C12 },
+  ["@lsp.type.macro"] = { fg = C13 },
+  ["@lsp.type.decorator"] = { fg = C13 },
+  ["@lsp.type.namespace"] = { fg = C7 },
+  ["@lsp.type.comment"] = "Comment",
+  ["@lsp.mod.deprecated"] = { fg = C8, strikethrough = true },
+  ["@lsp.mod.readonly"] = { fg = C4 },
+  ["@lsp.mod.static"] = { bold = true },
 
   -- ── fugitive ──────────────────────────────────────────────────────────
-  FugitiveblameHash              = { fg = C4 },
-  FugitiveblameBoundary          = { fg = C5 },
-  FugitiveblameUncommitted       = "Comment",
-  FugitiveblameNotCommittedYet   = "Comment",
-  FugitiveblameTime              = "GreyFg3",
-  FugitiveblameLineNumber        = "LineNr",
-  FugitiveblameOriginalFile      = { fg = C2 },
+  FugitiveblameHash = { fg = C4 },
+  FugitiveblameBoundary = { fg = C5 },
+  FugitiveblameUncommitted = "Comment",
+  FugitiveblameNotCommittedYet = "Comment",
+  FugitiveblameTime = "GreyFg3",
+  FugitiveblameLineNumber = "LineNr",
+  FugitiveblameOriginalFile = { fg = C2 },
   FugitiveblameOriginalLineNumber = "LineNr",
-  FugitiveblameDelimiter         = "GreyFg1",
-  FugitiveblameShort             = "FugitiveblameDelimiter",
+  FugitiveblameDelimiter = "GreyFg1",
+  FugitiveblameShort = "FugitiveblameDelimiter",
 
   -- ── gitsigns ──────────────────────────────────────────────────────────
-  GitSignsAdd          = { fg = C2 },
-  GitSignsChange       = { fg = C3 },
-  GitSignsDelete       = { fg = C1 },
+  GitSignsAdd = { fg = C2 },
+  GitSignsChange = { fg = C3 },
+  GitSignsDelete = { fg = C1 },
   GitSignsChangedelete = { fg = C3 },
-  GitSignsTopdelete    = { fg = C1 },
-  GitSignsUntracked    = { fg = C8 },
+  GitSignsTopdelete = { fg = C1 },
+  GitSignsUntracked = { fg = C8 },
 
-  GitSignsAddInline    = { bg = rgb(0, 1, 0) },
+  GitSignsAddInline = { bg = rgb(0, 1, 0) },
   GitSignsChangeInline = { bg = rgb(0, 0, 1) },
   GitSignsDeleteInline = { bg = rgb(1, 0, 0) },
 
+  -- ── mini.starter ──────────────────────────────────────────────────────
+  MiniStarterHeader = { fg = C4, bold = true },
+  MiniStarterFooter = { "Comment" },
+  MiniStarterSection = { fg = C6 },
+  MiniStarterItemBullet = { fg = C4 },
+  MiniStarterItemPrefix = { "WarningMsg", bold = true },
+  MiniStarterInactive = { "Comment" },
+  MiniStarterQuery = { "WarningMsg", bold = true },
+  MiniStarterCurrent = { "WarningMsg", bold = true },
+
   -- ── mini.statusline ───────────────────────────────────────────────────
-  MiniStatuslineModeNormal  = { bg = C4,  fg = C0, bold = true },
-  MiniStatuslineModeInsert  = { bg = C2,  fg = C0, bold = true },
-  MiniStatuslineModeVisual  = { bg = C5,  fg = C15, bold = true },
-  MiniStatuslineModeReplace = { bg = C1,  fg = C15, bold = true },
-  MiniStatuslineModeCommand = { bg = C3,  fg = C0, bold = true },
-  MiniStatuslineModeOther   = { bg = C6,  fg = C0, bold = true },
-  MiniStatuslineDevinfo     = { bg = grey(3), fg = C7 },
-  MiniStatuslineFilename    = { bg = grey(3), fg = C7 },
-  MiniStatuslineFileinfo    = { bg = grey(3), fg = C7 },
-  MiniStatuslineInactive    = { bg = grey(1), fg = C8 },
+  MiniStatuslineModeNormal = { bg = C4, fg = C0, bold = true },
+  MiniStatuslineModeInsert = { bg = C2, fg = C0, bold = true },
+  MiniStatuslineModeVisual = { bg = C5, fg = C15, bold = true },
+  MiniStatuslineModeReplace = { bg = C1, fg = C15, bold = true },
+  MiniStatuslineModeCommand = { bg = C3, fg = C0, bold = true },
+  MiniStatuslineModeOther = { bg = C6, fg = C0, bold = true },
+  MiniStatuslineDevinfo = { bg = grey(3), fg = grey(14) },
+  MiniStatuslineFilename = { bg = grey(3), fg = grey(14) },
+  MiniStatuslineFileinfo = { bg = grey(3), fg = grey(14) },
+  MiniStatuslineInactive = { bg = grey(1), fg = C8 },
 })

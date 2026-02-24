@@ -325,7 +325,7 @@ function M.apply()
 
     -- ── Cursor / selection ────────────────────────────────────────────────
     Cursor = { reverse = true },
-    Visual = { bg = grey(5) },
+    Visual = { bg = grey(4) },
     VisualNOS = "Visual",
 
     CursorLine = "GreyBg4",
@@ -345,13 +345,13 @@ function M.apply()
     MatchParen = { fg = C3, bg = grey(5), bold = true },
     QuickFixLine = { fg = C4, bold = true },
 
-    Pmenu = "GreyBg2",
+    Pmenu = { fg = grey(12) },
     PmenuSbar = "GreyBg2",
     PmenuThumb = "GreyBg4",
     PmenuSel = { fg = C15, bg = grey(5), bold = true },
-    PmenuKind = { "Pmenu", fg = C4 },
+    PmenuKind = { fg = C4 },
     PmenuKindSel = { "PmenuSel", fg = C12 },
-    PmenuExtra = { "Pmenu", fg = C8 },
+    PmenuExtra = { fg = C7 },
     PmenuExtraSel = { "PmenuSel", fg = C8 },
 
     -- ── Tabs / statusline ─────────────────────────────────────────────────
@@ -558,9 +558,34 @@ function M.apply()
     GitSignsTopdelete = { fg = C1 },
     GitSignsUntracked = { fg = C8 },
 
-    GitSignsAddInline = { bg = rgb(0, 1, 0) },
-    GitSignsChangeInline = { bg = rgb(0, 0, 1) },
-    GitSignsDeleteInline = { bg = rgb(1, 0, 0) },
+    GitSignsAddInline = { bg = C2 },
+    GitSignsChangeInline = { bg = C4 },
+    GitSignsDeleteInline = { bg = C1 },
+
+    -- nvim-cmp
+    CmpItemAbbr = { link = "Pmenu" },
+    CmpItemAbbrDeprecated = { fg = C1, strikethrough = true },
+    CmpItemAbbrMatch = { fg = C15, bold = true },
+    CmpItemAbbrMatchFuzzy = { fg = C15, bold = true },
+
+    CmpItemKind = { link = "Pmenu" },
+
+    CmpItemKindClass = { fg = C4 },
+    CmpItemKindFunction = { fg = C6 },
+    CmpItemKindInterface = { fg = C4 },
+    CmpItemKindMethod = { fg = C6 },
+    CmpItemKindSnippet = { fg = C5 }, -- meta / macro-like
+    CmpItemKindVariable = { fg = C7 },
+
+    CmpItemKindModule = { fg = C7 },
+    CmpItemKindField = { fg = C4 },
+    CmpItemKindProperty = { fg = C4 },
+    CmpItemKindEnum = { fg = C4 },
+    CmpItemKindConstant = { fg = C3 },
+    CmpItemKindStruct = { fg = C4 },
+    CmpItemKindEvent = { fg = C6 },
+    CmpItemKindOperator = { fg = C8 },
+    CmpItemKindKeyword = { fg = C2 },
 
     -- ── mini.starter ──────────────────────────────────────────────────────
     MiniStarterHeader = { fg = C4, bold = true },
@@ -570,7 +595,6 @@ function M.apply()
     MiniStarterItemPrefix = { "WarningMsg", bold = true },
     MiniStarterInactive = { "Comment" },
     MiniStarterQuery = { "WarningMsg", bold = true },
-    MiniStarterCurrent = { "WarningMsg", bold = true },
 
     -- ── mini.tabline ──────────────────────────────────────────────────────
     MiniTablineCurrent = { fg = C7, bg = grey(5), bold = true }, -- active tab

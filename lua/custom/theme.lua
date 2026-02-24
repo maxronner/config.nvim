@@ -336,8 +336,8 @@ function M.apply()
     ColorColumn = { bg = grey(3) },
 
     -- ── Search ────────────────────────────────────────────────────────────
-    Search = { fg = C14, bg = C11 }, -- bright rose fg, gold bg
-    CurSearch = { fg = C14, bg = C3, bold = true },
+    Search = { fg = grey(12), bg = C11 },
+    CurSearch = { fg = grey(10), bg = C3, bold = true },
     IncSearch = "CurSearch",
 
     -- ── Completion / wildmenu ─────────────────────────────────────────────

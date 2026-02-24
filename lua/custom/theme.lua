@@ -53,7 +53,11 @@ local function create_theme(t)
   vim.g.colors_name = "custom"
   vim.o.termguicolors = false
 
-  local hl = vim.api.nvim_set_hl
+  -- Collect all (group, opts) pairs first, then apply in one batch.
+  -- This avoids triggering Neovim's internal highlight invalidation on every
+  -- single nvim_set_hl call; the redraw happens once after the flush.
+  local pending = {} -- { { name, opts } ... }
+
   local highlights = {}
   local function add_highlight(k, v)
     if v == nil then
@@ -62,7 +66,7 @@ local function create_theme(t)
     if type(v) == "string" then
       local opts = highlights[v] or add_highlight(v, t[v])
       highlights[k] = opts
-      hl(0, k, { link = v })
+      pending[#pending + 1] = { k, { link = v } }
       return opts
     else
       local opts
@@ -104,19 +108,27 @@ local function create_theme(t)
             },
           }
         end
-        hl(0, k, opts)
+        pending[#pending + 1] = { k, opts }
       else
         opts = highlights[v[1]] or add_highlight(v[1], t[v[1]])
-        hl(0, k, { link = v[1] })
+        pending[#pending + 1] = { k, { link = v[1] } }
       end
       highlights[k] = opts
       return opts
     end
   end
+
+  -- Resolve the full inheritance graph (no API calls yet)
   for k, v in pairs(t) do
     if not highlights[k] then
       add_highlight(k, v)
     end
+  end
+
+  -- Flush: apply all highlights in one tight loop
+  local hl = vim.api.nvim_set_hl
+  for i = 1, #pending do
+    hl(0, pending[i][1], pending[i][2])
   end
 end
 
@@ -144,13 +156,21 @@ function M.apply()
   -- that the theme uses for visible syntax (C5/C6/C9/C12). When a slot's
   -- perceived luminance is close to the background, substitute its "bright"
   -- counterpart.
+  --
+  -- Reuses the cached content from plugin/colors.lua (vim.g.theme_palette_json)
+  -- to avoid a second io.open on the same file every startup.
   do
-    local palette_path = vim.fn.expand("$XDG_CONFIG_HOME/thememanager/palette.json")
-    local f = io.open(palette_path, "r")
-    if f then
-      local content = f:read("*a")
-      f:close()
-
+    local content = vim.g.theme_palette_json
+    if not content then
+      -- Fallback: read directly (e.g. when apply() is called standalone)
+      local palette_path = vim.fn.expand("$XDG_CONFIG_HOME/thememanager/palette.json")
+      local f = io.open(palette_path, "r")
+      if f then
+        content = f:read("*a")
+        f:close()
+      end
+    end
+    if content then
       --- @param hex string  6-char hex string
       --- @return number perceived luminance 0–255
       local function lum(hex)

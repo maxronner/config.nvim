@@ -3,6 +3,9 @@
 -- Only runs when palette.json is present (thememanager environment).
 -- In all other environments vim.o.background keeps its default ("dark") or
 -- whatever the user has set manually.
+--
+-- Also caches the raw palette.json content in vim.g.theme_palette_json so
+-- theme.lua can reuse it without a second file read.
 local function detect_background()
   local palette_path = vim.fn.expand("$XDG_CONFIG_HOME/thememanager/palette.json")
   local f = io.open(palette_path, "r")
@@ -11,6 +14,9 @@ local function detect_background()
   end
   local content = f:read("*a")
   f:close()
+
+  -- Cache for theme.lua (avoids a second io.open on the same file)
+  vim.g.theme_palette_json = content
 
   local bg_hex = content:match('"bg"%s*:%s*"#?([0-9a-fA-F]+)"')
   if not bg_hex or #bg_hex < 6 then

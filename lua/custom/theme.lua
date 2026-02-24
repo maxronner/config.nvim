@@ -212,7 +212,7 @@ function M.apply()
     Conditional = "Statement",
     Repeat = "Statement",
     Label = { fg = C4 }, -- foam — labels feel structural
-    Operator = { fg = C8 }, -- subtle — operators recede
+    Operator = { fg = grey(10) }, -- subtle — operators recede
     Keyword = "Statement",
     Exception = { fg = C2 }, -- pine — exceptions are control flow
 
@@ -483,8 +483,8 @@ function M.apply()
 
     -- ── Punctuation ───────────────────────────────────────────────────────
     ["@punctuation.bracket"] = { fg = grey(12) }, -- subtle — ( ) [ ] { } recede
-    ["@punctuation.delimiter"] = { fg = C8 }, -- subtle — , ; : recede
-    ["@punctuation.special"] = { fg = C8 }, -- subtle — $( ) interpolation
+    ["@punctuation.delimiter"] = { fg = grey(10) }, -- subtle — , ; : recede
+    ["@punctuation.special"] = { fg = C7 }, -- subtle — $( ) interpolation
 
     -- ── String specials ───────────────────────────────────────────────────
     -- @string.special already links to SpecialChar (C10) above; add subtypes:

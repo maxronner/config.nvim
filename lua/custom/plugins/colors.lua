@@ -18,6 +18,9 @@ return {
     "catgoose/nvim-colorizer.lua",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
+      if not vim.o.termguicolors then
+        return
+      end
       require("colorizer").setup({
         filetypes = { "*" }, -- Filetype options.  Accepts table like `user_default_options`
         buftypes = {}, -- Buftype options.  Accepts table like `user_default_options`

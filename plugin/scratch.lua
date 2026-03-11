@@ -1,8 +1,8 @@
-function OpenScratch()
+vim.api.nvim_create_user_command("Scratch", function()
   vim.cmd("enew")
   vim.bo.buftype = "nofile"
   vim.bo.bufhidden = "wipe"
   vim.bo.swapfile = false
-end
+end, {})
 
-vim.keymap.set("n", "<leader>bs", OpenScratch, { desc = "Open scratch buffer" })
+vim.keymap.set("n", "<leader>bs", "<cmd>Scratch", { desc = "Open scratch buffer" })

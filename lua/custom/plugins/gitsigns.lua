@@ -4,23 +4,20 @@ return {
     event = "VeryLazy",
     config = function()
       require("gitsigns").setup({
+        signs = {
+          add = { text = "▎" },
+          change = { text = "▎" },
+          delete = { text = "▎" },
+          topdelete = { text = "▎" },
+          changedelete = { text = "▎" },
+          untracked = { text = "▎" },
+        },
+        signs_staged = {
+          add = { text = "▏" },
+          change = { text = "▏" },
+        },
         on_attach = function(bufnr)
           local gitsigns = require("gitsigns")
-
-          gitsigns.setup({
-            signs = {
-              add = { text = "▎" },
-              change = { text = "▎" },
-              delete = { text = "▎" },
-              topdelete = { text = "▎" },
-              changedelete = { text = "▎" },
-              untracked = { text = "▎" },
-            },
-            signs_staged = {
-              add = { text = "▏" },
-              change = { text = "▏" },
-            },
-          })
 
           local function map(mode, l, r, opts)
             opts = opts or {}

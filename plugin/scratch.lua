@@ -1,7 +1,7 @@
 function OpenScratch()
   vim.cmd("enew")
   vim.bo.buftype = "nofile"
-  vim.bo.bufhidden = "hide"
+  vim.bo.bufhidden = "wipe"
   vim.bo.swapfile = false
 end
 

@@ -5,4 +5,4 @@ vim.api.nvim_create_user_command("Scratch", function()
   vim.bo.swapfile = false
 end, {})
 
-vim.keymap.set("n", "<leader>bs", "<cmd>Scratch", { desc = "Open scratch buffer" })
+vim.keymap.set("n", "<leader>bs", "<cmd>Scratch<CR>", { desc = "Open scratch buffer" })

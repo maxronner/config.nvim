@@ -164,7 +164,8 @@ return {
 
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
-          local client = assert(vim.lsp.get_client_by_id(args.data.client_id), "must have valid client")
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if not client then return end
           vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
 
           local map = function(mode, key, func, opts)
@@ -220,7 +221,7 @@ return {
         },
       })
 
-      vim.keymap.set("", "<leader>ll", function()
+      vim.keymap.set("n", "<leader>ll", function()
         local config = vim.diagnostic.config() or {}
         if config.virtual_text then
           vim.diagnostic.config({ virtual_text = false, virtual_lines = true })

@@ -1,15 +1,11 @@
 return {
   "tpope/vim-fugitive",
+  cmd = { "Git", "G", "Gclog", "Gvdiffsplit", "Gdiffsplit" },
+  keys = {
+    { "<leader>gg", function() vim.cmd.Git() end, desc = "Fugitive: Open window" },
+    { "<leader>gl", ":Gclog<CR>", desc = "Fugitive: Log to quickfix" },
+  },
   config = function()
-    vim.keymap.set("n", "<leader>gg", function()
-      -- FIX: currently always initialize git repo
-      -- if vim.fn.isdirectory(".git") == 0 then
-      --   vim.cmd.Git({ "init" })
-      -- end
-      vim.cmd.Git()
-    end, { desc = "Fugitive: Open window" })
-    vim.keymap.set("n", "<leader>gl", ":Gclog<CR>", { desc = "Fugitive: Log to quickfix" })
-
     local FugitiveConfig = vim.api.nvim_create_augroup("FugitiveConfig", {})
     local autocmd = vim.api.nvim_create_autocmd
     autocmd("FileType", {

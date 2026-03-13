@@ -18,22 +18,17 @@ if require("zk.util").notebook_root(vim.fn.expand("%:p")) ~= nil then
   -- Create a new note in current directory, prompting for title
   map("n", "<leader>zn", function()
     local title = vim.fn.input("Title: ")
-    vim.cmd(string.format("ZkNew { dir = '%s', title = '%s' }", current_dir, title))
+    require("zk.commands").get("ZkNew")({ dir = current_dir, title = title })
   end, vim.tbl_extend("force", opts, { desc = "New note in current dir" }))
 
-  map(
-    "v",
-    "<leader>znt",
-    string.format(":'<,'>ZkNewFromTitleSelection { dir = '%s' }<CR>", current_dir),
-    vim.tbl_extend("force", opts, { desc = "New note from title selection" })
-  )
+  map("v", "<leader>znt", function()
+    require("zk.commands").get("ZkNewFromTitleSelection")({ dir = current_dir })
+  end, vim.tbl_extend("force", opts, { desc = "New note from title selection" }))
 
-  map(
-    "v",
-    "<leader>znc",
-    string.format(":'<,'>ZkNewFromContentSelection { dir = '%s', title = vim.fn.input('Title: ') }<CR>", current_dir),
-    vim.tbl_extend("force", opts, { desc = "New note from content selection" })
-  )
+  map("v", "<leader>znc", function()
+    local title = vim.fn.input("Title: ")
+    require("zk.commands").get("ZkNewFromContentSelection")({ dir = current_dir, title = title })
+  end, vim.tbl_extend("force", opts, { desc = "New note from content selection" }))
 
   -- Open notes linking to current buffer (backlinks)
   map("n", "<leader>zb", "<Cmd>ZkBacklinks<CR>", vim.tbl_extend("force", opts, { desc = "Show backlinks" }))

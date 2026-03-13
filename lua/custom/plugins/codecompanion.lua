@@ -24,7 +24,7 @@ return {
       },
     },
     opts = {
-      interactions = {
+      strategies = {
         chat = {
           adapter = "anthropic",
         },
@@ -34,37 +34,42 @@ return {
         cmd = {
           adapter = "anthropic",
         },
-      },
-      adapters = {
-        http = {
-          gemini = function()
-            return require("codecompanion.adapters").extend("gemini", {
-              env = {
-                api_key = require("custom.passloader").get_var("GEMINI_API_KEY"),
-              },
-            })
-          end,
-          openai = function()
-            return require("codecompanion.adapters").extend("openai", {
-              env = {
-                api_key = require("custom.passloader").get_var("OPENAI_API_KEY"),
-              },
-            })
-          end,
-          anthropic = function()
-            return require("codecompanion.adapters").extend("anthropic", {
-              env = {
-                api_key = require("custom.passloader").get_var("ANTHROPIC_API_KEY"),
-              },
-            })
-          end,
+        agent = {
+          adapter = "anthropic",
         },
       },
-      prompt_library = {
-        ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
-        ["Generate Conventional Commit Message"] = require("custom.codecompanion.templates.gitcommit"),
+      adapters = {
+        gemini = function()
+          return require("codecompanion.adapters").extend("gemini", {
+            env = {
+              api_key = require("custom.passloader").get_var("GEMINI_API_KEY"),
+            },
+          })
+        end,
+        openai = function()
+          return require("codecompanion.adapters").extend("openai", {
+            env = {
+              api_key = require("custom.passloader").get_var("OPENAI_API_KEY"),
+            },
+          })
+        end,
+        anthropic = function()
+          return require("codecompanion.adapters").extend("anthropic", {
+            env = {
+              api_key = require("custom.passloader").get_var("ANTHROPIC_API_KEY"),
+            },
+          })
+        end,
       },
     },
+    config = function(_, opts)
+      require("codecompanion").setup(vim.tbl_deep_extend("force", opts, {
+        prompt_library = {
+          ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
+          ["Generate Conventional Commit Message"] = require("custom.codecompanion.templates.gitcommit"),
+        },
+      }))
+    end,
     init = function()
       vim.cmd([[cab cc CodeCompanion]])
       vim.schedule(function()

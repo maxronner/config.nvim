@@ -7,13 +7,15 @@ M.setup = function()
     install_dir = vim.fn.stdpath("data") .. "/site",
   })
 
-  ts.install({
-    "stable",
-    "lua",
-    "vim",
-    "gitcommit",
-    "diff",
-  })
+  vim.schedule(function()
+    ts.install({
+      "stable",
+      "lua",
+      "vim",
+      "gitcommit",
+      "diff",
+    })
+  end)
 
   local syntax_on = {
     markdown = true,

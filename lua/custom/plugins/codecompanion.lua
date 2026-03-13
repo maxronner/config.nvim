@@ -39,27 +39,29 @@ return {
         },
       },
       adapters = {
-        gemini = function()
-          return require("codecompanion.adapters").extend("gemini", {
-            env = {
-              api_key = require("custom.passloader").get_var("GEMINI_API_KEY"),
-            },
-          })
-        end,
-        openai = function()
-          return require("codecompanion.adapters").extend("openai", {
-            env = {
-              api_key = require("custom.passloader").get_var("OPENAI_API_KEY"),
-            },
-          })
-        end,
-        anthropic = function()
-          return require("codecompanion.adapters").extend("anthropic", {
-            env = {
-              api_key = require("custom.passloader").get_var("ANTHROPIC_API_KEY"),
-            },
-          })
-        end,
+        http = {
+          gemini = function()
+            return require("codecompanion.adapters").extend("gemini", {
+              env = {
+                api_key = require("custom.passloader").get_var("GEMINI_API_KEY"),
+              },
+            })
+          end,
+          openai = function()
+            return require("codecompanion.adapters").extend("openai", {
+              env = {
+                api_key = require("custom.passloader").get_var("OPENAI_API_KEY"),
+              },
+            })
+          end,
+          anthropic = function()
+            return require("codecompanion.adapters").extend("anthropic", {
+              env = {
+                api_key = require("custom.passloader").get_var("ANTHROPIC_API_KEY"),
+              },
+            })
+          end,
+        },
       },
     },
     config = function(_, opts)

@@ -25,7 +25,7 @@ local formatters_by_ft = {
   sh = { "shfmt" },
   typescript = web_formatters(),
   typescriptreact = web_formatters(),
-  yaml = web_formatters(),
+  yaml = { "yamlfmt" },
 }
 
 local function configured_formatters(bufnr)
@@ -80,6 +80,13 @@ function M.setup()
 
   conform.setup({
     formatters_by_ft = formatters_by_ft,
+    formatters = {
+      biome = {
+        condition = function(_, ctx)
+          return vim.fs.find({ "biome.json", "biome.jsonc" }, { path = ctx.filename, upward = true })[1] ~= nil
+        end,
+      },
+    },
     format_on_save = function(bufnr)
       local formatters = configured_formatters(bufnr)
       if not formatters then

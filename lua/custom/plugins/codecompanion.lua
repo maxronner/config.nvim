@@ -23,8 +23,12 @@ return {
         ft = { "markdown", "codecompanion" },
       },
     },
+    -- prompt_library = {
+    --   ["Analyze Staged Diff"] = require("custom.codecompanion.templates.git_staged_diff"),
+    --   ["Generate Conventional Commit Message"] = require("custom.codecompanion.templates.gitcommit"),
+    -- },
     opts = {
-      strategies = {
+      interactions = {
         chat = {
           adapter = "anthropic",
         },

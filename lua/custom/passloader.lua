@@ -1,12 +1,21 @@
-local function is_gpg_locked(err_msg)
+local function classify_gpg_error(err_msg)
   local msg = (err_msg or ""):lower()
-  return msg:match("decryption failed")
-    or msg:match("no secret key")
-    or msg:match("no agent running")
-    or msg:match("can't open")
-    or msg:match("permission denied")
-    or msg:match("inappropriate ioctl")
-    or msg:match("gpg%-agent")
+
+  if
+    msg:match("waiting for lock")
+    or msg:match("database_open.-waiting for lock")
+    or msg:match("keydb_search failed: connection timed out")
+  then
+    return "lock"
+  elseif msg:match("no secret key") then
+    return "no_secret_key"
+  elseif msg:match("no agent running") or msg:match("inappropriate ioctl") or msg:match("gpg%-agent") then
+    return "agent"
+  elseif msg:match("permission denied") or msg:match("can't open") then
+    return "io"
+  elseif msg:match("decryption failed") then
+    return "decrypt"
+  end
 end
 
 local function trim_or_empty(val)
@@ -24,11 +33,11 @@ local function pass_result(res)
   end
 
   local err_raw = trim_or_empty(res.stderr)
-  if is_gpg_locked(err_raw) then
-    return { ok = false, locked = true, err = err_raw }
-  end
-
-  return { ok = false, locked = false, err = normalize_err(err_raw) }
+  return {
+    ok = false,
+    kind = classify_gpg_error(err_raw),
+    err = err_raw ~= "" and err_raw or "Unknown error",
+  }
 end
 
 local function pass_fallback_sync(entry)
@@ -193,6 +202,5 @@ end
 register_lazy_key("api/llm/openai", "OPENAI_API_KEY")
 register_lazy_key("api/llm/gemini", "GEMINI_API_KEY")
 register_lazy_key("api/llm/anthropic", "ANTHROPIC_API_KEY")
-register_lazy_key("api/llm/tavily", "TAVILY_API_KEY")
 
 return M

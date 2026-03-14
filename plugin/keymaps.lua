@@ -80,14 +80,6 @@ nxmap_leader("D", [["+d]], { desc = "Cut to system clipboard" })
 nxmap_leader("y", [["+y]], { desc = "Yank to system clipboard" })
 nmap_leader("Y", [["+Y]], { desc = "Yank line to system clipboard" })
 
----- Logic ----
-nmap_leader("cf", "<cmd>!find . -type f -not -path '*/.git/*' | wc -l<CR>", { desc = "Count files in directory" })
-nmap_leader(
-  "cd",
-  "<cmd>!find . -type f -not -path '*/.git/*' -exec wc -l {} \\; | awk '{ total += $1 } END { print \"Lines in workspace: \" total }'<CR>",
-  { desc = "Count lines in all files of current directory" }
-)
-
 -- Terminal mode
 tmap("<Esc>", "<C-\\><C-n>", { desc = "Escape terminal mode" })
 

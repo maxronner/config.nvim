@@ -1,8 +1,23 @@
-vim.api.nvim_create_user_command("Scratch", function()
-  vim.cmd("enew")
+local function scratch()
+  vim.cmd.enew()
   vim.bo.buftype = "nofile"
   vim.bo.bufhidden = "wipe"
   vim.bo.swapfile = false
-end, {})
+  vim.bo.buflisted = false
+end
 
-vim.keymap.set("n", "<leader>bs", "<cmd>Scratch<CR>", { desc = "Open scratch buffer" })
+vim.api.nvim_create_user_command("Scratch", scratch, {})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    if vim.g.startup_mode ~= "scratch" then
+      return
+    end
+
+    vim.opt.shortmess:append("I")
+    vim.g.ministarter_disable = true
+    scratch()
+  end,
+})
+
+vim.keymap.set("n", "<leader>bs", scratch, { desc = "Open scratch buffer" })

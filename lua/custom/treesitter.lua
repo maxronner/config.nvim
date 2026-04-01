@@ -14,6 +14,9 @@ M.setup = function()
       "vim",
       "gitcommit",
       "diff",
+      "yaml",
+      "json",
+      "markdown",
     })
   end)
 

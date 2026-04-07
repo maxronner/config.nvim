@@ -176,28 +176,6 @@ function M.get_var(var)
   end
 end
 
-function M.export_var(var)
-  local val = M.get_var(var)
-  if val then
-    vim.env[var] = val
-    return true
-  end
-  return false
-end
-
-function M.export_var_async(var, cb)
-  M.get_var_async(var, function(val, err)
-    vim.schedule(function()
-      if val then
-        vim.env[var] = val
-        cb(true, nil)
-      else
-        cb(false, err)
-      end
-    end)
-  end)
-end
-
 -- Register all keys once
 register_lazy_key("api/llm/openai", "OPENAI_API_KEY")
 register_lazy_key("api/llm/gemini", "GEMINI_API_KEY")

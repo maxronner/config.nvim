@@ -2,8 +2,14 @@ return {
   "tpope/vim-fugitive",
   cmd = { "Git", "G", "Gclog", "Gvdiffsplit", "Gdiffsplit" },
   keys = {
-    { "<leader>gg", function() vim.cmd.Git() end, desc = "Fugitive: Open window" },
-    { "<leader>gl", ":Gclog<CR>", desc = "Fugitive: Log to quickfix" },
+    {
+      "<leader>gg",
+      function()
+        vim.cmd.Git()
+      end,
+      desc = "Fugitive: Open window",
+    },
+    { "<leader>qg", ":Gclog<CR>", desc = "Fugitive: Log to quickfix" },
   },
   config = function()
     local FugitiveConfig = vim.api.nvim_create_augroup("FugitiveConfig", {})

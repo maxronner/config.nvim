@@ -1,19 +1,5 @@
 return {
   {
-    "mason-org/mason-lspconfig.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      {
-        "mason-org/mason.nvim",
-        cmd = "Mason",
-        opts = {},
-      },
-      "WhoIsSethDaniel/mason-tool-installer.nvim",
-    },
-    opts = {},
-  },
-
-  {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
@@ -92,16 +78,14 @@ return {
           },
         },
         rust_analyzer = true,
-        intelephense = true,
         pyright = true,
-
-        -- ts_ls = {
-        --   root_dir = require("lspconfig").util.root_pattern "package.json",
-        --   single_file = false,
-        --   server_capabilities = {
-        --     documentFormattingProvider = false,
-        --   },
-        -- },
+        ts_ls = {
+          root_dir = require("lspconfig").util.root_pattern("package.json"),
+          single_file = false,
+          server_capabilities = {
+            documentFormattingProvider = false,
+          },
+        },
         vtsls = {
           server_capabilities = {
             documentFormattingProvider = false,
@@ -129,29 +113,7 @@ return {
             },
           },
         },
-
-        clangd = {
-          init_options = { clangdFileStatus = true },
-          filetypes = { "c" },
-        },
       }
-
-      local ensure_installed = vim.tbl_filter(function(key)
-        local t = servers[key]
-        if type(t) == "table" then
-          return not t.manual_install
-        else
-          return t
-        end
-      end, vim.tbl_keys(servers))
-      require("mason-tool-installer").setup({
-        ensure_installed = vim.list_extend(ensure_installed, {
-          "stylua",
-          "shfmt",
-          "ruff",
-          "delve",
-        }),
-      })
 
       for name, cfg in pairs(servers) do
         if cfg == true then
@@ -164,42 +126,28 @@ return {
 
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          if not client then
-            return
+          local opts = { buffer = args.buf }
+          local map = function(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { desc = desc }))
           end
-          vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
 
-          local map = function(mode, key, func, opts)
-            vim.keymap.set(mode, key, func, vim.tbl_extend("force", { buffer = 0, desc = "LSP: " .. key }, opts or {}))
-          end
-          map("n", "gD", vim.lsp.buf.declaration, { desc = "LSP: Declaration" })
-          map("n", "gT", vim.lsp.buf.type_definition, { desc = "LSP: Type definition" })
-          map("n", "K", function()
-            vim.lsp.buf.hover({ border = "rounded" })
-          end, { desc = "LSP: Hover documentation" })
-          map("n", "<leader>la", vim.lsp.buf.code_action, { desc = "LSP: Code actions" })
-          map("n", "<leader>lr", vim.lsp.buf.rename, { desc = "LSP: Rename symbol" })
-          map("n", "<C-h>", function()
-            vim.lsp.buf.signature_help({ border = "rounded" })
-          end, { desc = "LSP: Signature help" })
-          map("n", "<leader>lf", vim.diagnostic.open_float, { desc = "LSP: Open diagnostics float" })
-          map("n", "<leader>lws", vim.lsp.buf.workspace_symbol, { desc = "Workspace symbols" })
+          map({ "n", "x" }, "gra", vim.lsp.buf.code_action, "LSP: Code action")
+          map("n", "grn", vim.lsp.buf.rename, "LSP: Rename")
+          map("n", "gri", vim.lsp.buf.implementation, "LSP: Implementation")
+          map("n", "grr", vim.lsp.buf.references, "LSP: References")
+          map("n", "grt", vim.lsp.buf.type_definition, "LSP: Type definition")
+          map("n", "gO", vim.lsp.buf.document_symbol, "LSP: Document symbols")
+          map("n", "grx", vim.lsp.codelens.run, "LSP: CodeLens")
+          map("i", "<C-S>", vim.lsp.buf.signature_help, "LSP: Signature help")
 
-          local settings = servers[client.name]
-          if type(settings) ~= "table" then
-            settings = {}
-          end
-          if settings.server_capabilities then
-            for k, v in pairs(settings.server_capabilities) do
-              if v == vim.NIL then
-                ---@diagnostic disable-next-line: cast-local-type
-                v = nil
-              end
-
-              client.server_capabilities[k] = v
+          map("n", "grtl", function()
+            local config = vim.diagnostic.config() or {}
+            if config.virtual_text then
+              vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
+            else
+              vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
             end
-          end
+          end, "LSP: Toggle virtual text")
         end,
       })
 
@@ -222,15 +170,6 @@ return {
           prefix = "",
         },
       })
-
-      vim.keymap.set("n", "<leader>ll", function()
-        local config = vim.diagnostic.config() or {}
-        if config.virtual_text then
-          vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
-        else
-          vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
-        end
-      end, { desc = "LSP: Toggle virtual text" })
     end,
   },
 }

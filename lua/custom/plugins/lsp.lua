@@ -65,17 +65,6 @@ return {
           server_capabilities = {
             semanticTokensProvider = false,
           },
-          settings = {
-            Lua = {
-              workspace = {
-                checkThirdParty = false,
-                library = {
-                  vim.env.VIMRUNTIME,
-                  { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-                },
-              },
-            },
-          },
         },
         rust_analyzer = true,
         pyright = true,

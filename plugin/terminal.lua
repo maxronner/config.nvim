@@ -17,10 +17,6 @@ vim.api.nvim_create_autocmd("TermOpen", {
 })
 
 vim.keymap.set("n", "<leader>zz", function()
-  if vim.fn.executable("tmux-scratch") == 1 then
-    vim.cmd("silent !tmux-scratch -P")
-  else
-    open_terminal_bottom_split()
-    vim.notify("tmux-scratch not found, opening regular terminal.", vim.log.levels.WARN)
-  end
-end, { desc = "Open/Swap tmux pane or open terminal" })
+  open_terminal_bottom_split()
+  vim.notify("tmux-scratch not found, opening regular terminal.", vim.log.levels.WARN)
+end, { desc = "Open terminal" })

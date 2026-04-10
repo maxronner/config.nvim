@@ -163,7 +163,8 @@ function M.apply()
     local content = vim.g.theme_palette_json
     if not content then
       -- Fallback: read directly (e.g. when apply() is called standalone)
-      local palette_path = vim.fn.expand("$XDG_CONFIG_HOME/thememanager/palette.json")
+      local data_home = os.getenv("XDG_DATA_HOME") or (os.getenv("HOME") .. "/.local/share")
+      local palette_path = data_home .. "/theme/palette.json"
       local f = io.open(palette_path, "r")
       if f then
         content = f:read("*a")

@@ -7,7 +7,8 @@
 -- Also caches the raw palette.json content in vim.g.theme_palette_json so
 -- theme.lua can reuse it without a second file read.
 local function detect_background()
-  local palette_path = vim.fn.expand("$XDG_CONFIG_HOME/thememanager/palette.json")
+  local data_home = os.getenv("XDG_DATA_HOME") or (os.getenv("HOME") .. "/.local/share")
+  local palette_path = data_home .. "/theme/palette.json"
   local f = io.open(palette_path, "r")
   if not f then
     return

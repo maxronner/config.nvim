@@ -18,5 +18,4 @@ vim.api.nvim_create_autocmd("TermOpen", {
 
 vim.keymap.set("n", "<leader>zz", function()
   open_terminal_bottom_split()
-  vim.notify("tmux-scratch not found, opening regular terminal.", vim.log.levels.WARN)
 end, { desc = "Open terminal" })

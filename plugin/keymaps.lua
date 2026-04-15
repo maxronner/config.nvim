@@ -93,3 +93,8 @@ nmap_leader("bc", function()
     end
   end)
 end, { desc = "Run command in new buffer" })
+
+vim.keymap.set("n", "<leader>cp", function()
+  vim.fn.setreg("+", vim.fn.expand("%:p"))
+  vim.notify("Copied: " .. vim.fn.expand("%:p"))
+end, { desc = "Copy buffer path" })

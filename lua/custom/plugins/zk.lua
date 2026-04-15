@@ -88,7 +88,7 @@ return {
 
     vim.api.nvim_create_user_command("ZkSync", function()
       local notebook_dir = os.getenv("ZK_NOTEBOOK_DIR") or "~/notebook"
-      local sync_script = vim.fn.expand("~/.local/bin/zk-sync --auto")
+      local sync_script = vim.fn.expand("~/.local/bin/zk-sync")
 
       if vim.fn.filereadable(sync_script) == 0 then
         vim.notify("[zk-sync] Sync script not found: " .. sync_script, vim.log.levels.ERROR)
@@ -96,7 +96,7 @@ return {
       end
 
       -- Run in background to avoid blocking UI
-      vim.fn.jobstart({ sync_script }, {
+      vim.fn.jobstart({ sync_script, "--auto" }, {
         cwd = notebook_dir,
         stdout_buffered = true,
         stderr_buffered = true,

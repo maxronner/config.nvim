@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Broadcast a theme reload to every running nvim instance over its
+# server socket. Called by theme-apply-all after thememanager writes a
+# fresh palette.json.
+#
+# Each nvim process listens on $XDG_RUNTIME_DIR/nvim.<pid>.0 by default;
+# we enumerate those and send a remote-expr that invokes :ReloadTheme
+# with the palette's detected background.
+set -euo pipefail
+
+THEME_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/theme"
+PALETTE_FILE="${THEME_DATA_DIR}/palette.json"
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
+
+[[ -f "$PALETTE_FILE" ]] || exit 0
+
+if [[ "${1:-}" == "--check" ]]; then
+  command -v nvim >/dev/null || exit 1
+  jq -e -r '.bg' "$PALETTE_FILE" >/dev/null 2>&1
+  exit $?
+fi
+
+bg_hex=$(jq -e -r '.bg' "$PALETTE_FILE" | tr -d '#')
+# Perceived luminance (0-255); >127 is a light background.
+bg=$(awk -v h="$bg_hex" 'BEGIN {
+  r = strtonum("0x" substr(h,1,2))
+  g = strtonum("0x" substr(h,3,2))
+  b = strtonum("0x" substr(h,5,2))
+  print (0.299*r + 0.587*g + 0.114*b) > 127 ? "light" : "dark"
+}')
+
+shopt -s nullglob
+sockets=("$RUNTIME_DIR"/nvim.*.0)
+(( ${#sockets[@]} )) || exit 0
+
+failed=0
+for sock in "${sockets[@]}"; do
+  [[ -S "$sock" ]] || continue
+  if ! nvim --server "$sock" --remote-expr "execute('ReloadTheme ${bg}')" >/dev/null 2>&1; then
+    echo "apply-theme[nvim]: reload failed for ${sock##*/}" >&2
+    failed=$((failed + 1))
+  fi
+done
+
+exit $(( failed > 0 ))

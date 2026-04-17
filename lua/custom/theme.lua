@@ -37,6 +37,53 @@ local function grey(shade)
   return 232 + idx
 end
 
+-- Read the thememanager palette.json once and cache the raw content.
+-- Returns nil when the file isn't present (non-thememanager environment).
+local palette_cache = nil
+local palette_loaded = false
+local function read_palette()
+  if palette_loaded then
+    return palette_cache
+  end
+  palette_loaded = true
+  local data_home = os.getenv("XDG_DATA_HOME") or (os.getenv("HOME") .. "/.local/share")
+  local f = io.open(data_home .. "/theme/palette.json", "r")
+  if not f then
+    return nil
+  end
+  palette_cache = f:read("*a")
+  f:close()
+  return palette_cache
+end
+
+local function invalidate_palette()
+  palette_cache = nil
+  palette_loaded = false
+end
+
+--- @param hex string 6-char hex string
+--- @return number perceived luminance 0–255
+local function luminance(hex)
+  local r = tonumber(hex:sub(1, 2), 16) or 0
+  local g = tonumber(hex:sub(3, 4), 16) or 0
+  local b = tonumber(hex:sub(5, 6), 16) or 0
+  return 0.299 * r + 0.587 * g + 0.114 * b
+end
+
+-- Set vim.o.background based on the palette's bg color.
+-- No-op when palette.json isn't present.
+function M.detect_background()
+  local content = read_palette()
+  if not content then
+    return
+  end
+  local bg_hex = content:match('"bg"%s*:%s*"#?([0-9a-fA-F]+)"')
+  if not bg_hex or #bg_hex < 6 then
+    return
+  end
+  vim.o.background = luminance(bg_hex) > 127 and "light" or "dark"
+end
+
 ---@class (exact) HighlightOpts
 ---@field fg? integer
 ---@field bg? integer
@@ -132,6 +179,43 @@ local function create_theme(t)
   end
 end
 
+-- Remap foreground-role slots that are too dark to contrast against the bg.
+-- Some wallpaper-derived palettes put very dark colors in slots that the
+-- theme uses for visible syntax (C5/C6/C9/C12). When a slot's perceived
+-- luminance is close to the background, substitute its "bright" counterpart.
+local function contrast_guarded_slots()
+  local slots = { C5 = 5, C6 = 6, C9 = 9, C12 = 12 }
+  local fallbacks = { C5 = 13, C6 = 14, C9 = 1, C12 = 4 }
+
+  local content = read_palette()
+  if not content then
+    return slots
+  end
+  local bg_hex = content:match('"bg"%s*:%s*"#?([0-9a-fA-F]+)"') or "000000"
+  local bg_lum = luminance(bg_hex)
+
+  for name, slot in pairs(slots) do
+    local hex = content:match('"color' .. slot .. '"%s*:%s*"#?([0-9a-fA-F]+)"')
+    if hex and #hex >= 6 and math.abs(luminance(hex) - bg_lum) < 60 then
+      slots[name] = fallbacks[name]
+    end
+  end
+  return slots
+end
+
+-- Re-read the palette, optionally override &background, and re-apply highlights.
+-- Called by scripts/apply-theme via --remote-expr when thememanager swaps the palette.
+---@param bg? "light" | "dark"
+function M.reload(bg)
+  invalidate_palette()
+  if bg == "light" or bg == "dark" then
+    vim.o.background = bg
+  else
+    M.detect_background()
+  end
+  M.apply()
+end
+
 function M.apply()
   local C0 = 0
   local C1 = 1
@@ -150,61 +234,11 @@ function M.apply()
   local C14 = 14
   local C15 = 15
 
-  -- Remap foreground-role slots that are too dark to contrast against the bg.
-  -- Only runs when thememanager's palette.json is present — silently no-ops
-  -- otherwise. Some wallpaper-derived palettes put very dark colors in slots
-  -- that the theme uses for visible syntax (C5/C6/C9/C12). When a slot's
-  -- perceived luminance is close to the background, substitute its "bright"
-  -- counterpart.
-  --
-  -- Reuses the cached content from plugin/colors.lua (vim.g.theme_palette_json)
-  -- to avoid a second io.open on the same file every startup.
-  do
-    local content = vim.g.theme_palette_json
-    if not content then
-      -- Fallback: read directly (e.g. when apply() is called standalone)
-      local data_home = os.getenv("XDG_DATA_HOME") or (os.getenv("HOME") .. "/.local/share")
-      local palette_path = data_home .. "/theme/palette.json"
-      local f = io.open(palette_path, "r")
-      if f then
-        content = f:read("*a")
-        f:close()
-      end
-    end
-    if content then
-      --- @param hex string  6-char hex string
-      --- @return number perceived luminance 0–255
-      local function lum(hex)
-        local r = tonumber(hex:sub(1, 2), 16) or 0
-        local g = tonumber(hex:sub(3, 4), 16) or 0
-        local b = tonumber(hex:sub(5, 6), 16) or 0
-        return 0.299 * r + 0.587 * g + 0.114 * b
-      end
-
-      local bg_hex = content:match('"bg"%s*:%s*"#?([0-9a-fA-F]+)"') or "000000"
-      local bg_lum = lum(bg_hex)
-
-      --- Return the slot index to use: `slot` if contrast is sufficient, else `fallback`.
-      --- @param slot integer  terminal palette index (0–15)
-      --- @param fallback integer  replacement slot
-      --- @return integer
-      local function fg_slot(slot, fallback)
-        local hex = content:match('"color' .. slot .. '"%s*:%s*"#?([0-9a-fA-F]+)"')
-        if not hex or #hex < 6 then
-          return slot
-        end
-        local contrast = math.abs(lum(hex) - bg_lum)
-        return contrast < 60 and fallback or slot
-      end
-
-      -- Guard slots used for prominent foreground syntax colors.
-      -- Fallbacks are the "bright" counterpart in the conventional ANSI layout.
-      C5 = fg_slot(5, 13) -- Statement/Keyword  → bright magenta
-      C6 = fg_slot(6, 14) -- Special/Info       → bright cyan/rose
-      C9 = fg_slot(9, 1) -- (reserved bright slot)
-      C12 = fg_slot(12, 4) -- (reserved bright slot)
-    end
-  end
+  local guarded = contrast_guarded_slots()
+  C5 = guarded.C5
+  C6 = guarded.C6
+  C9 = guarded.C9
+  C12 = guarded.C12
 
   create_theme({
     -- ── Primitives ────────────────────────────────────────────────────────

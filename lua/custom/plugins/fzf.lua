@@ -3,6 +3,7 @@ return {
     "ibhagwan/fzf-lua",
     enabled = true,
     cmd = "FzfLua",
+    module = "fzf-lua",
     keys = {
       {
         "<leader>/",

@@ -5,14 +5,12 @@ return {
       "ibhagwan/fzf-lua",
     },
     init = function()
+      local router = require("custom.opencode_tmux")
+
       vim.o.autoread = true
 
       vim.g.opencode_opts = {
-        server = {
-          start = false,
-          stop = false,
-          toggle = false,
-        },
+        server = router.server_options(),
         select = {
           sections = {
             server = false,

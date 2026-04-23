@@ -593,18 +593,6 @@ function M.apply()
     LspReferenceText = { bg = grey(3) }, -- text-reference under cursor
     LspReferenceWrite = { bg = grey(4) }, -- write-reference under cursor (slightly brighter)
 
-    -- ── fugitive ──────────────────────────────────────────────────────────
-    FugitiveblameHash = { fg = C4 },
-    FugitiveblameBoundary = { fg = C5 },
-    FugitiveblameUncommitted = "Comment",
-    FugitiveblameNotCommittedYet = "Comment",
-    FugitiveblameTime = "GreyFg3",
-    FugitiveblameLineNumber = "LineNr",
-    FugitiveblameOriginalFile = { fg = C2 },
-    FugitiveblameOriginalLineNumber = "LineNr",
-    FugitiveblameDelimiter = "GreyFg1",
-    FugitiveblameShort = "FugitiveblameDelimiter",
-
     -- ── gitsigns ──────────────────────────────────────────────────────────
     GitSignsAdd = { fg = C2 },
     GitSignsChange = { fg = C3 },

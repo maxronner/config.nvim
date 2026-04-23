@@ -4,7 +4,7 @@ return {
     dependencies = {
       "ibhagwan/fzf-lua",
     },
-    init = function()
+    config = function()
       local router = require("custom.opencode_tmux")
 
       vim.o.autoread = true

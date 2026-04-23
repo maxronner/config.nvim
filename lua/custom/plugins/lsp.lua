@@ -39,6 +39,14 @@ return {
     },
 
     config = function()
+      vim.keymap.set("n", "<leader>lf", function()
+        vim.lsp.buf.format()
+      end, { desc = "LSP: Format buffer" })
+
+      vim.keymap.set("n", "<leader>qd", function()
+        vim.diagnostic.setqflist()
+      end, { desc = "Diagnostics to quickfix" })
+
       local capabilities = nil
       if pcall(require, "cmp_nvim_lsp") then
         capabilities = require("cmp_nvim_lsp").default_capabilities()

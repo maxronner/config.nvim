@@ -56,8 +56,6 @@ xmap("?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selectio
 ---- Editing ----
 imap("<C-d>", "<Del>", { desc = "Delete char (insert mode)" })
 nmap("<leader>|", "gMea<CR><Esc>", { desc = "Split line at midpoint" })
-nmap_leader("lf", vim.lsp.buf.format, { desc = "LSP: Format buffer" })
-nmap("<leader>qd", vim.diagnostic.setqflist, { desc = "Diagnostics to quickfix" })
 nmap("<C-Del>", "dw", { desc = "Delete word (normal mode)" })
 imap("<C-Del>", "<C-o>dw", { desc = "Delete word (insert mode)" })
 nxmap_leader("d", '"_d', { desc = "Delete (black hole register)" })

@@ -1,22 +1,5 @@
 return {
   {
-    "rose-pine/neovim",
-    name = "rose-pine",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require("rose-pine").setup({
-        disable_background = true,
-        enable = {
-          terminal = true,
-        },
-        styles = {
-          italic = false,
-        },
-      })
-    end,
-  },
-  {
     "catgoose/nvim-colorizer.lua",
     event = { "BufReadPre", "BufNewFile" },
     config = function()

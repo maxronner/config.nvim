@@ -55,12 +55,7 @@ return {
       },
       mappings = {
         status = {
-          ["<leader>p"] = neogit.action("push", "to_pushremote"),
-          ["<leader>P"] = neogit.action("push", "to_upstream", { "--set-upstream" }),
-          ["<leader>u"] = neogit.action("pull", "from_upstream"),
-          ["<leader>U"] = neogit.action("pull", "from_upstream", { "--rebase" }),
           ["<leader>s"] = update_submodules,
-          ["<leader>cc"] = neogit.action("commit", "amend"),
         },
       },
     })

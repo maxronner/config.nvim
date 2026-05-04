@@ -26,7 +26,8 @@ bg=$(awk -v h="$bg_hex" 'BEGIN {
   r = strtonum("0x" substr(h,1,2))
   g = strtonum("0x" substr(h,3,2))
   b = strtonum("0x" substr(h,5,2))
-  print (0.299*r + 0.587*g + 0.114*b) > 127 ? "light" : "dark"
+  lum = 0.299*r + 0.587*g + 0.114*b
+  print (lum > 127 ? "light" : "dark")
 }')
 
 shopt -s nullglob

@@ -70,14 +70,14 @@ local function luminance(hex)
   return 0.299 * r + 0.587 * g + 0.114 * b
 end
 
--- Set vim.o.background based on the palette's bg color.
+-- Set vim.o.background based on the Palette Artifact surface color.
 -- No-op when palette.json isn't present.
 function M.detect_background()
   local content = read_palette()
   if not content then
     return
   end
-  local bg_hex = content:match('"bg"%s*:%s*"#?([0-9a-fA-F]+)"')
+  local bg_hex = content:match('"m3surface"%s*:%s*"#?([0-9a-fA-F]+)"')
   if not bg_hex or #bg_hex < 6 then
     return
   end
@@ -191,11 +191,11 @@ local function contrast_guarded_slots()
   if not content then
     return slots
   end
-  local bg_hex = content:match('"bg"%s*:%s*"#?([0-9a-fA-F]+)"') or "000000"
+  local bg_hex = content:match('"m3surface"%s*:%s*"#?([0-9a-fA-F]+)"') or "000000"
   local bg_lum = luminance(bg_hex)
 
   for name, slot in pairs(slots) do
-    local hex = content:match('"color' .. slot .. '"%s*:%s*"#?([0-9a-fA-F]+)"')
+    local hex = content:match('"term' .. slot .. '"%s*:%s*"#?([0-9a-fA-F]+)"')
     if hex and #hex >= 6 and math.abs(luminance(hex) - bg_lum) < 60 then
       slots[name] = fallbacks[name]
     end

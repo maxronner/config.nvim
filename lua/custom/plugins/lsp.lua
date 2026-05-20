@@ -74,6 +74,8 @@ return {
             semanticTokensProvider = false,
           },
         },
+        marksman = true,
+        nixd = true,
         rust_analyzer = true,
         pyright = true,
         ts_ls = {

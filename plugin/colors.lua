@@ -8,7 +8,7 @@ vim.cmd.colorscheme("custom")
 -- :ReloadTheme [light|dark]
 -- Invoked over IPC by scripts/apply-theme when thememanager swaps the palette.
 -- Re-reads palette.json and re-applies highlights so bg-dependent logic
--- (greyscale inversion, contrast guard) picks up the new colors without
+-- (greyscale inversion) picks up the new colors without
 -- requiring a manual :colorscheme reload.
 vim.api.nvim_create_user_command("ReloadTheme", function(opts)
   theme.reload(opts.args ~= "" and opts.args or nil)

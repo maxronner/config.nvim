@@ -179,30 +179,6 @@ local function create_theme(t)
   end
 end
 
--- Remap foreground-role slots that are too dark to contrast against the bg.
--- Some wallpaper-derived palettes put very dark colors in slots that the
--- theme uses for visible syntax (C5/C6/C9/C12). When a slot's perceived
--- luminance is close to the background, substitute its "bright" counterpart.
-local function contrast_guarded_slots()
-  local slots = { C5 = 5, C6 = 6, C9 = 9, C12 = 12 }
-  local fallbacks = { C5 = 13, C6 = 14, C9 = 1, C12 = 4 }
-
-  local content = read_palette()
-  if not content then
-    return slots
-  end
-  local bg_hex = content:match('"m3surface"%s*:%s*"#?([0-9a-fA-F]+)"') or "000000"
-  local bg_lum = luminance(bg_hex)
-
-  for name, slot in pairs(slots) do
-    local hex = content:match('"term' .. slot .. '"%s*:%s*"#?([0-9a-fA-F]+)"')
-    if hex and #hex >= 6 and math.abs(luminance(hex) - bg_lum) < 60 then
-      slots[name] = fallbacks[name]
-    end
-  end
-  return slots
-end
-
 -- Re-read the palette, optionally override &background, and re-apply highlights.
 -- Called by scripts/apply-theme via --remote-expr when thememanager swaps the palette.
 ---@param bg? "light" | "dark"
@@ -233,12 +209,6 @@ function M.apply()
   local C13 = 13
   local C14 = 14
   local C15 = 15
-
-  local guarded = contrast_guarded_slots()
-  C5 = guarded.C5
-  C6 = guarded.C6
-  C9 = guarded.C9
-  C12 = guarded.C12
 
   create_theme({
     -- ── Primitives ────────────────────────────────────────────────────────

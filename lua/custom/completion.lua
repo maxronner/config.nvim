@@ -5,10 +5,10 @@ require("custom.snippets")
 
 local lspkind = require("lspkind")
 lspkind.init({
-  symbol_map = {
-    Copilot = "",
-    Supermaven = "",
-  },
+  -- symbol_map = {
+  --   Copilot = "",
+  --   Supermaven = "",
+  -- },
 })
 
 local kind_formatter = lspkind.cmp_format({
@@ -22,7 +22,7 @@ local kind_formatter = lspkind.cmp_format({
     gh_issues = "[issues]",
     tn = "[TabNine]",
     eruby = "[erb]",
-    supermaven = "[llm]",
+    -- supermaven = "[llm]",
   },
 })
 

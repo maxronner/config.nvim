@@ -38,7 +38,7 @@ vim.opt.smartcase = true -- Respect case if search pattern has upper case
 vim.opt.path = ".,**"
 
 -- Terminal
-vim.opt.termguicolors = true
+vim.opt.termguicolors = false
 
 -- Tree-sitter based folding for all filetypes
 vim.opt.foldmethod = "expr"

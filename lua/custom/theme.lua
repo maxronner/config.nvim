@@ -5,19 +5,19 @@
 -- Conventional ANSI slot roles:
 --   C0  black / background shade
 --   C1  red
---   C2  green  (some themes put blue/teal here, e.g. rose-pine)
+--   C2  green / success
 --   C3  yellow
---   C4  blue   (some themes put cyan/teal here, e.g. rose-pine)
+--   C4  blue / link
 --   C5  magenta / purple
---   C6  cyan   (some themes put rose/pink here, e.g. rose-pine)
+--   C6  cyan / info
 --   C7  white / foreground
 --   C8  bright black / muted / overlay
 --   C9  bright red
 --   C10 bright green
 --   C11 bright yellow
---   C12 bright blue / cyan
+--   C12 bright blue
 --   C13 bright magenta / purple
---   C14 bright cyan / rose
+--   C14 bright cyan
 --   C15 bright white
 
 local M = {}
@@ -219,7 +219,7 @@ function M.apply()
     Number = "Literal",
     Float = "Literal",
     Character = "Literal",
-    Boolean = { fg = C6 }, -- rose — booleans are special values
+    Boolean = { fg = C5 }, -- magenta — booleans are special values
     -- Strings: green slot — classic, easy to scan
     String = { fg = C3 },
     -- String internals
@@ -228,8 +228,8 @@ function M.apply()
     -- ── Identifiers ───────────────────────────────────────────────────────
     Identifier = {}, -- plain text color
     Variable = "Identifier",
-    -- Functions: rose — active, prominent
-    Function = { fg = C6 },
+    -- Functions: magenta — active, prominent
+    Function = { fg = C5 },
 
     -- ── Statements ────────────────────────────────────────────────────────
     -- Keywords: pine — structural blue for control flow
@@ -320,7 +320,7 @@ function M.apply()
 
     -- ── Prose / markup ────────────────────────────────────────────────────
     Title = { fg = C4, bold = true }, -- foam — structural heading
-    Todo = { fg = C6, bold = true }, -- rose — todo markers
+    Todo = { fg = C5, bold = true }, -- magenta — todo markers
     Note = { fg = C4, bold = true }, -- foam — notes
     Question = { fg = C3 }, -- gold — questions feel like warnings
     Comment = { fg = grey(10), italic = true }, -- subtle
@@ -345,7 +345,7 @@ function M.apply()
     -- ── Messages ──────────────────────────────────────────────────────────
     ModeMsg = { fg = C8 }, -- --INSERT-- etc. mode indicator (subtle)
     MoreMsg = { fg = C5 }, -- --More-- prompt (iris)
-    Debug = { fg = C6 }, -- debug output (rose)
+    Debug = { fg = C5 }, -- debug output
     Underlined = { fg = C5, underline = true }, -- underlined text (iris)
 
     -- ── Cursor / selection ────────────────────────────────────────────────
@@ -362,7 +362,7 @@ function M.apply()
 
     -- ── Search ────────────────────────────────────────────────────────────
     Search = { fg = C8, bg = C11 },
-    CurSearch = { fg = C8, bg = C6, bold = true },
+    CurSearch = { fg = C8, bg = C5, bold = true },
     IncSearch = "CurSearch",
 
     -- ── Completion / wildmenu ─────────────────────────────────────────────
@@ -441,9 +441,9 @@ function M.apply()
     ["@boolean"] = "Boolean",
 
     ["@function"] = "Function",
-    ["@function.builtin"] = { fg = C6, bold = true }, -- rose bold — builtins distinct from regular fns
-    ["@function.macro"] = { fg = C6 }, -- rose — macros are function-like
-    ["@function.method"] = { fg = C6 }, -- rose
+    ["@function.builtin"] = { fg = C13, bold = true }, -- bright magenta — builtins distinct from regular fns
+    ["@function.macro"] = { fg = C5 }, -- magenta — macros are function-like
+    ["@function.method"] = { fg = C5 }, -- magenta
 
     ["@constructor"] = { fg = C4 }, -- foam — constructors ~ types
     ["@operator"] = "Operator",
@@ -486,7 +486,7 @@ function M.apply()
     ["@markup.heading.6"] = { fg = C4, bold = true },
     ["@markup.link"] = { fg = C4, underline = true },
     ["@markup.link.label"] = { fg = C4 }, -- foam
-    ["@markup.link.url"] = { fg = C6, underline = true }, -- rose — URLs are active
+    ["@markup.link.url"] = { fg = C4, underline = true }, -- blue — URLs are active links
     ["@markup.raw"] = { fg = C3 },
     ["@markup.raw.block"] = { fg = C7 },
     ["@markup.list"] = { fg = C2 }, -- pine — list markers are structural
@@ -521,13 +521,13 @@ function M.apply()
     ["@character.special"] = { fg = C13, bold = true }, -- make @ prefix, $@, $< etc — bright magenta
 
     -- ── Function calls ────────────────────────────────────────────────────
-    ["@function.call"] = { fg = C6 }, -- rose
-    ["@function.method.call"] = { fg = C6 }, -- rose
+    ["@function.call"] = { fg = C5 }, -- magenta
+    ["@function.method.call"] = { fg = C5 }, -- magenta
 
     -- ── Keyword variants ──────────────────────────────────────────────────
     ["@keyword.function"] = { fg = C2 }, -- pine — 'function' keyword is a keyword
     ["@keyword.storage"] = { fg = C4 }, -- foam — static, extern, const
-    ["@keyword.debug"] = { fg = C6 }, -- rose — debugger, breakpoint
+    ["@keyword.debug"] = { fg = C5 }, -- magenta — debugger, breakpoint
     ["@keyword.conditional.ternary"] = "Conditional", -- pine — ternary ?:
     ["@keyword.directive"] = { fg = C5 }, -- iris — shebangs, preprocessor directives
     ["@keyword.directive.define"] = { fg = C5 }, -- iris
@@ -546,7 +546,7 @@ function M.apply()
     ["@lsp.type.property"] = { fg = C4 }, -- foam
     ["@lsp.type.enumMember"] = "Constant",
     ["@lsp.type.function"] = "Function",
-    ["@lsp.type.method"] = { fg = C6 }, -- rose
+    ["@lsp.type.method"] = { fg = C5 }, -- magenta
     ["@lsp.type.macro"] = { fg = C13 },
     ["@lsp.type.decorator"] = { fg = C13 },
     ["@lsp.type.namespace"] = { fg = C7 },
@@ -584,9 +584,9 @@ function M.apply()
     CmpItemKind = { link = "Pmenu" },
 
     CmpItemKindClass = { fg = C4 },
-    CmpItemKindFunction = { fg = C6 },
+    CmpItemKindFunction = { fg = C5 },
     CmpItemKindInterface = { fg = C4 },
-    CmpItemKindMethod = { fg = C6 },
+    CmpItemKindMethod = { fg = C5 },
     CmpItemKindSnippet = { fg = C5 }, -- meta / macro-like
     CmpItemKindVariable = { fg = C7 },
 
@@ -596,14 +596,14 @@ function M.apply()
     CmpItemKindEnum = { fg = C4 },
     CmpItemKindConstant = { fg = C3 },
     CmpItemKindStruct = { fg = C4 },
-    CmpItemKindEvent = { fg = C6 },
+    CmpItemKindEvent = { fg = C5 },
     CmpItemKindOperator = { fg = C8 },
     CmpItemKindKeyword = { fg = C2 },
 
     -- ── mini.starter ──────────────────────────────────────────────────────
     MiniStarterHeader = { fg = C4, bold = true },
     MiniStarterFooter = { "Comment" },
-    MiniStarterSection = { fg = C6 },
+    MiniStarterSection = { fg = C5 },
     MiniStarterItemBullet = { fg = C4 },
     MiniStarterItemPrefix = { "WarningMsg", bold = true },
     MiniStarterInactive = { "Comment" },

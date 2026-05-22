@@ -19,6 +19,7 @@ local function run_llm_prompt(prompt, provider, cb)
 end
 
 local function gen_commit_msg()
+  local commit_buf = vim.api.nvim_get_current_buf()
   local diff = vim.fn.system("git diff --staged --no-color")
 
   if diff == "" then
@@ -65,8 +66,16 @@ local function gen_commit_msg()
     end
 
     vim.schedule(function()
-      vim.api.nvim_buf_set_lines(0, 0, -1, false, msg_lines)
-      vim.api.nvim_win_set_cursor(0, { 1, 0 })
+      if not vim.api.nvim_buf_is_valid(commit_buf) then
+        vim.notify("Commit buffer closed before message could be inserted", vim.log.levels.WARN)
+        return
+      end
+
+      vim.api.nvim_buf_set_lines(commit_buf, 0, -1, false, msg_lines)
+      local win = vim.fn.bufwinid(commit_buf)
+      if win ~= -1 then
+        vim.api.nvim_win_set_cursor(win, { 1, 0 })
+      end
     end)
   end)
 end

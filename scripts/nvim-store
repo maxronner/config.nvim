@@ -29,7 +29,6 @@ export NVIM_PACK_BACKEND="nix_manifest"
 export NVIM_PACK_MANIFEST="$manifest"
 export NVIM_PACK_MODE="secure"
 export NVIM_PACK_TRUSTED_PREFIX="/nix/store/"
-export NVIM_TREESITTER_INSTALL="${NVIM_TREESITTER_INSTALL:-disabled}"
 export NVIM_LOG_FILE="${NVIM_LOG_FILE:-$repo_root/.nvimlog}"
 
 exec nvim -u "$repo_root/init.lua" "$@"

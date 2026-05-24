@@ -60,8 +60,9 @@ Neovim:
 
 - `SchemaStore.nvim` supplies JSON schemas for `jsonls`; the native LSP config
   keeps using its schema catalog.
-- `nvim-treesitter` manages parser installation. Core Treesitter handles parser
-  startup and folding once parsers exist.
+- Treesitter parsers are expected to be provided by the surrounding environment,
+  such as Home Manager/Nix. Runtime config starts parsers that already exist,
+  but does not install or update them.
 - `nvim-treesitter-textobjects` provides the configured `af`, `if`, `ac`,
   movement, swap, and peek mappings. Core incremental selection covers `an` and
   `in`, but not the full textobject workflow used here.

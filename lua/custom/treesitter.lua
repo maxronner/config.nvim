@@ -2,25 +2,6 @@ local M = {}
 
 M.setup = function()
   local group = vim.api.nvim_create_augroup("custom-treesitter", { clear = true })
-  local ts = require("nvim-treesitter")
-  ts.setup({
-    install_dir = vim.fn.stdpath("data") .. "/site",
-  })
-
-  if vim.env.NVIM_TREESITTER_INSTALL ~= "disabled" then
-    vim.schedule(function()
-      ts.install({
-        "stable",
-        "lua",
-        "vim",
-        "gitcommit",
-        "diff",
-        "yaml",
-        "json",
-        "markdown",
-      })
-    end)
-  end
 
   local syntax_on = {
     markdown = true,

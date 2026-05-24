@@ -61,5 +61,5 @@ jobs:
           "+checkhealth nvim" \
           "+checkhealth lazy" \
           "+checkhealth vim.lsp" \
-          "+checkhealth nvim-treesitter" \
+          "+checkhealth vim.treesitter" \
           "+qall"

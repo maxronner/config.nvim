@@ -1,6 +1,5 @@
 vim.g.mapleader = " "
 vim.go.loadplugins = false
-vim.env.NVIM_TREESITTER_INSTALL = vim.env.NVIM_TREESITTER_INSTALL or "disabled"
 
 local config_root = vim.env.NVIM_PACK_CONFIG_ROOT or vim.fn.stdpath("config")
 vim.opt.runtimepath:prepend(config_root)

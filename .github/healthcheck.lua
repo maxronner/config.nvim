@@ -8,7 +8,7 @@ vim.o.shortmess = vim.o.shortmess .. "FI"
 local checks = {
   "nvim",
   "vim.lsp",
-  "nvim-treesitter",
+  "vim.treesitter",
 }
 
 local had_error = false

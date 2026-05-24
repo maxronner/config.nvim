@@ -55,10 +55,13 @@ workflow: `vim.pack` for plugin acquisition, `vim.lsp.config()` and
 completion, `vim.snippet` for snippets, and core `gc` commenting instead of
 `mini.comment`.
 
-Some plugins remain because they still provide behavior beyond core Neovim:
+Some LSP helper plugins remain because they still provide behavior beyond core
+Neovim:
 
-- `nvim-lspconfig` supplies default server configs; clean Neovim does not define
-  configs such as `lua_ls` or `ts_ls` by itself.
+- `lazydev.nvim` improves Lua LSP completion and diagnostics for Neovim runtime,
+  plugin, and `vim.uv` APIs while editing this config.
+- `SchemaStore.nvim` supplies JSON schemas for `jsonls`; the native LSP config
+  keeps using its schema catalog.
 - `nvim-treesitter` manages parser installation. Core Treesitter handles parser
   startup and folding once parsers exist.
 - `nvim-treesitter-textobjects` provides the configured `af`, `if`, `ac`,

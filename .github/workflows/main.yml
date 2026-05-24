@@ -60,6 +60,6 @@ jobs:
           nvim --headless \
           "+checkhealth nvim" \
           "+checkhealth lazy" \
-          "+checkhealth lspconfig" \
+          "+checkhealth vim.lsp" \
           "+checkhealth nvim-treesitter" \
           "+qall"

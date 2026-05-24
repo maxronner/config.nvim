@@ -10,6 +10,7 @@ local forbidden_specs = {
   "lspkind.nvim",
   "mini.comment",
   "nvim-cmp",
+  "nvim-lspconfig",
 }
 
 local seen = {}
@@ -77,13 +78,13 @@ assert(
 )
 assert(loader.counts().total == total_before_bad_setup, "missing dependency setup mutated loader state")
 
-assert(not loader.is_loaded("nvim-lspconfig"), "nvim-lspconfig loaded before smoke request")
+assert(not loader.is_loaded("SchemaStore.nvim"), "SchemaStore.nvim loaded before smoke request")
 
-loader.load("nvim-lspconfig")
-assert(loader.is_loaded("nvim-lspconfig"), "nvim-lspconfig did not report loaded")
+loader.load("SchemaStore.nvim")
+assert(loader.is_loaded("SchemaStore.nvim"), "SchemaStore.nvim did not report loaded")
 
 local loaded = loader.loaded()
-assert(vim.tbl_contains(loaded, "nvim-lspconfig"), "loaded list missing nvim-lspconfig")
+assert(vim.tbl_contains(loaded, "SchemaStore.nvim"), "loaded list missing SchemaStore.nvim")
 
 local counts = loader.counts()
 assert(counts.loaded == #loaded, "counts.loaded does not match loaded list")
@@ -91,8 +92,8 @@ assert(counts.loaded == #loaded, "counts.loaded does not match loaded list")
 local status = loader.status()
 local has_pending = false
 for _, row in ipairs(status) do
-  if row.name == "nvim-lspconfig" then
-    assert(row.loaded == true, "status reports nvim-lspconfig pending")
+  if row.name == "SchemaStore.nvim" then
+    assert(row.loaded == true, "status reports SchemaStore.nvim pending")
   elseif row.lazy and not row.loaded then
     has_pending = true
   end

@@ -1,6 +1,6 @@
 return {
   {
-    "neovim/nvim-lspconfig",
+    "b0o/SchemaStore.nvim",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       {
@@ -19,9 +19,6 @@ return {
 
       -- Autoformatting and linting
       "stevearc/conform.nvim",
-
-      -- Schema information
-      "b0o/SchemaStore.nvim",
     },
 
     config = function()
@@ -41,9 +38,55 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities.textDocument.completion.completionItem.snippetSupport = true
 
+      local js_like_filetypes = {
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+      }
+
+      local function node_command(name)
+        return function(dispatchers, config)
+          local cmd = name
+          if (config or {}).root_dir then
+            local local_cmd = vim.fs.joinpath(config.root_dir, "node_modules/.bin", name)
+            if vim.fn.executable(local_cmd) == 1 then
+              cmd = local_cmd
+            end
+          end
+
+          return vim.lsp.rpc.start({ cmd, "--stdio" }, dispatchers)
+        end
+      end
+
+      local function ts_root(bufnr, on_dir)
+        local project_root = vim.fs.root(bufnr, "package.json")
+        if project_root then
+          on_dir(project_root)
+        end
+      end
+
+      local disable_lsp_format = {
+        jsonls = true,
+        ts_ls = true,
+        vtsls = true,
+      }
+
       local servers = {
-        bashls = true,
+        bashls = {
+          cmd = { "bash-language-server", "start" },
+          filetypes = { "bash", "sh" },
+          root_markers = { ".git" },
+          settings = {
+            bashIde = {
+              globPattern = vim.env.GLOB_PATTERN or "*@(.sh|.inc|.bash|.command)",
+            },
+          },
+        },
         gopls = {
+          cmd = { "gopls" },
+          filetypes = { "go", "gomod", "gowork", "gotmpl" },
+          root_markers = { "go.work", "go.mod", ".git" },
           settings = {
             gopls = {
               hints = {
@@ -59,29 +102,75 @@ return {
           },
         },
         lua_ls = {
-          server_capabilities = {
-            semanticTokensProvider = false,
+          cmd = { "lua-language-server" },
+          filetypes = { "lua" },
+          root_markers = {
+            { ".luarc.json", ".luarc.jsonc", ".emmyrc.json" },
+            { ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml" },
+            { ".git" },
+          },
+          settings = {
+            Lua = {
+              codeLens = { enable = true },
+              hint = { enable = true, semicolon = "Disable" },
+            },
           },
         },
-        marksman = true,
-        nixd = true,
-        rust_analyzer = true,
-        pyright = true,
-        ts_ls = {
-          root_dir = require("lspconfig").util.root_pattern("package.json"),
-          single_file = false,
-          server_capabilities = {
-            documentFormattingProvider = false,
+        marksman = {
+          cmd = { "marksman", "server" },
+          filetypes = { "markdown", "markdown.mdx" },
+          root_markers = { ".marksman.toml", ".git" },
+        },
+        nixd = {
+          cmd = { "nixd" },
+          filetypes = { "nix" },
+          root_markers = { "flake.nix", ".git" },
+        },
+        rust_analyzer = {
+          cmd = { "rust-analyzer" },
+          filetypes = { "rust" },
+          root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+        },
+        pyright = {
+          cmd = { "pyright-langserver", "--stdio" },
+          filetypes = { "python" },
+          root_markers = {
+            "pyrightconfig.json",
+            "pyproject.toml",
+            "setup.py",
+            "setup.cfg",
+            "requirements.txt",
+            "Pipfile",
+            ".git",
           },
+          settings = {
+            python = {
+              analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = "openFilesOnly",
+              },
+            },
+          },
+        },
+        ts_ls = {
+          cmd = node_command("typescript-language-server"),
+          filetypes = js_like_filetypes,
+          root_dir = ts_root,
+          init_options = { hostInfo = "neovim" },
         },
         vtsls = {
-          server_capabilities = {
-            documentFormattingProvider = false,
-          },
+          cmd = { "vtsls", "--stdio" },
+          filetypes = js_like_filetypes,
+          root_dir = ts_root,
+          init_options = { hostInfo = "neovim" },
         },
         jsonls = {
-          server_capabilities = {
-            documentFormattingProvider = false,
+          cmd = node_command("vscode-json-language-server"),
+          filetypes = { "json", "jsonc" },
+          root_markers = { ".git" },
+          init_options = {
+            provideFormatter = true,
           },
           settings = {
             json = {
@@ -92,14 +181,22 @@ return {
         },
 
         yamlls = {
+          cmd = node_command("yaml-language-server"),
+          filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values" },
+          root_markers = { ".git" },
           settings = {
+            redhat = { telemetry = { enabled = false } },
             yaml = {
+              format = { enable = true },
               schemaStore = {
                 enable = false,
                 url = "",
               },
             },
           },
+          on_init = function(client)
+            client.server_capabilities.documentFormattingProvider = true
+          end,
         },
       }
 
@@ -114,6 +211,16 @@ return {
 
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client then
+            if client.name == "lua_ls" then
+              client.server_capabilities.semanticTokensProvider = nil
+            end
+            if disable_lsp_format[client.name] then
+              client.server_capabilities.documentFormattingProvider = false
+            end
+          end
+
           local opts = { buffer = args.buf }
           local map = function(mode, lhs, rhs, desc)
             vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { desc = desc }))

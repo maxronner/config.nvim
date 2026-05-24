@@ -127,14 +127,23 @@ local function setup_cmd(plugin, command)
 end
 
 local function setup_key(plugin, key)
-  local lhs = key[1]
-  local rhs = key[2]
-  local modes = spec.as_list(key.mode or "n")
+  local lhs = key
+  local rhs = nil
+  local modes = { "n" }
+  local key_opts = {}
+
+  if type(key) == "table" then
+    lhs = key[1]
+    rhs = key[2]
+    modes = spec.as_list(key.mode or "n")
+    key_opts = key
+  end
+
   local map_opts = {
-    desc = key.desc,
-    silent = key.silent,
-    expr = key.expr,
-    noremap = key.remap ~= true,
+    desc = key_opts.desc,
+    silent = key_opts.silent,
+    expr = key_opts.expr,
+    noremap = key_opts.remap ~= true,
   }
 
   vim.keymap.set(modes, lhs, function()

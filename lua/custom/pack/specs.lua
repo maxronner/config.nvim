@@ -5,12 +5,6 @@ local M = {}
 local imports = {
   {
     module = "custom.plugins.mini",
-    include = {
-      "mini.statusline",
-      "mini.icons",
-      "mini.trailspace",
-      "mini.starter",
-    },
   },
   {
     module = "custom.plugins.oil",

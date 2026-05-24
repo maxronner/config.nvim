@@ -29,6 +29,11 @@ for _, plugin in ipairs(pack.normalize(require("custom.pack.specs").get())) do
   seen[plugin.name] = true
 end
 
+for _, spec in ipairs(pack.import("custom.plugins.mini")) do
+  local name = pack.spec.spec_name(spec)
+  assert(seen[name], ("pack specs should include %s"):format(name))
+end
+
 for _, name in ipairs(forbidden_specs) do
   assert(not seen[name], ("pack specs should not include %s"):format(name))
 end

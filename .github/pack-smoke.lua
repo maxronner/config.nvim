@@ -7,6 +7,7 @@ local forbidden_specs = {
   "cmp-path",
   "friendly-snippets",
   "fidget.nvim",
+  "lazydev.nvim",
   "lspkind.nvim",
   "mini.comment",
   "nvim-cmp",

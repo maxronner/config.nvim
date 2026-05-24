@@ -58,8 +58,6 @@ completion, `vim.snippet` for snippets, and core `gc` commenting instead of
 Some LSP helper plugins remain because they still provide behavior beyond core
 Neovim:
 
-- `lazydev.nvim` improves Lua LSP completion and diagnostics for Neovim runtime,
-  plugin, and `vim.uv` APIs while editing this config.
 - `SchemaStore.nvim` supplies JSON schemas for `jsonls`; the native LSP config
   keeps using its schema catalog.
 - `nvim-treesitter` manages parser installation. Core Treesitter handles parser

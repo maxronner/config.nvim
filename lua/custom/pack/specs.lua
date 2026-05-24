@@ -94,7 +94,6 @@ local imports = {
   {
     module = "custom.plugins.lsp",
     include = {
-      "lazydev.nvim",
       "conform.nvim",
       "SchemaStore.nvim",
     },

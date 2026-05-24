@@ -3,20 +3,6 @@ return {
     "b0o/SchemaStore.nvim",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      {
-        -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-        -- used for completion, annotations and signatures of Neovim apis
-        "folke/lazydev.nvim",
-        ft = "lua",
-        opts = {
-          library = {
-            -- See the configuration section for more details
-            -- Load luvit types when the `vim.uv` word is found
-            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-          },
-        },
-      },
-
       -- Autoformatting and linting
       "stevearc/conform.nvim",
     },
@@ -112,7 +98,23 @@ return {
           settings = {
             Lua = {
               codeLens = { enable = true },
+              diagnostics = {
+                globals = { "vim" },
+              },
               hint = { enable = true, semicolon = "Disable" },
+              runtime = {
+                path = {
+                  "lua/?.lua",
+                  "lua/?/init.lua",
+                },
+                version = "LuaJIT",
+              },
+              workspace = {
+                checkThirdParty = false,
+                library = {
+                  vim.env.VIMRUNTIME,
+                },
+              },
             },
           },
         },

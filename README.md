@@ -69,3 +69,29 @@ Neovim:
 - `conform.nvim` routes external formatters, checks formatter availability, and
   keeps format-on-save from silently falling back to LSP formatting when a
   configured external formatter is missing.
+
+## FIM Completion
+
+`custom.fim` is a small single-file-context FIM consumer. It collects
+prefix/suffix around the insert cursor, calls the configured provider, streams
+the result into ghost text, and lets insert mode accept or dismiss it.
+
+The default provider is DeepSeek FIM. Set `DEEPSEEK_API_KEY` before starting
+Neovim. Optional overrides can be provided before `plugin/fim.lua` runs:
+
+```lua
+vim.g.custom_fim = {
+  auto = true,
+  debounce_ms = 350,
+  accept_all_key = "<C-a>",
+  accept_forward_key = "<S-Tab>",
+  dismiss_key = "<C-]>",
+  manual_key = "<C-g>",
+  manual_normal_key = "<leader>ii",
+  toggle_key = "<leader>iq",
+  provider = {
+    model = "deepseek-v4-pro",
+    max_tokens = 96,
+  },
+}
+```

@@ -89,6 +89,18 @@ vim.g.custom_fim = {
   manual_key = "<C-g>",
   manual_normal_key = "<leader>ii",
   toggle_key = "<leader>iq",
+  blocked_path_patterns = {
+    "*.env",
+    "*.pem",
+    "*.key",
+    "*.gpg",
+    "*.age",
+    "*secret*",
+    "*vault*",
+    "~/.ssh/*",
+    "~/.kube/*",
+    "~/.gnupg/*",
+  },
   provider = {
     model = "deepseek-v4-pro",
     max_tokens = 96,

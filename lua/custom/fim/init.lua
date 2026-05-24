@@ -2,6 +2,7 @@ local config = require("custom.fim.config")
 local context = require("custom.fim.context")
 local providers = require("custom.fim.providers")
 local renderer = require("custom.fim.renderer")
+local safety = require("custom.fim.safety")
 
 local M = {}
 
@@ -137,11 +138,13 @@ function M.status()
   local api_key_env = provider_opts.api_key_env or "DEEPSEEK_API_KEY"
   local api_key_state = vim.env[api_key_env] and vim.env[api_key_env] ~= "" and "set" or "missing"
   local current = renderer.current()
+  local blocked = safety.reason(0, nil, opts)
 
   local lines = {
     "enabled: " .. tostring(opts.enabled),
     "auto: " .. tostring(opts.auto),
     "api key: " .. api_key_env .. " " .. api_key_state,
+    "blocked: " .. (blocked or "no"),
     "status: " .. state.last_status,
     "ghost text: " .. (current and "visible" or "none"),
   }
@@ -159,6 +162,17 @@ function M.trigger(source)
     state.last_status = "disabled"
     if source == "manual" then
       vim.notify("FIM disabled", vim.log.levels.INFO, { title = "FIM" })
+    end
+    return
+  end
+
+  local blocked = safety.reason(0, nil, opts)
+  if blocked then
+    M.dismiss()
+    state.last_status = "blocked"
+    state.last_error = blocked
+    if source == "manual" then
+      vim.notify("FIM blocked: " .. blocked, vim.log.levels.WARN, { title = "FIM" })
     end
     return
   end
@@ -235,6 +249,12 @@ function M.schedule()
     return
   end
 
+  if safety.reason(0, nil, opts) then
+    M.dismiss()
+    state.last_status = "blocked"
+    return
+  end
+
   if state.pending_rest or renderer.current() then
     return
   end
@@ -256,6 +276,20 @@ function M.setup(opts)
   opts = config.setup(opts)
 
   local group = vim.api.nvim_create_augroup("custom-fim", { clear = true })
+  vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile", "BufFilePost" }, {
+    group = group,
+    desc = "Block FIM for sensitive buffers before reading text",
+    callback = function(args)
+      safety.mark(args.buf, args.file, opts)
+    end,
+  })
+  vim.api.nvim_create_autocmd("FileType", {
+    group = group,
+    desc = "Block FIM for sensitive filetypes",
+    callback = function(args)
+      safety.mark(args.buf, vim.api.nvim_buf_get_name(args.buf), opts)
+    end,
+  })
   vim.api.nvim_create_autocmd("TextChangedI", {
     group = group,
     desc = "Refresh FIM completion after insert changes",

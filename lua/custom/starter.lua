@@ -65,48 +65,30 @@ local items = {
     section = "Custom",
   },
   {
-    name = "Lazy",
-    action = "Lazy",
-    section = "Custom",
-  },
-  {
-    name = "Mason",
-    action = "Mason",
-    section = "Custom",
-  },
-  {
     name = "Config",
     action = "lua require('fzf-lua').files({ cwd = '$XDG_CONFIG_HOME/nvim' })",
     section = "Custom",
   },
 }
 
-local footer = {
-  count = 0,
-  loaded = 0,
-  startuptime = 0,
-}
-
-local function set_footer()
-  local stats = require("lazy").stats()
-  footer.count = stats.count
-  footer.loaded = stats.loaded
-  footer.startuptime = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-end
-
 local function get_footer()
-  return " Neovim loaded " .. footer.loaded .. "/" .. footer.count .. " plugins in " .. footer.startuptime .. "ms"
-end
+  local ok, counts = pcall(function()
+    return require("custom.pack.loader").counts()
+  end)
+  local version = vim.version()
 
-vim.api.nvim_create_autocmd("User", {
-  pattern = "LazyVimStarted",
-  callback = function()
-    set_footer()
-    if _G.MiniStarter and vim.bo.filetype == "ministarter" then
-      MiniStarter.refresh()
-    end
-  end,
-})
+  if not ok then
+    return (" Neovim %d.%d.%d"):format(version.major, version.minor, version.patch)
+  end
+
+  return (" Neovim %d.%d.%d loaded %d/%d plugins"):format(
+    version.major,
+    version.minor,
+    version.patch,
+    counts.loaded,
+    counts.total
+  )
+end
 
 vim.keymap.set("n", "<leader>S", "<cmd>lua require('mini.starter').open()<CR>", { desc = "Open starter" })
 

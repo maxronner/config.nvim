@@ -3,7 +3,6 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
       {
         -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
         -- used for completion, annotations and signatures of Neovim apis
@@ -23,22 +22,14 @@ return {
 
       -- Schema information
       "b0o/SchemaStore.nvim",
-
-      -- LSP progress messages
-      {
-        "j-hui/fidget.nvim",
-        opts = {
-          notification = {
-            window = {
-              winblend = 0,
-              y_padding = 1,
-            },
-          },
-        },
-      },
     },
 
     config = function()
+      vim.opt.completeopt = { "menuone", "noselect", "popup" }
+      if vim.fn.exists("+autocomplete") == 1 then
+        vim.opt.autocomplete = true
+      end
+
       vim.keymap.set("n", "<leader>lf", function()
         vim.lsp.buf.format()
       end, { desc = "LSP: Format buffer" })
@@ -47,10 +38,8 @@ return {
         vim.diagnostic.setqflist()
       end, { desc = "Diagnostics to quickfix" })
 
-      local capabilities = nil
-      if pcall(require, "cmp_nvim_lsp") then
-        capabilities = require("cmp_nvim_lsp").default_capabilities()
-      end
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities.textDocument.completion.completionItem.snippetSupport = true
 
       local servers = {
         bashls = true,
@@ -130,14 +119,12 @@ return {
             vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { desc = desc }))
           end
 
-          map({ "n", "x" }, "gra", vim.lsp.buf.code_action, "LSP: Code action")
-          map("n", "grn", vim.lsp.buf.rename, "LSP: Rename")
-          map("n", "gri", vim.lsp.buf.implementation, "LSP: Implementation")
-          map("n", "grr", vim.lsp.buf.references, "LSP: References")
-          map("n", "grt", vim.lsp.buf.type_definition, "LSP: Type definition")
-          map("n", "gO", vim.lsp.buf.document_symbol, "LSP: Document symbols")
-          map("n", "grx", vim.lsp.codelens.run, "LSP: CodeLens")
-          map("i", "<C-S>", vim.lsp.buf.signature_help, "LSP: Signature help")
+          if vim.lsp.completion then
+            vim.lsp.completion.enable(true, args.data.client_id, args.buf, {
+              autotrigger = true,
+            })
+            map("i", "<C-Space>", vim.lsp.completion.get, "LSP: Complete")
+          end
 
           map("n", "grtl", function()
             local config = vim.diagnostic.config() or {}

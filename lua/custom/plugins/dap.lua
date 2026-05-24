@@ -16,7 +16,6 @@ return {
       "leoluz/nvim-dap-go",
       "rcarriga/nvim-dap-ui",
       "nvim-neotest/nvim-nio",
-      "williamboman/mason.nvim",
     },
     config = function()
       local dap = require("dap")

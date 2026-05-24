@@ -34,7 +34,7 @@ return {
   },
   {
     "nvim-mini/mini.clue",
-    event = "VeryLazy",
+    event = "VimEnter",
     config = function()
       local miniclue = require("mini.clue")
       miniclue.setup({
@@ -98,7 +98,7 @@ return {
   },
   {
     "nvim-mini/mini.ai",
-    event = "VeryLazy",
+    event = "VimEnter",
     config = function()
       require("mini.ai").setup()
     end,
@@ -131,7 +131,7 @@ return {
   },
   {
     "nvim-mini/mini.jump",
-    event = "VeryLazy",
+    event = "VimEnter",
     config = function()
       require("mini.jump").setup()
     end,
@@ -165,7 +165,7 @@ return {
   },
   {
     "nvim-mini/mini.cursorword",
-    event = "VeryLazy",
+    event = "VimEnter",
     config = function()
       require("mini.cursorword").setup()
       local function disable_current_word_highlight()

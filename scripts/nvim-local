@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+repo_root=$(CDPATH= cd -- "$script_dir/.." && pwd)
+config_home=$(dirname -- "$repo_root")
+app_name=$(basename -- "$repo_root")
+local_home=${NVIM_LOCAL_HOME:-"$repo_root/.local"}
+
+export XDG_CONFIG_HOME="$config_home"
+export XDG_DATA_HOME="$local_home/share"
+export XDG_STATE_HOME="$local_home/state"
+export XDG_CACHE_HOME="$local_home/cache"
+export NVIM_APPNAME="$app_name"
+export NVIM_LOG_FILE="${NVIM_LOG_FILE:-$repo_root/.nvimlog}"
+
+exec nvim "$@"

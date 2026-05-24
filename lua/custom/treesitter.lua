@@ -7,18 +7,20 @@ M.setup = function()
     install_dir = vim.fn.stdpath("data") .. "/site",
   })
 
-  vim.schedule(function()
-    ts.install({
-      "stable",
-      "lua",
-      "vim",
-      "gitcommit",
-      "diff",
-      "yaml",
-      "json",
-      "markdown",
-    })
-  end)
+  if vim.env.NVIM_TREESITTER_INSTALL ~= "disabled" then
+    vim.schedule(function()
+      ts.install({
+        "stable",
+        "lua",
+        "vim",
+        "gitcommit",
+        "diff",
+        "yaml",
+        "json",
+        "markdown",
+      })
+    end)
+  end
 
   local syntax_on = {
     markdown = true,

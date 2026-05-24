@@ -135,7 +135,7 @@ return {
       {
         "<leader>vl",
         function()
-          require("fzf-lua").files({ cwd = vim.fn.stdpath("data") .. "/lazy" })
+          require("fzf-lua").files({ cwd = vim.fn.stdpath("data") .. "/site/pack/core/opt" })
         end,
         desc = "Fzf: Find files in plugins",
       },

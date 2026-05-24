@@ -575,31 +575,6 @@ function M.apply()
     GitSignsChangeInline = { bg = C4 },
     GitSignsDeleteInline = { bg = C1 },
 
-    -- nvim-cmp
-    CmpItemAbbr = { link = "Pmenu" },
-    CmpItemAbbrDeprecated = { fg = C1, strikethrough = true },
-    CmpItemAbbrMatch = { fg = C15, bold = true },
-    CmpItemAbbrMatchFuzzy = { fg = C15, bold = true },
-
-    CmpItemKind = { link = "Pmenu" },
-
-    CmpItemKindClass = { fg = C4 },
-    CmpItemKindFunction = { fg = C5 },
-    CmpItemKindInterface = { fg = C4 },
-    CmpItemKindMethod = { fg = C5 },
-    CmpItemKindSnippet = { fg = C5 }, -- meta / macro-like
-    CmpItemKindVariable = { fg = C7 },
-
-    CmpItemKindModule = { fg = C7 },
-    CmpItemKindField = { fg = C4 },
-    CmpItemKindProperty = { fg = C4 },
-    CmpItemKindEnum = { fg = C4 },
-    CmpItemKindConstant = { fg = C3 },
-    CmpItemKindStruct = { fg = C4 },
-    CmpItemKindEvent = { fg = C5 },
-    CmpItemKindOperator = { fg = C8 },
-    CmpItemKindKeyword = { fg = C2 },
-
     -- ── mini.starter ──────────────────────────────────────────────────────
     MiniStarterHeader = { fg = C4, bold = true },
     MiniStarterFooter = { "Comment" },

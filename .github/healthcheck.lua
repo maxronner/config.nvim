@@ -7,10 +7,8 @@ vim.o.shortmess = vim.o.shortmess .. "FI"
 
 local checks = {
   "nvim",
-  "lazy",
   "vim.lsp",
   "nvim-treesitter",
-  "mason",
 }
 
 local had_error = false

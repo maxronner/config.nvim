@@ -1,1 +1,3 @@
 .nvimlog
+.local/
+nvim-pack-lock.json

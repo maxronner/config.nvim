@@ -18,7 +18,7 @@ M.art.categories = category_module_names
 -- Seed RNG once at module load (improves randomness and avoids repeated seeding)
 math.randomseed(vim.uv.hrtime())
 
--- Simple setup function for lazy.nvim
+-- Simple setup function for plugin specs
 M.setup = function()
   return M
 end

@@ -1,6 +1,6 @@
 return {
   "nvim-treesitter/nvim-treesitter",
-  event = "VeryLazy",
+  event = "VimEnter",
   branch = "main",
   build = ":TSUpdate",
   dependencies = {

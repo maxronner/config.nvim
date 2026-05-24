@@ -25,11 +25,6 @@ This sets `XDG_CONFIG_HOME` and `NVIM_APPNAME` so Neovim loads this repository
 instead of another installed config. The local checkout uses the pack backend,
 so the first run may install plugins into `.local/`.
 
-Neovim 0.12 also provides builtin treesitter incremental selection in visual
-mode: `an` selects outward to parent nodes and `in` selects inward to child
-nodes. The existing `af`, `if`, and `ac` mappings from
-`nvim-treesitter-textobjects` still cover function/class textobjects.
-
 To try the same pack backend in an isolated XDG sandbox:
 
 ```sh
@@ -51,3 +46,24 @@ and validates plugin paths against `/nix/store/`.
 ## Note
 
 Expect machine-specific assumptions, local preferences, and rough edges that make sense in a personal dotfiles repo.
+
+## Neovim 0.12 Plugin Relevance
+
+This config intentionally uses native Neovim 0.12 features where they cover the
+workflow: `vim.pack` for plugin acquisition, `vim.lsp.config()` and
+`vim.lsp.enable()` for server activation, `vim.lsp.completion` for LSP-backed
+completion, `vim.snippet` for snippets, and core `gc` commenting instead of
+`mini.comment`.
+
+Some plugins remain because they still provide behavior beyond core Neovim:
+
+- `nvim-lspconfig` supplies default server configs; clean Neovim does not define
+  configs such as `lua_ls` or `ts_ls` by itself.
+- `nvim-treesitter` manages parser installation. Core Treesitter handles parser
+  startup and folding once parsers exist.
+- `nvim-treesitter-textobjects` provides the configured `af`, `if`, `ac`,
+  movement, swap, and peek mappings. Core incremental selection covers `an` and
+  `in`, but not the full textobject workflow used here.
+- `conform.nvim` routes external formatters, checks formatter availability, and
+  keeps format-on-save from silently falling back to LSP formatting when a
+  configured external formatter is missing.

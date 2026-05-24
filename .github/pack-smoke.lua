@@ -8,6 +8,7 @@ local forbidden_specs = {
   "friendly-snippets",
   "fidget.nvim",
   "lspkind.nvim",
+  "mini.comment",
   "nvim-cmp",
 }
 

@@ -90,13 +90,6 @@ return {
     end,
   },
   {
-    "nvim-mini/mini.comment",
-    keys = { "gc" },
-    config = function()
-      require("mini.comment").setup()
-    end,
-  },
-  {
     "nvim-mini/mini.ai",
     event = "VimEnter",
     config = function()

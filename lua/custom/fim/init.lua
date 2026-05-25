@@ -48,6 +48,13 @@ local function cancel_request()
   end
 end
 
+local function clear_completion()
+  state.completion = ""
+  state.last_status = "idle"
+  cancel_request()
+  renderer.clear()
+end
+
 local function stale(request_id, ctx)
   local cursor = vim.api.nvim_win_get_cursor(0)
   local cursor_row = math.max(cursor[1], 1) - 1
@@ -61,11 +68,8 @@ end
 
 function M.dismiss()
   state.request_id = state.request_id + 1
-  state.completion = ""
   state.pending_rest = nil
-  state.last_status = "idle"
-  cancel_request()
-  renderer.clear()
+  clear_completion()
 end
 
 function M.accept_all()
@@ -98,16 +102,28 @@ function M.accept_forward()
 
   local accepted = forward_segment(current.text)
   local rest = current.text:sub(#accepted + 1)
-  M.dismiss()
+  state.request_id = state.request_id + 1
+  clear_completion()
   state.pending_rest = rest ~= "" and rest or nil
+  if state.pending_rest then
+    vim.defer_fn(function()
+      M.show_pending_rest()
+    end, 20)
+    vim.defer_fn(function()
+      M.show_pending_rest()
+    end, 80)
+  end
 
   return accepted
 end
 
 function M.show_pending_rest()
   local rest = state.pending_rest
-  if not rest or rest == "" or not in_insert_mode() then
+  if not rest or rest == "" then
     state.pending_rest = nil
+    return
+  end
+  if not in_insert_mode() then
     return
   end
 
@@ -147,6 +163,7 @@ function M.status()
     "blocked: " .. (blocked or "no"),
     "status: " .. state.last_status,
     "ghost text: " .. (current and "visible" or "none"),
+    "pending rest: " .. (state.pending_rest and "yes" or "no"),
   }
 
   if state.last_error then

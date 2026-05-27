@@ -4,6 +4,7 @@ local M = {}
 local state = {
   plugins = {},
   loaded = {},
+  loading = {},
 }
 
 local function configure(plugin)
@@ -37,27 +38,39 @@ function M.load(name)
   if state.loaded[name] then
     return
   end
+  if state.loading[name] then
+    error(("Recursive pack plugin load: %s"):format(name))
+  end
 
   local plugin = state.plugins[name]
   if not plugin then
     error(("Unknown pack plugin: %s"):format(name))
   end
 
-  for _, dependency in ipairs(plugin.dependencies) do
-    if state.plugins[dependency] then
-      M.load(dependency)
+  state.loading[name] = true
+  local ok, err = xpcall(function()
+    for _, dependency in ipairs(plugin.dependencies) do
+      if state.plugins[dependency] then
+        M.load(dependency)
+      end
     end
-  end
 
-  if plugin.runtime_path then
-    vim.opt.runtimepath:prepend(plugin.runtime_path)
-    source_runtime_files(plugin.runtime_path)
-  else
-    vim.cmd.packadd(plugin.name)
+    if plugin.runtime_path then
+      vim.opt.runtimepath:prepend(plugin.runtime_path)
+      source_runtime_files(plugin.runtime_path)
+    else
+      vim.cmd.packadd(plugin.name)
+    end
+
+    configure(plugin)
+  end, debug.traceback)
+  state.loading[name] = nil
+
+  if not ok then
+    error(err, 0)
   end
 
   state.loaded[name] = true
-  configure(plugin)
 end
 
 function M.is_loaded(name)
@@ -126,18 +139,35 @@ local function setup_cmd(plugin, command)
   })
 end
 
+local function lazy_key_action(key)
+  if type(key) ~= "table" then
+    return nil
+  end
+  return key[2]
+end
+
+local function lazy_key_is_trigger(action)
+  return action == nil
+end
+
+local function invoke_lazy_key(action, lhs)
+  if type(action) == "function" then
+    return action()
+  end
+  return vim.api.nvim_feedkeys(vim.keycode(action or lhs), "m", false)
+end
+
 local function setup_key(plugin, key)
   local lhs = key
-  local rhs = nil
   local modes = { "n" }
   local key_opts = {}
 
   if type(key) == "table" then
     lhs = key[1]
-    rhs = key[2]
     modes = spec.as_list(key.mode or "n")
     key_opts = key
   end
+  local action = lazy_key_action(key)
 
   local map_opts = {
     desc = key_opts.desc,
@@ -147,12 +177,13 @@ local function setup_key(plugin, key)
   }
 
   vim.keymap.set(modes, lhs, function()
-    pcall(vim.keymap.del, modes, lhs)
     M.load(plugin.name)
-    if type(rhs) == "function" then
-      return rhs()
+
+    if lazy_key_is_trigger(action) then
+      pcall(vim.keymap.del, modes, lhs)
     end
-    return vim.api.nvim_feedkeys(vim.keycode(rhs or lhs), "m", false)
+
+    return invoke_lazy_key(action, lhs)
   end, map_opts)
 end
 
@@ -207,6 +238,7 @@ function M.setup(resolved)
 
   state.plugins = plugins
   state.loaded = {}
+  state.loading = {}
 
   for _, plugin in ipairs(resolved) do
     if plugin.lazy then

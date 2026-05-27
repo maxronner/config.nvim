@@ -576,9 +576,9 @@ function M.apply()
     GitSignsDeleteInline = { bg = C1 },
 
     -- ── mini.starter ──────────────────────────────────────────────────────
-    MiniStarterHeader = { fg = C4, bold = true },
+    MiniStarterHeader = { fg = C6, bold = true },
     MiniStarterFooter = { "Comment" },
-    MiniStarterSection = { fg = C5 },
+    MiniStarterSection = { fg = C1 },
     MiniStarterItemBullet = { fg = C4 },
     MiniStarterItemPrefix = { "WarningMsg", bold = true },
     MiniStarterInactive = { "Comment" },

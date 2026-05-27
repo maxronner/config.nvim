@@ -77,7 +77,7 @@ function M.detect_background()
   if not content then
     return
   end
-  local bg_hex = content:match('"m3surface"%s*:%s*"#?([0-9a-fA-F]+)"')
+  local bg_hex = content:match('"surface"%s*:%s*"#?([0-9a-fA-F]+)"')
   if not bg_hex or #bg_hex < 6 then
     return
   end

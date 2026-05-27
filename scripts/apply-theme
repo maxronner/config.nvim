@@ -16,11 +16,11 @@ RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
 
 if [[ "${1:-}" == "--check" ]]; then
   command -v nvim >/dev/null || exit 1
-  jq -e -r '.version == 2 and .m3surface' "$PALETTE_FILE" >/dev/null 2>&1
+  jq -e -r '.roles.surface' "$PALETTE_FILE" >/dev/null 2>&1
   exit $?
 fi
 
-bg_hex=$(jq -e -r '.m3surface' "$PALETTE_FILE" | tr -d '#')
+bg_hex=$(jq -e -r '.roles.surface' "$PALETTE_FILE" | tr -d '#')
 # Perceived luminance (0-255); >127 is a light background.
 bg=$(awk -v h="$bg_hex" 'BEGIN {
   r = strtonum("0x" substr(h,1,2))

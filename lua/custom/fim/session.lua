@@ -32,6 +32,18 @@ function M.next_request()
   return state.request_id
 end
 
+function M.request_id()
+  return state.request_id
+end
+
+function M.last_status()
+  return state.last_status
+end
+
+function M.last_error()
+  return state.last_error
+end
+
 function M.set_status(status, last_error)
   state.last_status = status
   if last_error ~= nil then

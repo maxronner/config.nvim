@@ -6,7 +6,6 @@ local safety = require("custom.fim.safety")
 local session = require("custom.fim.session")
 
 local M = {}
-local state = session.state()
 
 local function in_insert_mode()
   return vim.api.nvim_get_mode().mode:sub(1, 1) == "i"
@@ -41,7 +40,7 @@ end
 local function stale(request_id, ctx)
   local cursor = vim.api.nvim_win_get_cursor(0)
   local cursor_row = math.max(cursor[1], 1) - 1
-  return request_id ~= state.request_id
+  return request_id ~= session.request_id()
     or not vim.api.nvim_buf_is_valid(ctx.bufnr)
     or vim.api.nvim_buf_get_changedtick(ctx.bufnr) ~= ctx.changedtick
     or ctx.bufnr ~= vim.api.nvim_get_current_buf()
@@ -62,7 +61,7 @@ function M.accept_all()
   end
 
   local ctx = current.ctx
-  if stale(state.request_id, ctx) then
+  if stale(session.request_id(), ctx) then
     M.dismiss()
     return nil
   end
@@ -78,7 +77,7 @@ function M.accept_forward()
   end
 
   local ctx = current.ctx
-  if stale(state.request_id, ctx) then
+  if stale(session.request_id(), ctx) then
     M.dismiss()
     return nil
   end
@@ -140,13 +139,13 @@ function M.status()
     "auto: " .. tostring(opts.auto),
     "api key: " .. api_key_env .. " " .. api_key_state,
     "blocked: " .. (blocked or "no"),
-    "status: " .. state.last_status,
+    "status: " .. session.last_status(),
     "ghost text: " .. (current and "visible" or "none"),
     "pending rest: " .. (session.has_pending_rest() and "yes" or "no"),
   }
 
-  if state.last_error then
-    table.insert(lines, "last error: " .. state.last_error)
+  if session.last_error() then
+    table.insert(lines, "last error: " .. session.last_error())
   end
 
   vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "FIM status" })

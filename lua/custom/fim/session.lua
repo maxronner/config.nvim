@@ -88,4 +88,22 @@ function M.has_pending_rest()
   return state.pending_rest ~= nil
 end
 
+function M.stop_timer()
+  if state.timer then
+    state.timer:stop()
+    state.timer:close()
+    state.timer = nil
+  end
+end
+
+function M.set_timer(timer)
+  state.timer = timer
+end
+
+function M.clear_timer(timer)
+  if not timer or state.timer == timer then
+    state.timer = nil
+  end
+end
+
 return M

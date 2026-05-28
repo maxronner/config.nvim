@@ -242,17 +242,16 @@ function M.schedule()
     return
   end
 
-  if state.timer then
-    state.timer:stop()
-    state.timer:close()
-  end
+  session.stop_timer()
 
-  state.timer = vim.defer_fn(function()
-    state.timer = nil
+  local timer
+  timer = vim.defer_fn(function()
+    session.clear_timer(timer)
     if in_insert_mode() then
       M.trigger("auto")
     end
   end, opts.debounce_ms)
+  session.set_timer(timer)
 end
 
 function M.setup(opts)

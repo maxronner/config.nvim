@@ -69,4 +69,23 @@ function M.fail_request(message)
   state.last_error = message
 end
 
+function M.clear_pending_rest()
+  state.pending_rest = nil
+end
+
+function M.set_pending_rest(text)
+  state.pending_rest = text ~= "" and text or nil
+  return state.pending_rest
+end
+
+function M.take_pending_rest()
+  local rest = state.pending_rest
+  state.pending_rest = nil
+  return rest
+end
+
+function M.has_pending_rest()
+  return state.pending_rest ~= nil
+end
+
 return M

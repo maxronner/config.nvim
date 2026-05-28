@@ -51,7 +51,7 @@ end
 
 function M.dismiss()
   session.next_request()
-  state.pending_rest = nil
+  session.clear_pending_rest()
   clear_completion()
 end
 
@@ -87,8 +87,7 @@ function M.accept_forward()
   local rest = current.text:sub(#accepted + 1)
   session.next_request()
   clear_completion()
-  state.pending_rest = rest ~= "" and rest or nil
-  if state.pending_rest then
+  if session.set_pending_rest(rest) then
     vim.defer_fn(function()
       M.show_pending_rest()
     end, 20)
@@ -101,16 +100,15 @@ function M.accept_forward()
 end
 
 function M.show_pending_rest()
-  local rest = state.pending_rest
-  if not rest or rest == "" then
-    state.pending_rest = nil
+  if not session.has_pending_rest() then
+    session.clear_pending_rest()
     return
   end
   if not in_insert_mode() then
     return
   end
 
-  state.pending_rest = nil
+  local rest = session.take_pending_rest()
   local opts = config.options
   local next_ctx = context.collect(0, opts)
   session.next_request()
@@ -144,7 +142,7 @@ function M.status()
     "blocked: " .. (blocked or "no"),
     "status: " .. state.last_status,
     "ghost text: " .. (current and "visible" or "none"),
-    "pending rest: " .. (state.pending_rest and "yes" or "no"),
+    "pending rest: " .. (session.has_pending_rest() and "yes" or "no"),
   }
 
   if state.last_error then
@@ -240,7 +238,7 @@ function M.schedule()
     return
   end
 
-  if state.pending_rest or renderer.current() then
+  if session.has_pending_rest() or renderer.current() then
     return
   end
 
@@ -279,7 +277,7 @@ function M.setup(opts)
     group = group,
     desc = "Refresh FIM completion after insert changes",
     callback = function()
-      if state.pending_rest then
+      if session.has_pending_rest() then
         vim.schedule(M.show_pending_rest)
       else
         M.schedule()

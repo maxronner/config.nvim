@@ -215,6 +215,18 @@ local function setup_event(plugin, event)
   vim.api.nvim_create_autocmd(autocmd, opts)
 end
 
+function M.install_trigger(plugin, trigger)
+  if trigger.kind == "command" then
+    setup_cmd(plugin, trigger.command)
+  elseif trigger.kind == "key" then
+    setup_key(plugin, trigger)
+  elseif trigger.kind == "event" then
+    setup_event(plugin, trigger.event)
+  else
+    error(("%s: unknown pack trigger kind %s"):format(plugin.name, tostring(trigger.kind)))
+  end
+end
+
 function M.trigger_plan(plugin)
   local triggers = {}
 
@@ -243,13 +255,7 @@ end
 
 local function setup_triggers(plugin)
   for _, trigger in ipairs(M.trigger_plan(plugin)) do
-    if trigger.kind == "command" then
-      setup_cmd(plugin, trigger.command)
-    elseif trigger.kind == "key" then
-      setup_key(plugin, trigger)
-    elseif trigger.kind == "event" then
-      setup_event(plugin, trigger.event)
-    end
+    M.install_trigger(plugin, trigger)
   end
 end
 

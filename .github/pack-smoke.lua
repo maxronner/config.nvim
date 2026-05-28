@@ -191,6 +191,13 @@ local function assert_loader_trigger_plan(loader)
 
   assert(triggers[4].kind == "event", "fourth trigger should be event")
   assert(triggers[4].event == "BufReadPost", "event trigger missing event")
+
+  local ok, err = pcall(loader.install_trigger, { name = "planned-plugin" }, { kind = "timer" })
+  assert(not ok, "loader.install_trigger should reject unknown trigger kinds")
+  assert(
+    tostring(err):find("planned-plugin: unknown pack trigger kind timer", 1, true),
+    "unknown trigger kind error was not useful"
+  )
 end
 
 local function assert_loader_runtime(loader)

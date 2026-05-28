@@ -25,6 +25,14 @@ This sets `XDG_CONFIG_HOME` and `NVIM_APPNAME` so Neovim loads this repository
 instead of another installed config. The local checkout uses the pack backend,
 so the first run may install plugins into `.local/`.
 
+The pack backend uses installed plugin directories directly on normal startup.
+Set `NVIM_PACK_SYNC=1` when you want startup to force `vim.pack.add()` sync
+behavior for existing plugins:
+
+```sh
+NVIM_PACK_SYNC=1 scripts/nvim-local
+```
+
 To try the same pack backend in an isolated XDG sandbox:
 
 ```sh

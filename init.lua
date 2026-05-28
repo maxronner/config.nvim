@@ -1,3 +1,4 @@
+vim.g.custom_start_time = vim.uv.hrtime()
 vim.g.mapleader = " "
 vim.go.loadplugins = false
 

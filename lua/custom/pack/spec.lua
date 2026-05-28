@@ -61,6 +61,11 @@ local function append_spec(inputs, input, seen)
   seen[name] = true
 
   for _, dependency in ipairs(M.as_list(input.dependencies)) do
+    if type(dependency) == "string" then
+      dependency = { dependency, lazy = true }
+    elseif dependency.lazy == nil then
+      dependency = vim.tbl_extend("force", dependency, { lazy = true })
+    end
     append_spec(inputs, dependency, seen)
   end
 

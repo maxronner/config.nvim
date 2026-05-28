@@ -41,6 +41,28 @@ local function get_header()
 end
 
 local starter = require("mini.starter")
+local startup_ms
+
+local function get_startup_ms()
+  if startup_ms then
+    return startup_ms
+  end
+
+  if vim.g.custom_start_time then
+    return (vim.uv.hrtime() - vim.g.custom_start_time) / 1e6
+  end
+end
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  once = true,
+  callback = function()
+    startup_ms = get_startup_ms()
+    if _G.MiniStarter and vim.bo.filetype == "ministarter" then
+      MiniStarter.refresh()
+    end
+  end,
+})
+
 local items = {
   starter.sections.builtin_actions(),
   starter.sections.recent_files(5, true),
@@ -76,17 +98,24 @@ local function get_footer()
     return require("custom.pack.loader").counts()
   end)
   local version = vim.version()
+  local startuptime = ""
 
-  if not ok then
-    return (" Neovim %d.%d.%d"):format(version.major, version.minor, version.patch)
+  local ms = get_startup_ms()
+  if ms then
+    startuptime = (" in %.2fms"):format(ms)
   end
 
-  return (" Neovim %d.%d.%d loaded %d/%d plugins"):format(
+  if not ok then
+    return (" Neovim %d.%d.%d%s"):format(version.major, version.minor, version.patch, startuptime)
+  end
+
+  return (" Neovim %d.%d.%d loaded %d/%d plugins%s"):format(
     version.major,
     version.minor,
     version.patch,
     counts.loaded,
-    counts.total
+    counts.total,
+    startuptime
   )
 end
 

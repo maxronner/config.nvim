@@ -33,17 +33,8 @@ local function forward_segment(text)
   return text:match("^%s*[%w_]+") or text:match("^%s*%p") or text:match("^%s+") or text
 end
 
-local function cancel_request()
-  if state.cancel then
-    state.cancel()
-    state.cancel = nil
-  end
-end
-
 local function clear_completion()
-  state.completion = ""
-  state.last_status = "idle"
-  cancel_request()
+  session.clear_completion()
   renderer.clear()
 end
 

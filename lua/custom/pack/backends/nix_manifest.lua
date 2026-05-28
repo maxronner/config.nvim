@@ -1,4 +1,5 @@
 local M = {}
+local resolve = require("custom.pack.resolve")
 
 local function load_manifest(path)
   local ok, manifest = pcall(dofile, path)
@@ -20,18 +21,18 @@ function M.resolve(specs, opts)
 
   local manifest = load_manifest(manifest_path)
 
-  return vim.tbl_map(function(spec)
+  return resolve.map(specs, function(spec)
     local entry = manifest[spec.name]
     if not entry then
       error("No manifest entry for " .. spec.name)
     end
 
-    return vim.tbl_extend("force", spec, {
+    return {
       runtime_path = entry.runtime_path,
       rev = entry.rev or spec.rev,
       sha256 = entry.sha256 or spec.sha256,
-    })
-  end, specs)
+    }
+  end)
 end
 
 return M

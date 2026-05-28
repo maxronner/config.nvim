@@ -1,4 +1,5 @@
 local M = {}
+local resolve = require("custom.pack.resolve")
 
 function M.resolve(specs, opts)
   opts = opts or {}
@@ -23,11 +24,11 @@ function M.resolve(specs, opts)
     })
   end
 
-  return vim.tbl_map(function(spec)
-    return vim.tbl_extend("force", spec, {
+  return resolve.map(specs, function(spec)
+    return {
       runtime_path = vim.fs.joinpath(pack_root, spec.name),
-    })
-  end, specs)
+    }
+  end)
 end
 
 return M

@@ -16,6 +16,7 @@ local forbidden_specs = {
 
 local seen = {}
 local pack = require("custom.pack")
+local resolve = require("custom.pack.resolve")
 
 local function assert_same(value, expected, message)
   assert(vim.deep_equal(value, expected), message)
@@ -43,6 +44,21 @@ local fixture_specs = pack.normalize({
 })
 local normalized_before_resolve = vim.deepcopy(fixture_specs)
 assert(fixture_specs[1].runtime_path == nil, "normalized spec should not have runtime_path")
+local primary_fixture_spec = fixture_specs[#fixture_specs]
+
+local helper_resolved = resolve.enrich(primary_fixture_spec, {
+  runtime_path = "/tmp/example.nvim",
+})
+assert_same(fixture_specs, normalized_before_resolve, "resolve.enrich should not mutate normalized specs")
+assert(helper_resolved ~= primary_fixture_spec, "resolve.enrich should return a new resolved spec")
+assert(helper_resolved.runtime_path == "/tmp/example.nvim", "resolved spec should include runtime_path")
+
+ok, err = pcall(resolve.enrich, primary_fixture_spec, {})
+assert(not ok, "resolve.enrich should reject missing runtime_path")
+assert(
+  tostring(err):find("example.nvim: resolved pack spec missing runtime_path", 1, true),
+  "missing runtime_path error was not useful"
+)
 
 local pack_root = vim.fs.joinpath(vim.fn.stdpath("data"), "site", "pack", "core", "opt")
 for _, plugin in ipairs(fixture_specs) do

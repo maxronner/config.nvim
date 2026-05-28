@@ -14,6 +14,10 @@ function M.state()
   return state
 end
 
+function M.snapshot()
+  return vim.deepcopy(state)
+end
+
 function M.cancel()
   if state.cancel then
     state.cancel()

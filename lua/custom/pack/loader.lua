@@ -34,6 +34,23 @@ local function source_runtime_files(runtime_path)
   end
 end
 
+local function load_dependencies(plugin)
+  for _, dependency in ipairs(plugin.dependencies) do
+    if state.plugins[dependency] then
+      M.load(dependency)
+    end
+  end
+end
+
+local function add_runtime(plugin)
+  if plugin.runtime_path then
+    vim.opt.runtimepath:prepend(plugin.runtime_path)
+    source_runtime_files(plugin.runtime_path)
+  else
+    vim.cmd.packadd(plugin.name)
+  end
+end
+
 function M.load(name)
   if state.loaded[name] then
     return
@@ -49,19 +66,8 @@ function M.load(name)
 
   state.loading[name] = true
   local ok, err = xpcall(function()
-    for _, dependency in ipairs(plugin.dependencies) do
-      if state.plugins[dependency] then
-        M.load(dependency)
-      end
-    end
-
-    if plugin.runtime_path then
-      vim.opt.runtimepath:prepend(plugin.runtime_path)
-      source_runtime_files(plugin.runtime_path)
-    else
-      vim.cmd.packadd(plugin.name)
-    end
-
+    load_dependencies(plugin)
+    add_runtime(plugin)
     configure(plugin)
   end, debug.traceback)
   state.loading[name] = nil

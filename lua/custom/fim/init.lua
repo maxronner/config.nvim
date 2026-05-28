@@ -114,9 +114,7 @@ function M.show_pending_rest()
   local opts = config.options
   local next_ctx = context.collect(0, opts)
   session.next_request()
-  state.completion = rest
-  state.last_status = "partial accept"
-  state.last_error = nil
+  session.set_completion(rest, "partial accept")
   renderer.show(next_ctx, rest, opts)
 end
 
@@ -159,7 +157,7 @@ end
 function M.trigger(source)
   local opts = config.options
   if not opts.enabled then
-    state.last_status = "disabled"
+    session.set_status("disabled")
     if source == "manual" then
       vim.notify("FIM disabled", vim.log.levels.INFO, { title = "FIM" })
     end
@@ -169,8 +167,7 @@ function M.trigger(source)
   local blocked = safety.reason(0, nil, opts)
   if blocked then
     M.dismiss()
-    state.last_status = "blocked"
-    state.last_error = blocked
+    session.set_status("blocked", blocked)
     if source == "manual" then
       vim.notify("FIM blocked: " .. blocked, vim.log.levels.WARN, { title = "FIM" })
     end
@@ -179,7 +176,7 @@ function M.trigger(source)
 
   local ctx = context.collect(0, opts)
   if #ctx.prefix < opts.min_prefix_chars then
-    state.last_status = "waiting for more prefix"
+    session.set_status("waiting for more prefix")
     if source == "manual" then
       vim.notify(
         ("Need at least %d prefix chars"):format(opts.min_prefix_chars),
@@ -192,7 +189,7 @@ function M.trigger(source)
   local provider_opts = opts.provider or {}
   local api_key_env = provider_opts.api_key_env or "DEEPSEEK_API_KEY"
   if (provider_opts.name or "deepseek") == "deepseek" and (not vim.env[api_key_env] or vim.env[api_key_env] == "") then
-    state.last_status = "missing api key"
+    session.set_status("missing api key")
     if source == "manual" then
       vim.notify(("Missing %s"):format(api_key_env), vim.log.levels.WARN, { title = "FIM" })
     end
@@ -202,44 +199,33 @@ function M.trigger(source)
   M.dismiss()
 
   local request_id = session.next_request()
-  state.completion = ""
-  state.last_status = "requesting"
-  state.last_error = nil
+  session.set_completion("", "requesting")
 
-  state.cancel = providers.complete(ctx, opts, {
+  session.set_cancel(providers.complete(ctx, opts, {
     on_text = function(text)
       if stale(request_id, ctx) then
         M.dismiss()
         return
       end
 
-      state.completion = (state.completion .. text):sub(1, opts.max_completion_chars)
-      state.last_status = "streaming"
-      renderer.show(ctx, state.completion, opts)
+      renderer.show(ctx, session.append_completion(text, opts.max_completion_chars), opts)
     end,
     on_done = function()
       if stale(request_id, ctx) then
         M.dismiss()
       end
-      if state.completion == "" then
-        state.last_status = "empty response"
-      else
-        state.last_status = "done"
-      end
-      state.cancel = nil
+      session.finish_request()
     end,
     on_error = function(message)
       if stale(request_id, ctx) then
         return
       end
 
-      state.cancel = nil
-      state.last_status = "error"
-      state.last_error = message
+      session.fail_request(message)
       renderer.clear(ctx.bufnr)
       vim.notify(message, vim.log.levels.WARN, { title = "FIM" })
     end,
-  })
+  }))
 end
 
 function M.schedule()
@@ -250,7 +236,7 @@ function M.schedule()
 
   if safety.reason(0, nil, opts) then
     M.dismiss()
-    state.last_status = "blocked"
+    session.set_status("blocked")
     return
   end
 

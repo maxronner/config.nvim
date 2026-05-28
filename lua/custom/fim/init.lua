@@ -50,7 +50,7 @@ local function stale(request_id, ctx)
 end
 
 function M.dismiss()
-  state.request_id = state.request_id + 1
+  session.next_request()
   state.pending_rest = nil
   clear_completion()
 end
@@ -85,7 +85,7 @@ function M.accept_forward()
 
   local accepted = forward_segment(current.text)
   local rest = current.text:sub(#accepted + 1)
-  state.request_id = state.request_id + 1
+  session.next_request()
   clear_completion()
   state.pending_rest = rest ~= "" and rest or nil
   if state.pending_rest then
@@ -113,7 +113,7 @@ function M.show_pending_rest()
   state.pending_rest = nil
   local opts = config.options
   local next_ctx = context.collect(0, opts)
-  state.request_id = state.request_id + 1
+  session.next_request()
   state.completion = rest
   state.last_status = "partial accept"
   state.last_error = nil
@@ -201,8 +201,7 @@ function M.trigger(source)
 
   M.dismiss()
 
-  state.request_id = state.request_id + 1
-  local request_id = state.request_id
+  local request_id = session.next_request()
   state.completion = ""
   state.last_status = "requesting"
   state.last_error = nil

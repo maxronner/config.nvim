@@ -27,4 +27,9 @@ function M.clear_completion()
   M.cancel()
 end
 
+function M.next_request()
+  state.request_id = state.request_id + 1
+  return state.request_id
+end
+
 return M

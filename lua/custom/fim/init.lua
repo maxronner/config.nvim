@@ -3,18 +3,10 @@ local context = require("custom.fim.context")
 local providers = require("custom.fim.providers")
 local renderer = require("custom.fim.renderer")
 local safety = require("custom.fim.safety")
+local session = require("custom.fim.session")
 
 local M = {}
-
-local state = {
-  timer = nil,
-  request_id = 0,
-  cancel = nil,
-  completion = "",
-  last_status = "idle",
-  last_error = nil,
-  pending_rest = nil,
-}
+local state = session.state()
 
 local function in_insert_mode()
   return vim.api.nvim_get_mode().mode:sub(1, 1) == "i"

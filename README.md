@@ -51,6 +51,16 @@ scripts/nvim-store
 This requires `~/.dotfiles/result/home-files/.config/nvim/lua/custom/pack/manifest.lua`
 and validates plugin paths against `/nix/store/`.
 
+## Verification
+
+Run the focused smoke checks for this checkout:
+
+```sh
+scripts/nvim-pack-smoke
+scripts/nvim-fim-smoke
+scripts/nvim-local --headless -l .github/healthcheck.lua
+```
+
 ## Note
 
 Expect machine-specific assumptions, local preferences, and rough edges that make sense in a personal dotfiles repo.

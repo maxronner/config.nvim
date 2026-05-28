@@ -37,29 +37,22 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ runner.temp }}/nvim
-          key: nvim-${{ runner.os }}-${{ hashFiles('**/lazy-lock.json') }}
+            .local
+          key: nvim-${{ runner.os }}-${{ hashFiles('lua/custom/pack/specs.lua', 'lua/custom/plugins/*.lua') }}
           restore-keys: |
             nvim-${{ runner.os }}-
 
-      - name: Install plugins (fail on error)
-        env:
-          XDG_CONFIG_HOME: ${{ github.workspace }}
-          XDG_DATA_HOME: ${{ runner.temp }}/nvim/data
-          XDG_STATE_HOME: ${{ runner.temp }}/nvim/state
+      - name: Run pack smoke
         run: |
           set -euo pipefail
-          nvim --headless "+Lazy sync" "+qa"
+          scripts/nvim-pack-smoke
+
+      - name: Run FIM smoke
+        run: |
+          set -euo pipefail
+          scripts/nvim-fim-smoke
 
       - name: Run checkhealth
-        env:
-          XDG_CONFIG_HOME: ${{ github.workspace }}
-          XDG_DATA_HOME: ${{ runner.temp }}/nvim/data
-          XDG_STATE_HOME: ${{ runner.temp }}/nvim/state
         run: |
-          nvim --headless \
-          "+checkhealth nvim" \
-          "+checkhealth lazy" \
-          "+checkhealth vim.lsp" \
-          "+checkhealth vim.treesitter" \
-          "+qall"
+          set -euo pipefail
+          scripts/nvim-local --headless -l .github/healthcheck.lua

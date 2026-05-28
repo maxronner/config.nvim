@@ -158,6 +158,41 @@ local function assert_loader_validation(loader)
   assert(loader.counts().total == total_before_bad_setup, "missing dependency setup mutated loader state")
 end
 
+local function assert_loader_trigger_plan(loader)
+  local function key_action() end
+  local triggers = loader.trigger_plan({
+    name = "planned-plugin",
+    cmd = { "Planned" },
+    keys = {
+      "gp",
+      { "<leader>p", key_action, mode = { "n", "x" }, desc = "Planned key", silent = true },
+    },
+    event = { "BufReadPost" },
+  })
+
+  assert(#triggers == 4, "loader trigger plan should include commands, keys, and events")
+  assert(triggers[1].kind == "command", "first trigger should be command")
+  assert(triggers[1].plugin == "planned-plugin", "command trigger missing plugin name")
+  assert(triggers[1].command == "Planned", "command trigger missing command")
+
+  assert(triggers[2].kind == "key", "second trigger should be key")
+  assert(triggers[2].lhs == "gp", "string key trigger missing lhs")
+  assert_same(triggers[2].modes, { "n" }, "string key trigger should default to normal mode")
+  assert(triggers[2].action == nil, "string key trigger should replay lhs")
+  assert(triggers[2].map_opts.noremap == true, "key trigger should default to noremap")
+
+  assert(triggers[3].kind == "key", "third trigger should be key")
+  assert(triggers[3].lhs == "<leader>p", "table key trigger missing lhs")
+  assert_same(triggers[3].modes, { "n", "x" }, "table key trigger should preserve modes")
+  assert(triggers[3].action == key_action, "table key trigger missing action")
+  assert(triggers[3].map_opts.desc == "Planned key", "table key trigger missing desc")
+  assert(triggers[3].map_opts.silent == true, "table key trigger missing silent")
+  assert(triggers[3].map_opts.noremap == true, "table key trigger should default to noremap")
+
+  assert(triggers[4].kind == "event", "fourth trigger should be event")
+  assert(triggers[4].event == "BufReadPost", "event trigger missing event")
+end
+
 local function assert_loader_runtime(loader)
   assert(not loader.is_loaded("SchemaStore.nvim"), "SchemaStore.nvim loaded before smoke request")
 
@@ -224,5 +259,6 @@ end
 
 local loader = require("custom.pack.loader")
 assert_loader_validation(loader)
+assert_loader_trigger_plan(loader)
 assert_loader_runtime(loader)
 assert_loaded_config()

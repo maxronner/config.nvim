@@ -157,7 +157,7 @@ local function invoke_lazy_key(action, lhs)
   return vim.api.nvim_feedkeys(vim.keycode(action or lhs), "m", false)
 end
 
-local function setup_key(plugin, key)
+local function key_trigger(plugin, key)
   local lhs = key
   local modes = { "n" }
   local key_opts = {}
@@ -176,6 +176,21 @@ local function setup_key(plugin, key)
     noremap = key_opts.remap ~= true,
   }
 
+  return {
+    kind = "key",
+    plugin = plugin.name,
+    lhs = lhs,
+    modes = modes,
+    action = action,
+    map_opts = map_opts,
+  }
+end
+
+local function setup_key(plugin, trigger)
+  local lhs = trigger.lhs
+  local modes = trigger.modes
+  local action = trigger.action
+
   vim.keymap.set(modes, lhs, function()
     M.load(plugin.name)
 
@@ -184,7 +199,7 @@ local function setup_key(plugin, key)
     end
 
     return invoke_lazy_key(action, lhs)
-  end, map_opts)
+  end, trigger.map_opts)
 end
 
 local function setup_event(plugin, event)
@@ -200,17 +215,41 @@ local function setup_event(plugin, event)
   vim.api.nvim_create_autocmd(autocmd, opts)
 end
 
-local function setup_triggers(plugin)
+function M.trigger_plan(plugin)
+  local triggers = {}
+
   for _, command in ipairs(spec.as_list(plugin.cmd)) do
-    setup_cmd(plugin, command)
+    table.insert(triggers, {
+      kind = "command",
+      plugin = plugin.name,
+      command = command,
+    })
   end
 
   for _, key in ipairs(spec.as_list(plugin.keys)) do
-    setup_key(plugin, key)
+    table.insert(triggers, key_trigger(plugin, key))
   end
 
   for _, event in ipairs(spec.as_list(plugin.event)) do
-    setup_event(plugin, event)
+    table.insert(triggers, {
+      kind = "event",
+      plugin = plugin.name,
+      event = event,
+    })
+  end
+
+  return triggers
+end
+
+local function setup_triggers(plugin)
+  for _, trigger in ipairs(M.trigger_plan(plugin)) do
+    if trigger.kind == "command" then
+      setup_cmd(plugin, trigger.command)
+    elseif trigger.kind == "key" then
+      setup_key(plugin, trigger)
+    elseif trigger.kind == "event" then
+      setup_event(plugin, trigger.event)
+    end
   end
 end
 

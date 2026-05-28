@@ -192,6 +192,11 @@ function M.apply()
   local ACCENT_ALT_BRIGHT = 13
   local TEXT_BRIGHT = 15
 
+  local DIFF_ADD_BG = rgb(0, 1, 0)
+  local DIFF_DELETE_BG = rgb(1, 0, 0)
+  local DIFF_CHANGE_BG = rgb(1, 1, 0)
+  local DIFF_TEXT_BG = rgb(0, 0, 2)
+
   create_theme({
     -- ── Primitives ────────────────────────────────────────────────────────
     Constant = { fg = WARNING },
@@ -390,10 +395,10 @@ function M.apply()
     Folded = { fg = MUTED, bg = grey(2) },
 
     -- ── Diff ──────────────────────────────────────────────────────────────
-    DiffAdd = { bg = rgb(0, 1, 0), fg = SUCCESS_BRIGHT },
-    DiffDelete = { bg = rgb(1, 0, 0), fg = DANGER_BRIGHT },
-    DiffChange = { bg = rgb(1, 1, 0), fg = WARNING },
-    DiffText = { bg = rgb(0, 0, 2), bold = true },
+    DiffAdd = { bg = DIFF_ADD_BG, fg = SUCCESS_BRIGHT },
+    DiffDelete = { bg = DIFF_DELETE_BG, fg = DANGER_BRIGHT },
+    DiffChange = { bg = DIFF_CHANGE_BG, fg = WARNING },
+    DiffText = { bg = DIFF_TEXT_BG, bold = true },
 
     -- ── Treesitter ────────────────────────────────────────────────────────
     ["@variable"] = "Identifier",

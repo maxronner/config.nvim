@@ -35,8 +35,9 @@ local subheaders = {
 }
 
 local function get_header()
+  local ascii = require("custom.ascii")
   local subheader = subheaders[math.random(#subheaders)]
-  local header_tbl = require("custom.ascii").get_random_global() or { "lol it broke" }
+  local header_tbl = ascii.get_random_global() or { "lol it broke" }
   return table.concat(header_tbl, "\n") .. "\n" .. subheader
 end
 

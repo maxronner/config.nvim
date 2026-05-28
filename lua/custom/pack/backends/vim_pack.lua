@@ -7,7 +7,6 @@ function M.resolve(specs, opts)
   local all_installed = true
   local pack_specs = vim.tbl_map(function(spec)
     local runtime_path = vim.fs.joinpath(pack_root, spec.name)
-    spec.runtime_path = runtime_path
     all_installed = all_installed and vim.uv.fs_stat(runtime_path) ~= nil
 
     return {
@@ -24,7 +23,11 @@ function M.resolve(specs, opts)
     })
   end
 
-  return specs
+  return vim.tbl_map(function(spec)
+    return vim.tbl_extend("force", spec, {
+      runtime_path = vim.fs.joinpath(pack_root, spec.name),
+    })
+  end, specs)
 end
 
 return M

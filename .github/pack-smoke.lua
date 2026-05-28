@@ -17,6 +17,10 @@ local forbidden_specs = {
 local seen = {}
 local pack = require("custom.pack")
 
+local function assert_same(value, expected, message)
+  assert(vim.deep_equal(value, expected), message)
+end
+
 local ok, err = pcall(pack.import, "custom.plugins.mini", {
   include = {
     "mini.statsline",
@@ -27,6 +31,55 @@ assert(
   tostring(err):find("missing included pack specs: mini.statsline", 1, true),
   "missing include error was not useful"
 )
+
+local fixture_specs = pack.normalize({
+  {
+    "owner/example.nvim",
+    version = "v1",
+    dependencies = {
+      "owner/example-dependency.nvim",
+    },
+  },
+})
+local normalized_before_resolve = vim.deepcopy(fixture_specs)
+assert(fixture_specs[1].runtime_path == nil, "normalized spec should not have runtime_path")
+
+local pack_root = vim.fs.joinpath(vim.fn.stdpath("data"), "site", "pack", "core", "opt")
+for _, plugin in ipairs(fixture_specs) do
+  vim.fn.mkdir(vim.fs.joinpath(pack_root, plugin.name), "p")
+end
+
+local vim_pack_resolved = require("custom.pack.backends.vim_pack").resolve(fixture_specs)
+assert_same(fixture_specs, normalized_before_resolve, "vim_pack backend should not mutate normalized specs")
+assert(vim_pack_resolved[1] ~= fixture_specs[1], "vim_pack backend should return new resolved specs")
+assert(vim_pack_resolved[1].runtime_path, "vim_pack resolved spec should have runtime_path")
+assert(fixture_specs[1].runtime_path == nil, "normalized spec should remain unresolved after vim_pack resolve")
+
+local manifest_path = vim.fs.joinpath(vim.fn.stdpath("cache"), "pack-smoke-manifest.lua")
+vim.fn.mkdir(vim.fn.fnamemodify(manifest_path, ":h"), "p")
+local manifest_file = assert(io.open(manifest_path, "w"))
+manifest_file:write("return {\n")
+for _, plugin in ipairs(fixture_specs) do
+  manifest_file:write(
+    ("  [%q] = { runtime_path = %q, rev = %q, sha256 = %q },\n"):format(
+      plugin.name,
+      "/nix/store/example-" .. plugin.name,
+      "manifest-rev",
+      "manifest-sha256"
+    )
+  )
+end
+manifest_file:write("}\n")
+manifest_file:close()
+
+local nix_resolved = require("custom.pack.backends.nix_manifest").resolve(fixture_specs, {
+  manifest = manifest_path,
+})
+assert_same(fixture_specs, normalized_before_resolve, "nix_manifest backend should not mutate normalized specs")
+assert(nix_resolved[1] ~= fixture_specs[1], "nix_manifest backend should return new resolved specs")
+assert(nix_resolved[1].runtime_path, "nix_manifest resolved spec should have runtime_path")
+assert(nix_resolved[1].rev == "manifest-rev", "nix_manifest resolved spec should prefer manifest rev")
+assert(nix_resolved[1].sha256 == "manifest-sha256", "nix_manifest resolved spec should include manifest sha256")
 
 for _, plugin in ipairs(pack.normalize(require("custom.pack.specs").get())) do
   seen[plugin.name] = true

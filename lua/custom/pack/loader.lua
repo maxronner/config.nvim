@@ -269,7 +269,7 @@ local function validate_dependencies(resolved, plugins)
   end
 end
 
-function M.setup(resolved)
+function M.build_plugin_index(resolved)
   local plugins = {}
 
   for _, plugin in ipairs(resolved) do
@@ -280,7 +280,11 @@ function M.setup(resolved)
   end
 
   validate_dependencies(resolved, plugins)
+  return plugins
+end
 
+function M.setup(resolved)
+  local plugins = M.build_plugin_index(resolved)
   state.plugins = plugins
   state.loaded = {}
   state.loading = {}

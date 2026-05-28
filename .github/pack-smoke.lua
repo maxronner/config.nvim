@@ -125,7 +125,22 @@ end
 
 local function assert_loader_validation(loader)
   local total_before_bad_setup = loader.counts().total
-  local ok, err = pcall(loader.setup, {
+  local ok, err = pcall(loader.build_plugin_index, {
+    {
+      name = "duplicate-plugin",
+      dependencies = {},
+      lazy = true,
+    },
+    {
+      name = "duplicate-plugin",
+      dependencies = {},
+      lazy = true,
+    },
+  })
+  assert(not ok, "loader.build_plugin_index should reject duplicate plugins")
+  assert(tostring(err):find("duplicate pack plugin: duplicate-plugin", 1, true), "duplicate plugin error was not useful")
+
+  ok, err = pcall(loader.setup, {
     {
       name = "duplicate-plugin",
       dependencies = {},
@@ -138,8 +153,22 @@ local function assert_loader_validation(loader)
     },
   })
   assert(not ok, "loader.setup should reject duplicate plugins")
-  assert(tostring(err):find("duplicate pack plugin: duplicate-plugin", 1, true), "duplicate plugin error was not useful")
   assert(loader.counts().total == total_before_bad_setup, "duplicate setup mutated loader state")
+
+  ok, err = pcall(loader.build_plugin_index, {
+    {
+      name = "broken-plugin",
+      dependencies = {
+        "missing-plugin",
+      },
+      lazy = true,
+    },
+  })
+  assert(not ok, "loader.build_plugin_index should reject unknown dependencies")
+  assert(
+    tostring(err):find("broken-plugin: unknown pack dependency missing-plugin", 1, true),
+    "unknown dependency error was not useful"
+  )
 
   ok, err = pcall(loader.setup, {
     {
@@ -151,11 +180,22 @@ local function assert_loader_validation(loader)
     },
   })
   assert(not ok, "loader.setup should reject unknown dependencies")
-  assert(
-    tostring(err):find("broken-plugin: unknown pack dependency missing-plugin", 1, true),
-    "unknown dependency error was not useful"
-  )
   assert(loader.counts().total == total_before_bad_setup, "missing dependency setup mutated loader state")
+
+  local plugins = loader.build_plugin_index({
+    {
+      name = "indexed-dependency",
+      dependencies = {},
+      lazy = true,
+    },
+    {
+      name = "indexed-plugin",
+      dependencies = { "indexed-dependency" },
+      lazy = true,
+    },
+  })
+  assert(plugins["indexed-plugin"].name == "indexed-plugin", "plugin index missing plugin")
+  assert(plugins["indexed-dependency"].name == "indexed-dependency", "plugin index missing dependency")
 end
 
 local function assert_loader_trigger_plan(loader)

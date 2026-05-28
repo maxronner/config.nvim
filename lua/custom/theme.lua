@@ -417,7 +417,7 @@ function M.apply()
     -- ── Diff ──────────────────────────────────────────────────────────────
     DiffAdd = { bg = rgb(0, 1, 0), fg = C10 },
     DiffDelete = { bg = rgb(1, 0, 0), fg = C9 },
-    DiffChange = { bg = rgb(0, 0, 1) },
+    DiffChange = { bg = rgb(1, 1, 0), fg = C3 },
     DiffText = { bg = rgb(0, 0, 2), bold = true },
 
     -- ── Treesitter ────────────────────────────────────────────────────────

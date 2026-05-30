@@ -198,11 +198,11 @@ local function setup_key(plugin, trigger)
   local action = trigger.action
 
   vim.keymap.set(modes, lhs, function()
-    M.load(plugin.name)
-
     if lazy_key_is_trigger(action) then
       pcall(vim.keymap.del, modes, lhs)
     end
+
+    M.load(plugin.name)
 
     return invoke_lazy_key(action, lhs)
   end, trigger.map_opts)

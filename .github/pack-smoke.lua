@@ -275,6 +275,24 @@ local function assert_loader_runtime(loader)
   )
 end
 
+local function assert_trigger_key_replays_after_plugin_load(loader)
+  assert(not loader.is_loaded("mini.move"), "mini.move loaded before lazy key smoke request")
+
+  vim.cmd("enew!")
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "a", "b", "c" })
+  vim.bo.modified = false
+  vim.cmd("normal! gg")
+
+  vim.api.nvim_feedkeys(vim.keycode("<M-j>"), "x", false)
+
+  assert(loader.is_loaded("mini.move"), "mini.move did not load from <M-j>")
+  assert_same(
+    vim.api.nvim_buf_get_lines(0, 0, -1, false),
+    { "b", "a", "c" },
+    "lazy trigger key should replay into plugin mapping after load"
+  )
+end
+
 local function assert_loaded_config()
   local lua_ls = vim.lsp.config.lua_ls
   assert(lua_ls, "lua_ls config missing")
@@ -308,4 +326,5 @@ local loader = require("custom.pack.loader")
 assert_loader_validation(loader)
 assert_loader_trigger_plan(loader)
 assert_loader_runtime(loader)
+assert_trigger_key_replays_after_plugin_load(loader)
 assert_loaded_config()

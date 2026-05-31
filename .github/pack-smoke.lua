@@ -293,6 +293,113 @@ local function assert_trigger_key_replays_after_plugin_load(loader)
   )
 end
 
+local function fake_runtime_path(name)
+  local path = vim.fn.tempname() .. "-" .. name
+  vim.fn.mkdir(path, "p")
+  return path
+end
+
+local function assert_loader_trigger_contracts(loader)
+  vim.cmd("enew!")
+  vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nx", false)
+
+  vim.g.pack_smoke_key_hits = 0
+  vim.g.pack_smoke_action_hits = 0
+  vim.g.pack_smoke_cmd_count = 0
+  vim.g.pack_smoke_cmd_args = nil
+  vim.g.pack_smoke_cmd_bang = nil
+  _G.pack_smoke_load_order = {}
+
+  loader.setup({
+    {
+      name = "smoke-key-plugin",
+      runtime_path = fake_runtime_path("smoke-key-plugin"),
+      dependencies = {},
+      lazy = true,
+      keys = {
+        "Q",
+        {
+          "Y",
+          function()
+            vim.g.pack_smoke_action_hits = vim.g.pack_smoke_action_hits + 1
+          end,
+        },
+      },
+      config = function()
+        vim.keymap.set("n", "Q", function()
+          vim.g.pack_smoke_key_hits = vim.g.pack_smoke_key_hits + 1
+        end)
+      end,
+    },
+    {
+      name = "smoke-command-plugin",
+      runtime_path = fake_runtime_path("smoke-command-plugin"),
+      dependencies = {},
+      lazy = true,
+      cmd = "SmokeReplay",
+      config = function()
+        vim.api.nvim_create_user_command("SmokeReplay", function(ctx)
+          vim.g.pack_smoke_cmd_count = vim.g.pack_smoke_cmd_count + 1
+          vim.g.pack_smoke_cmd_args = ctx.args
+          vim.g.pack_smoke_cmd_bang = ctx.bang
+        end, {
+          bang = true,
+          nargs = "*",
+        })
+      end,
+    },
+    {
+      name = "smoke-dependency",
+      runtime_path = fake_runtime_path("smoke-dependency"),
+      dependencies = {},
+      lazy = true,
+      config = function()
+        table.insert(_G.pack_smoke_load_order, "dependency")
+      end,
+    },
+    {
+      name = "smoke-dependent",
+      runtime_path = fake_runtime_path("smoke-dependent"),
+      dependencies = { "smoke-dependency" },
+      lazy = true,
+      keys = { "U" },
+      config = function()
+        table.insert(_G.pack_smoke_load_order, "dependent")
+        vim.keymap.set("n", "U", function() end)
+      end,
+    },
+  })
+
+  vim.api.nvim_feedkeys("Q", "x", false)
+  assert(loader.is_loaded("smoke-key-plugin"), "trigger-only key did not load plugin")
+  assert(vim.g.pack_smoke_key_hits == 1, "trigger-only key did not replay into plugin mapping")
+
+  vim.api.nvim_feedkeys("Q", "x", false)
+  assert(vim.g.pack_smoke_key_hits == 2, "plugin mapping did not survive trigger disarm")
+
+  vim.api.nvim_feedkeys("Y", "x", false)
+  vim.api.nvim_feedkeys("Y", "x", false)
+  assert(vim.g.pack_smoke_action_hits == 2, "explicit key action should stay callable after lazy load")
+
+  vim.cmd("SmokeReplay! first")
+  assert(loader.is_loaded("smoke-command-plugin"), "command trigger did not load plugin")
+  assert(vim.g.pack_smoke_cmd_count == 1, "command trigger did not dispatch to plugin command")
+  assert(vim.g.pack_smoke_cmd_args == "first", "command trigger did not forward args")
+  assert(vim.g.pack_smoke_cmd_bang == true, "command trigger did not forward bang")
+
+  vim.cmd("SmokeReplay second")
+  assert(vim.g.pack_smoke_cmd_count == 2, "plugin command did not survive trigger disarm")
+  assert(vim.g.pack_smoke_cmd_args == "second", "plugin command did not receive later args")
+  assert(vim.g.pack_smoke_cmd_bang == false, "plugin command did not receive later bang state")
+
+  vim.api.nvim_feedkeys("U", "x", false)
+  assert_same(
+    _G.pack_smoke_load_order,
+    { "dependency", "dependent" },
+    "dependencies should load before dependent plugin config"
+  )
+end
+
 local function assert_loaded_config()
   local lua_ls = vim.lsp.config.lua_ls
   assert(lua_ls, "lua_ls config missing")
@@ -328,3 +435,4 @@ assert_loader_trigger_plan(loader)
 assert_loader_runtime(loader)
 assert_trigger_key_replays_after_plugin_load(loader)
 assert_loaded_config()
+assert_loader_trigger_contracts(loader)

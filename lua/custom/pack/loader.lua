@@ -129,22 +129,6 @@ function M.status()
   return rows
 end
 
-local function setup_cmd(plugin, command)
-  vim.api.nvim_create_user_command(command, function(ctx)
-    pcall(vim.api.nvim_del_user_command, command)
-    M.load(plugin.name)
-
-    local args = ctx.args ~= "" and (" " .. ctx.args) or ""
-    local mods = ctx.mods ~= "" and (ctx.mods .. " ") or ""
-    vim.cmd(mods .. command .. args)
-  end, {
-    bang = true,
-    bar = true,
-    complete = "file",
-    nargs = "*",
-  })
-end
-
 local function lazy_key_action(key)
   if type(key) ~= "table" then
     return nil
@@ -156,11 +140,51 @@ local function lazy_key_is_trigger(action)
   return action == nil
 end
 
-local function invoke_lazy_key(action, lhs)
+local function disarm_command_trigger(command)
+  pcall(vim.api.nvim_del_user_command, command)
+end
+
+local function dispatch_command_trigger(command, ctx)
+  local args = ctx.args ~= "" and (" " .. ctx.args) or ""
+  local mods = ctx.mods ~= "" and (ctx.mods .. " ") or ""
+  local bang = ctx.bang and "!" or ""
+  vim.cmd(mods .. command .. bang .. args)
+end
+
+local function setup_cmd(plugin, command)
+  vim.api.nvim_create_user_command(command, function(ctx)
+    disarm_command_trigger(command)
+    M.load(plugin.name)
+    dispatch_command_trigger(command, ctx)
+  end, {
+    bang = true,
+    bar = true,
+    complete = "file",
+    nargs = "*",
+  })
+end
+
+local function disarm_key_trigger(trigger)
+  pcall(vim.keymap.del, trigger.modes, trigger.lhs)
+end
+
+local function dispatch_key_trigger(action, lhs)
   if type(action) == "function" then
     return action()
   end
   return vim.api.nvim_feedkeys(vim.keycode(action or lhs), "m", false)
+end
+
+local function run_key_trigger(plugin, trigger)
+  local action = trigger.action
+
+  if lazy_key_is_trigger(action) then
+    disarm_key_trigger(trigger)
+  end
+
+  M.load(plugin.name)
+
+  return dispatch_key_trigger(action, trigger.lhs)
 end
 
 local function key_trigger(plugin, key)
@@ -193,18 +217,8 @@ local function key_trigger(plugin, key)
 end
 
 local function setup_key(plugin, trigger)
-  local lhs = trigger.lhs
-  local modes = trigger.modes
-  local action = trigger.action
-
-  vim.keymap.set(modes, lhs, function()
-    if lazy_key_is_trigger(action) then
-      pcall(vim.keymap.del, modes, lhs)
-    end
-
-    M.load(plugin.name)
-
-    return invoke_lazy_key(action, lhs)
+  vim.keymap.set(trigger.modes, trigger.lhs, function()
+    return run_key_trigger(plugin, trigger)
   end, trigger.map_opts)
 end
 

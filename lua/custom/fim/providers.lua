@@ -20,6 +20,25 @@ local function parse_chunk(decoded)
   return choice.text or (choice.delta and choice.delta.content)
 end
 
+local function parse_completion(decoded)
+  if type(decoded) ~= "table" or type(decoded.choices) ~= "table" then
+    return nil
+  end
+
+  local texts = {}
+  for _, choice in ipairs(decoded.choices) do
+    if type(choice) == "table" and type(choice.text) == "string" and choice.text ~= "" then
+      table.insert(texts, choice.text)
+    end
+  end
+
+  if #texts == 0 then
+    return nil
+  end
+
+  return table.concat(texts, "\n")
+end
+
 local function stream_sse(data, carry, on_text)
   carry = carry .. (data or "")
 
@@ -47,6 +66,50 @@ local function stream_sse(data, carry, on_text)
   return carry
 end
 
+local function sse_payloads(data)
+  local payloads = {}
+
+  for line in (data or ""):gmatch("[^\r\n]+") do
+    line = vim.trim(line)
+    if line:sub(1, 5) == "data:" then
+      local payload = vim.trim(line:sub(6))
+      if payload ~= "" and payload ~= "[DONE]" then
+        table.insert(payloads, payload)
+      end
+    elseif line ~= "" and line:sub(1, 1) ~= ":" then
+      table.insert(payloads, line)
+    end
+  end
+
+  return payloads
+end
+
+local function response_error_message(stdout, stderr, result_code, timeout)
+  local message = vim.trim(table.concat(stderr))
+  local payloads = sse_payloads(table.concat(stdout))
+
+  for _, payload in ipairs(payloads) do
+    local decoded = decode_json(payload)
+    if decoded and decoded.error then
+      return decoded.error.message or decoded.error.type or payload
+    end
+  end
+
+  if message ~= "" then
+    return message
+  end
+
+  if result_code == 28 then
+    return ("request timed out after %ds waiting for DeepSeek FIM response"):format(timeout)
+  end
+
+  if #payloads > 0 then
+    return table.concat(payloads, "\n")
+  end
+
+  return "curl exited " .. result_code
+end
+
 function M.deepseek(ctx, provider_opts, callbacks)
   local api_key = vim.env[provider_opts.api_key_env or "DEEPSEEK_API_KEY"]
   if not api_key or api_key == "" then
@@ -54,24 +117,26 @@ function M.deepseek(ctx, provider_opts, callbacks)
     return function() end
   end
 
+  local stream = provider_opts.stream == true
   local body = vim.json.encode({
     model = provider_opts.model or "deepseek-v4-pro",
     prompt = ctx.prefix,
     suffix = ctx.suffix ~= "" and ctx.suffix or nil,
     max_tokens = provider_opts.max_tokens or 96,
     temperature = provider_opts.temperature or 0,
-    stream = true,
+    stream = stream,
   })
 
   local carry = ""
   local closed = false
+  local timeout = provider_opts.timeout or 20
   local cmd = {
     "curl",
     "-sS",
     "-N",
     "--fail-with-body",
     "--max-time",
-    tostring(provider_opts.timeout or 20),
+    tostring(timeout),
     "-H",
     "Content-Type: application/json",
     "-H",
@@ -91,6 +156,9 @@ function M.deepseek(ctx, provider_opts, callbacks)
       end
 
       table.insert(stdout, data)
+      if not stream then
+        return
+      end
 
       vim.schedule(function()
         if closed then
@@ -105,11 +173,6 @@ function M.deepseek(ctx, provider_opts, callbacks)
       end
 
       table.insert(stderr, data)
-      vim.schedule(function()
-        if not closed then
-          callbacks.on_error(vim.trim(data))
-        end
-      end)
     end,
   }, function(result)
     vim.schedule(function()
@@ -118,22 +181,16 @@ function M.deepseek(ctx, provider_opts, callbacks)
       end
 
       if result.code == 0 then
-        callbacks.on_done()
-      else
-        local body = vim.trim(table.concat(stdout))
-        local message = vim.trim(table.concat(stderr))
-        if body ~= "" then
-          local decoded = decode_json(body)
-          if decoded and decoded.error then
-            message = decoded.error.message or decoded.error.type or body
-          else
-            message = body
+        if not stream then
+          local decoded = decode_json(table.concat(stdout))
+          local text = parse_completion(decoded)
+          if text and text ~= "" then
+            callbacks.on_text(text)
           end
         end
-
-        callbacks.on_error(
-          ("DeepSeek FIM failed: %s"):format(message ~= "" and message or ("curl exited " .. result.code))
-        )
+        callbacks.on_done()
+      else
+        callbacks.on_error(("DeepSeek FIM failed: %s"):format(response_error_message(stdout, stderr, result.code, timeout)))
       end
     end)
   end)
@@ -155,5 +212,8 @@ function M.complete(ctx, opts, callbacks)
   callbacks.on_error("Unknown FIM provider: " .. provider)
   return function() end
 end
+
+M._response_error_message = response_error_message
+M._parse_completion = parse_completion
 
 return M

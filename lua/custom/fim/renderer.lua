@@ -33,7 +33,7 @@ function M.show(ctx, text, opts)
 
   vim.api.nvim_buf_set_extmark(ctx.bufnr, ns, ctx.row, ctx.col, {
     virt_text = first ~= "" and { { first, opts.highlight or "Comment" } } or nil,
-    virt_text_pos = "overlay",
+    virt_text_win_col = vim.fn.virtcol(".") - 1,
     virt_lines = virt_lines(parts, opts.highlight or "Comment"),
     hl_mode = "combine",
     right_gravity = false,
@@ -60,6 +60,10 @@ function M.current()
   end
 
   return nil
+end
+
+function M.namespace()
+  return ns
 end
 
 return M

@@ -40,16 +40,23 @@ end
 local function stale(request_id, ctx)
   local cursor = vim.api.nvim_win_get_cursor(0)
   local cursor_row = math.max(cursor[1], 1) - 1
+  local cursor_col = cursor[2]
+  local line = vim.api.nvim_buf_is_valid(ctx.bufnr)
+      and (vim.api.nvim_buf_get_lines(ctx.bufnr, ctx.row, ctx.row + 1, false)[1] or "")
+    or ""
+  local cursor_at_ctx = cursor_col == ctx.col or (ctx.col >= #line and ctx.col > 0 and cursor_col == ctx.col - 1)
+
   return request_id ~= session.request_id()
     or not vim.api.nvim_buf_is_valid(ctx.bufnr)
     or vim.api.nvim_buf_get_changedtick(ctx.bufnr) ~= ctx.changedtick
     or ctx.bufnr ~= vim.api.nvim_get_current_buf()
     or ctx.row ~= cursor_row
-    or ctx.col ~= cursor[2]
+    or not cursor_at_ctx
 end
 
 function M.dismiss()
   session.next_request()
+  session.stop_timer()
   session.clear_pending_rest()
   clear_completion()
 end
@@ -133,6 +140,11 @@ function M.status()
   local api_key_state = vim.env[api_key_env] and vim.env[api_key_env] ~= "" and "set" or "missing"
   local current = renderer.current()
   local blocked = safety.reason(0, nil, opts)
+  local snapshot = session.snapshot()
+  local completion_preview = snapshot.completion:gsub("\n", "\\n")
+  if #completion_preview > 80 then
+    completion_preview = completion_preview:sub(1, 80) .. "..."
+  end
 
   local lines = {
     "enabled: " .. tostring(opts.enabled),
@@ -140,6 +152,10 @@ function M.status()
     "api key: " .. api_key_env .. " " .. api_key_state,
     "blocked: " .. (blocked or "no"),
     "status: " .. session.last_status(),
+    "last non-idle: " .. (session.last_non_idle_status() or "none"),
+    "request id: " .. tostring(snapshot.request_id),
+    "completion chars: " .. tostring(#snapshot.completion),
+    "completion preview: " .. vim.inspect(completion_preview),
     "ghost text: " .. (current and "visible" or "none"),
     "pending rest: " .. (session.has_pending_rest() and "yes" or "no"),
   }
@@ -237,11 +253,21 @@ function M.schedule()
     return
   end
 
-  if session.has_pending_rest() or renderer.current() then
+  if session.has_pending_rest() then
     return
   end
 
+  local current = renderer.current()
+  if current then
+    if stale(session.request_id(), current.ctx) then
+      M.dismiss()
+    else
+      return
+    end
+  end
+
   session.stop_timer()
+  session.set_status("scheduled")
 
   local timer
   timer = vim.defer_fn(function()
@@ -308,6 +334,49 @@ function M.setup(opts)
   vim.api.nvim_create_user_command("FimStatus", function()
     M.status()
   end, { desc = "Show FIM status" })
+
+  vim.api.nvim_create_user_command("FimProviderSmoke", function()
+    local done = false
+    local chunks = {}
+    local cancel
+    local timer
+
+    local function finish(message, level)
+      if done then
+        return
+      end
+
+      done = true
+      if timer then
+        timer:stop()
+        timer:close()
+      end
+      if cancel then
+        cancel()
+      end
+      vim.notify(message, level or vim.log.levels.INFO, { title = "FIM provider smoke" })
+    end
+
+    cancel = providers.complete({
+      prefix = "def fib(a):",
+      suffix = "    return fib(a-1) + fib(a-2)",
+    }, opts, {
+      on_text = function(text)
+        table.insert(chunks, text)
+      end,
+      on_done = function()
+        local text = table.concat(chunks)
+        finish(("done; chars=%d; text=%s"):format(#text, vim.inspect(text)))
+      end,
+      on_error = function(message)
+        finish(message, vim.log.levels.WARN)
+      end,
+    })
+
+    timer = vim.defer_fn(function()
+      finish("timed out waiting for provider smoke response", vim.log.levels.WARN)
+    end, ((opts.provider or {}).timeout or 20) * 1000 + 1000)
+  end, { desc = "Run a direct FIM provider smoke request" })
 
   vim.keymap.set("i", opts.dismiss_key, function()
     M.dismiss()

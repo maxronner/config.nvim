@@ -51,6 +51,7 @@ M.defaults = {
     model = "deepseek-v4-pro",
     max_tokens = 96,
     temperature = 0.0,
+    stream = false,
     timeout = 20,
   },
 }

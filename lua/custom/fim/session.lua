@@ -6,16 +6,33 @@ local state = {
   cancel = nil,
   completion = "",
   last_status = "idle",
+  last_non_idle_status = nil,
   last_error = nil,
   pending_rest = nil,
 }
+
+local function set_status(status)
+  state.last_status = status
+  if status ~= "idle" then
+    state.last_non_idle_status = status
+  end
+end
 
 function M.state()
   return state
 end
 
 function M.snapshot()
-  return vim.deepcopy(state)
+  return {
+    timer = state.timer,
+    request_id = state.request_id,
+    cancel = state.cancel,
+    completion = state.completion,
+    last_status = state.last_status,
+    last_non_idle_status = state.last_non_idle_status,
+    last_error = state.last_error,
+    pending_rest = state.pending_rest,
+  }
 end
 
 function M.cancel()
@@ -27,7 +44,7 @@ end
 
 function M.clear_completion()
   state.completion = ""
-  state.last_status = "idle"
+  set_status("idle")
   M.cancel()
 end
 
@@ -44,12 +61,16 @@ function M.last_status()
   return state.last_status
 end
 
+function M.last_non_idle_status()
+  return state.last_non_idle_status
+end
+
 function M.last_error()
   return state.last_error
 end
 
 function M.set_status(status, last_error)
-  state.last_status = status
+  set_status(status)
   if last_error ~= nil then
     state.last_error = last_error
   end
@@ -59,14 +80,14 @@ function M.set_completion(text, status)
   state.completion = text
   state.last_error = nil
   if status then
-    state.last_status = status
+    set_status(status)
   end
   return state.completion
 end
 
 function M.append_completion(text, max_chars)
   state.completion = (state.completion .. text):sub(1, max_chars)
-  state.last_status = "streaming"
+  set_status("streaming")
   return state.completion
 end
 
@@ -75,13 +96,13 @@ function M.set_cancel(cancel)
 end
 
 function M.finish_request()
-  state.last_status = state.completion == "" and "empty response" or "done"
+  set_status(state.completion == "" and "empty response" or "done")
   state.cancel = nil
 end
 
 function M.fail_request(message)
   state.cancel = nil
-  state.last_status = "error"
+  set_status("error")
   state.last_error = message
 end
 

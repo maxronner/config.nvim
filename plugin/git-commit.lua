@@ -4,7 +4,7 @@
 local backend = "gemini"
 
 local function run_llm_prompt(prompt, provider, cb)
-  vim.system({ "llm-prompt", "--provider", provider }, {
+  vim.system({ "llm-message", "--provider", provider }, {
     text = true,
     stdin = prompt,
   }, function(obj)

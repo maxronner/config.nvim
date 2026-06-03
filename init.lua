@@ -1,6 +1,5 @@
 vim.g.custom_start_time = vim.uv.hrtime()
 vim.g.mapleader = " "
-vim.go.loadplugins = false
 
 local config_root = vim.env.NVIM_PACK_CONFIG_ROOT or vim.fn.stdpath("config")
 vim.opt.runtimepath:prepend(config_root)

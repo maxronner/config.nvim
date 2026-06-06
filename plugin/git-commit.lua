@@ -1,10 +1,16 @@
----@alias CommitBackend "gemini"|"openai"|"anthropic"
+---@class CustomGitCommitConfig
+---@field model? string
 
----@type CommitBackend
-local backend = "gemini"
+---@type CustomGitCommitConfig
+local config = vim.g.custom_git_commit or {}
 
-local function run_llm_prompt(prompt, provider, cb)
-  vim.system({ "llm", "prompt", "--model", provider }, {
+local function run_llm_prompt(prompt, model, cb)
+  local args = { "llm", "prompt", "--no-stream", "--no-log" }
+  if model and model ~= "" then
+    vim.list_extend(args, { "--model", model })
+  end
+
+  vim.system(args, {
     text = true,
     stdin = prompt,
   }, function(obj)
@@ -49,7 +55,7 @@ local function gen_commit_msg()
 
   vim.notify("Generating commit message…")
 
-  run_llm_prompt(prompt, backend, function(out, err)
+  run_llm_prompt(prompt, config.model, function(out, err)
     if not out or out:match("^%s*$") then
       vim.schedule(function()
         vim.notify("Commit msg failed: " .. (err or "empty response"), vim.log.levels.ERROR)

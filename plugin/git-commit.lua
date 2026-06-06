@@ -4,13 +4,13 @@
 local backend = "gemini"
 
 local function run_llm_prompt(prompt, provider, cb)
-  vim.system({ "llm-message", "--provider", provider }, {
+  vim.system({ "llm", "prompt", "--model", provider }, {
     text = true,
     stdin = prompt,
   }, function(obj)
     if obj.code ~= 0 then
       local err = vim.trim(obj.stderr or "")
-      cb(nil, err ~= "" and err or ("llm-prompt failed: exit " .. obj.code))
+      cb(nil, err ~= "" and err or ("llm prompt failed: exit " .. obj.code))
       return
     end
 

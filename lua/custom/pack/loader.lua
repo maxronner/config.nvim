@@ -109,6 +109,58 @@ function M.counts()
   }
 end
 
+local function custom_runtime_paths()
+  local paths = {}
+
+  for _, plugin in pairs(state.plugins) do
+    if plugin.runtime_path then
+      paths[plugin.runtime_path] = true
+    end
+  end
+
+  return paths
+end
+
+function M.ambient_start_packages()
+  local custom_paths = custom_runtime_paths()
+  local seen = {}
+  local rows = {}
+
+  for _, packpath in ipairs(vim.opt.packpath:get()) do
+    local pattern = vim.fs.joinpath(packpath, "pack", "*", "start", "*")
+    for _, path in ipairs(vim.fn.glob(pattern, false, true)) do
+      if vim.fn.isdirectory(path) == 1 and not custom_paths[path] and not seen[path] then
+        seen[path] = true
+        table.insert(rows, {
+          name = vim.fn.fnamemodify(path, ":t"),
+          path = path,
+        })
+      end
+    end
+  end
+
+  table.sort(rows, function(a, b)
+    if a.name ~= b.name then
+      return a.name < b.name
+    end
+    return a.path < b.path
+  end)
+
+  return rows
+end
+
+function M.summary()
+  local counts = M.counts()
+  local ambient = M.ambient_start_packages()
+
+  return {
+    loaded = counts.loaded,
+    total = counts.total,
+    ambient_start = #ambient,
+    ambient_start_packages = ambient,
+  }
+end
+
 function M.status()
   local rows = {}
   for name, plugin in pairs(state.plugins) do

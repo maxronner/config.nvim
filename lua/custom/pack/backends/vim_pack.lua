@@ -1,10 +1,11 @@
 local M = {}
 local resolve = require("custom.pack.resolve")
+local runtime = require("custom.runtime")
 
 function M.resolve(specs, opts)
   opts = opts or {}
 
-  local pack_root = vim.fs.joinpath(vim.fn.stdpath("data"), "site", "pack", "core", "opt")
+  local pack_root = runtime.local_pack_root()
   local all_installed = true
   local pack_specs = vim.tbl_map(function(spec)
     local runtime_path = vim.fs.joinpath(pack_root, spec.name)

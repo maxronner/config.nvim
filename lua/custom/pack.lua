@@ -33,13 +33,30 @@ local function install_specs(resolved)
   M.loader.setup(resolved)
 end
 
-function M.setup(inputs, opts)
+function M.plan(inputs, opts)
   opts = opts or {}
 
   local normalized = normalize_specs(inputs)
   local resolved = resolve_specs(normalized, opts)
   validate_specs(resolved, opts)
-  install_specs(resolved)
+
+  return {
+    backend = opts.backend or "vim_pack",
+    manifest = opts.manifest,
+    mode = opts.mode,
+    trusted_prefix = opts.trusted_prefix,
+    normalized = normalized,
+    resolved = resolved,
+  }
+end
+
+function M.apply(plan)
+  install_specs(plan.resolved)
+  return plan
+end
+
+function M.setup(inputs, opts)
+  return M.apply(M.plan(inputs, opts))
 end
 
 return M

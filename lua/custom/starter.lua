@@ -89,14 +89,14 @@ local items = {
   },
   {
     name = "Config",
-    action = "lua require('fzf-lua').files({ cwd = '$XDG_CONFIG_HOME/nvim' })",
+    action = "lua require('fzf-lua').files({ cwd = require('custom.runtime').config_root() })",
     section = "Custom",
   },
 }
 
 local function get_footer()
-  local ok, counts = pcall(function()
-    return require("custom.pack.loader").counts()
+  local ok, summary = pcall(function()
+    return require("custom.pack.loader").summary()
   end)
   local version = vim.version()
   local startuptime = ""
@@ -110,12 +110,15 @@ local function get_footer()
     return (" Neovim %d.%d.%d%s"):format(version.major, version.minor, version.patch, startuptime)
   end
 
-  return (" Neovim %d.%d.%d loaded %d/%d plugins%s"):format(
+  local ambient = summary.ambient_start > 0 and (" + %d start packages"):format(summary.ambient_start) or ""
+
+  return (" Neovim %d.%d.%d loaded %d/%d plugins%s%s"):format(
     version.major,
     version.minor,
     version.patch,
-    counts.loaded,
-    counts.total,
+    summary.loaded,
+    summary.total,
+    ambient,
     startuptime
   )
 end

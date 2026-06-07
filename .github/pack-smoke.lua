@@ -15,7 +15,9 @@ local forbidden_specs = {
 }
 
 local pack = require("custom.pack")
+local context = require("custom.pack.context")
 local resolve = require("custom.pack.resolve")
+local runtime = require("custom.runtime")
 
 local function assert_same(value, expected, message)
   assert(vim.deep_equal(value, expected), message)
@@ -102,7 +104,7 @@ local function assert_resolved_spec_shape(specs, normalized_before_resolve)
 end
 
 local function assert_backend_resolution(specs, normalized_before_resolve)
-  local pack_root = vim.fs.joinpath(vim.fn.stdpath("data"), "site", "pack", "core", "opt")
+  local pack_root = runtime.local_pack_root()
   for _, plugin in ipairs(specs) do
     vim.fn.mkdir(vim.fs.joinpath(pack_root, plugin.name), "p")
   end
@@ -123,6 +125,80 @@ local function assert_backend_resolution(specs, normalized_before_resolve)
   assert(nix_resolved[1].sha256 == "manifest-sha256", "nix_manifest resolved spec should include manifest sha256")
 end
 
+local function assert_launch_context()
+  local local_context = context.resolve({
+    env = {},
+    filereadable = function()
+      return false
+    end,
+  })
+  assert(local_context.backend == "vim_pack", "missing manifest should select vim_pack backend")
+  assert(local_context.mode == nil, "vim_pack context should not force secure mode")
+
+  local store_context = context.resolve({
+    env = {
+      NVIM_PACK_CONFIG_ROOT = "/repo/config.nvim",
+      NVIM_PACK_MANIFEST = "/manifest.lua",
+      NVIM_PACK_TRUSTED_PREFIX = "/nix/store/",
+    },
+    filereadable = function(path)
+      return path == "/manifest.lua"
+    end,
+  })
+  assert(store_context.config_root == "/repo/config.nvim", "context should honor NVIM_PACK_CONFIG_ROOT")
+  assert(store_context.backend == "nix_manifest", "readable manifest should select nix_manifest backend")
+  assert(store_context.mode == "secure", "nix_manifest context should default to secure mode")
+  assert(store_context.trusted_prefix == "/nix/store/", "context should preserve trusted prefix")
+
+  local explicit_context = context.resolve({
+    env = {
+      NVIM_PACK_BACKEND = "vim_pack",
+      NVIM_PACK_MANIFEST = "/manifest.lua",
+    },
+    filereadable = function()
+      return true
+    end,
+  })
+  assert(explicit_context.backend == "vim_pack", "explicit backend should override manifest detection")
+end
+
+local function assert_pack_plan()
+  local raw_specs = {
+    {
+      "owner/example.nvim",
+      version = "v1",
+      dependencies = {
+        "owner/example-dependency.nvim",
+      },
+    },
+  }
+  local normalized = pack.normalize(raw_specs)
+  local manifest = write_manifest(normalized)
+  local plan = pack.plan(raw_specs, {
+    backend = "nix_manifest",
+    manifest = manifest,
+    mode = "secure",
+    trusted_prefix = "/nix/store/",
+  })
+
+  assert(plan.backend == "nix_manifest", "pack plan should expose backend")
+  assert(plan.manifest == manifest, "pack plan should expose manifest")
+  assert(#plan.normalized == #normalized, "pack plan should expose normalized specs")
+  assert(#plan.resolved == #normalized, "pack plan should expose resolved specs")
+  assert(plan.resolved[1].runtime_path, "pack plan should resolve runtime paths")
+end
+
+local function assert_runtime_paths()
+  assert(
+    runtime.config_root() == (vim.g.custom_config_root or vim.fn.stdpath("config")),
+    "runtime config root mismatch"
+  )
+  assert(
+    runtime.local_pack_root() == vim.fs.joinpath(vim.fn.stdpath("data"), "site", "pack", "core", "opt"),
+    "runtime local pack root mismatch"
+  )
+end
+
 local function assert_loader_validation(loader)
   local total_before_bad_setup = loader.counts().total
   local ok, err = pcall(loader.build_plugin_index, {
@@ -138,7 +214,10 @@ local function assert_loader_validation(loader)
     },
   })
   assert(not ok, "loader.build_plugin_index should reject duplicate plugins")
-  assert(tostring(err):find("duplicate pack plugin: duplicate-plugin", 1, true), "duplicate plugin error was not useful")
+  assert(
+    tostring(err):find("duplicate pack plugin: duplicate-plugin", 1, true),
+    "duplicate plugin error was not useful"
+  )
 
   ok, err = pcall(loader.setup, {
     {
@@ -252,6 +331,11 @@ local function assert_loader_runtime(loader)
   local counts = loader.counts()
   assert(counts.loaded == #loaded, "counts.loaded does not match loaded list")
 
+  local summary = loader.summary()
+  assert(summary.loaded == counts.loaded, "summary.loaded does not match counts")
+  assert(summary.total == counts.total, "summary.total does not match counts")
+  assert(type(summary.ambient_start_packages) == "table", "summary should include ambient start package rows")
+
   local status = loader.status()
   local has_pending = false
   for _, row in ipairs(status) do
@@ -273,6 +357,23 @@ local function assert_loader_runtime(loader)
     footer:find(("loaded %d/%d plugins"):format(counts.loaded, counts.total), 1, true),
     "starter footer missing pack stats"
   )
+end
+
+local function assert_ambient_start_packages(loader)
+  local pack_root = vim.fn.tempname()
+  local start_path = vim.fs.joinpath(pack_root, "pack", "hm", "start", "ambient.nvim")
+  vim.fn.mkdir(start_path, "p")
+  vim.opt.packpath:prepend(pack_root)
+
+  local ambient = loader.ambient_start_packages()
+  local found = false
+  for _, row in ipairs(ambient) do
+    if row.path == start_path and row.name == "ambient.nvim" then
+      found = true
+    end
+  end
+
+  assert(found, "loader should report ambient start packages from packpath")
 end
 
 local function assert_trigger_key_replays_after_plugin_load(loader)
@@ -421,9 +522,12 @@ end
 local specs = fixture_specs()
 local normalized_before_resolve = vim.deepcopy(specs)
 
+assert_launch_context()
+assert_runtime_paths()
 assert_imports_and_normalization()
 assert_resolved_spec_shape(specs, normalized_before_resolve)
 assert_backend_resolution(specs, normalized_before_resolve)
+assert_pack_plan()
 
 for _, module in ipairs({ "cmp", "luasnip", "cmp_nvim_lsp" }) do
   assert(not package.loaded[module], ("pack startup loaded %s too early"):format(module))
@@ -433,6 +537,7 @@ local loader = require("custom.pack.loader")
 assert_loader_validation(loader)
 assert_loader_trigger_plan(loader)
 assert_loader_runtime(loader)
+assert_ambient_start_packages(loader)
 assert_trigger_key_replays_after_plugin_load(loader)
 assert_loaded_config()
 assert_loader_trigger_contracts(loader)

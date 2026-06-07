@@ -1,11 +1,19 @@
 vim.api.nvim_create_user_command("PackStatus", function()
   local loader = require("custom.pack.loader")
   local rows = loader.status()
-  local counts = loader.counts()
+  local summary = loader.summary()
   local lines = {
-    ("loaded %d/%d plugins"):format(counts.loaded, counts.total),
+    ("loaded %d/%d plugins"):format(summary.loaded, summary.total),
     "",
   }
+
+  if summary.ambient_start > 0 then
+    table.insert(lines, ("ambient start packages: %d"):format(summary.ambient_start))
+    for _, row in ipairs(summary.ambient_start_packages) do
+      table.insert(lines, ("sourced\tstart\t%s\t%s"):format(row.name, row.path))
+    end
+    table.insert(lines, "")
+  end
 
   for _, row in ipairs(rows) do
     local state = row.loaded and "loaded" or "pending"

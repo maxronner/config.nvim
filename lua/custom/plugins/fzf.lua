@@ -128,14 +128,14 @@ return {
       {
         "<leader>vv",
         function()
-          require("fzf-lua").files({ cwd = vim.fn.stdpath("config") })
+          require("fzf-lua").files({ cwd = require("custom.runtime").config_root() })
         end,
         desc = "Fzf: Find files in Neovim config",
       },
       {
         "<leader>vl",
         function()
-          require("fzf-lua").files({ cwd = vim.fn.stdpath("data") .. "/site/pack/core/opt" })
+          require("fzf-lua").files({ cwd = require("custom.runtime").local_pack_root() })
         end,
         desc = "Fzf: Find files in plugins",
       },

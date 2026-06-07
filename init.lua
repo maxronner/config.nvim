@@ -17,14 +17,6 @@ if pack_backend == "nix_manifest" then
   vim.env.NVIM_TREESITTER_INSTALL = vim.env.NVIM_TREESITTER_INSTALL or "disabled"
 end
 
-local function source_runtime_files(root)
-  for _, pattern in ipairs({ "plugin/**/*.vim", "plugin/**/*.lua" }) do
-    for _, file in ipairs(vim.fn.globpath(root, pattern, false, true)) do
-      vim.cmd.source(vim.fn.fnameescape(file))
-    end
-  end
-end
-
 local pack = require("custom.pack")
 local specs = require("custom.pack.specs").get()
 
@@ -34,5 +26,3 @@ pack.setup(specs, {
   mode = pack_mode,
   trusted_prefix = vim.env.NVIM_PACK_TRUSTED_PREFIX,
 })
-
-source_runtime_files(config_root)

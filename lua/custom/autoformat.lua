@@ -17,6 +17,7 @@ local FORMATTERS_BY_FT = {
   jsonc = { "prettier_jsonc" },
   lua = { "stylua" },
   markdown = web_formatters,
+  nix = { "nixfmt_tree" },
   python = { "ruff_format", "black", stop_after_first = true },
   rust = { "rustfmt" },
   scss = web_formatters,
@@ -107,6 +108,14 @@ function M.setup()
         condition = function(_, ctx)
           return biome_config_exists(ctx.filename)
         end,
+      },
+      nixfmt_tree = {
+        command = "treefmt",
+        args = { "--quiet", "--stdin", "$FILENAME" },
+        env = {
+          TREEFMT_NO_CACHE = "1",
+        },
+        stdin = true,
       },
       prettier_jsonc = {
         inherit = false,

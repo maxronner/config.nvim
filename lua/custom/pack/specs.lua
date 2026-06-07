@@ -92,6 +92,12 @@ local imports = {
     },
   },
   {
+    module = "custom.plugins.minuet",
+    include = {
+      "minuet-ai.nvim",
+    },
+  },
+  {
     module = "custom.plugins.lsp",
     include = {
       "conform.nvim",

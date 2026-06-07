@@ -47,10 +47,10 @@ jobs:
           set -euo pipefail
           scripts/nvim-pack-smoke
 
-      - name: Run FIM smoke
+      - name: Run Minuet smoke
         run: |
           set -euo pipefail
-          scripts/nvim-fim-smoke
+          scripts/nvim-minuet-smoke
 
       - name: Run checkhealth
         run: |

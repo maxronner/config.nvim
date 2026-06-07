@@ -4,4 +4,4 @@ set -eu
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(CDPATH= cd -- "$script_dir/.." && pwd)
 
-"$script_dir/nvim-local" --headless -l "$repo_root/.github/fim-smoke.lua"
+"$script_dir/nvim-local" --headless -l "$repo_root/.github/minuet-smoke.lua"

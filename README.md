@@ -57,7 +57,7 @@ Run the focused smoke checks for this checkout:
 
 ```sh
 scripts/nvim-pack-smoke
-scripts/nvim-fim-smoke
+scripts/nvim-minuet-smoke
 scripts/nvim-local --headless -l .github/healthcheck.lua
 ```
 
@@ -88,40 +88,15 @@ Neovim:
   keeps format-on-save from silently falling back to LSP formatting when a
   configured external formatter is missing.
 
-## FIM Completion
+## AI Completion
 
-`custom.fim` is a small single-file-context FIM consumer. It collects
-prefix/suffix around the insert cursor, calls the configured provider, streams
-the result into ghost text, and lets insert mode accept or dismiss it.
+`minuet-ai.nvim` provides FIM completion through virtual text. The default
+provider is DeepSeek FIM; set `DEEPSEEK_API_KEY` before starting Neovim.
 
-The default provider is DeepSeek FIM. Set `DEEPSEEK_API_KEY` before starting
-Neovim. Optional overrides can be provided before `plugin/fim.lua` runs:
+The active bindings are:
 
-```lua
-vim.g.custom_fim = {
-  auto = true,
-  debounce_ms = 350,
-  accept_all_key = "<C-a>",
-  accept_forward_key = "<S-Tab>",
-  dismiss_key = "<C-]>",
-  manual_key = "<C-g>",
-  manual_normal_key = "<leader>ii",
-  toggle_key = "<leader>iq",
-  blocked_path_patterns = {
-    "*.env",
-    "*.pem",
-    "*.key",
-    "*.gpg",
-    "*.age",
-    "*secret*",
-    "*vault*",
-    "~/.ssh/*",
-    "~/.kube/*",
-    "~/.gnupg/*",
-  },
-  provider = {
-    model = "deepseek-v4-pro",
-    max_tokens = 96,
-  },
-}
-```
+- Insert `<C-g>`: request or cycle virtual text completion
+- Insert `<C-a>`: accept the whole suggestion
+- Insert `<S-Tab>`: accept one line
+- Insert `<C-]>`: dismiss the suggestion
+- Normal `<leader>ii`: toggle automatic virtual text for the current buffer

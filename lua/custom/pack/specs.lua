@@ -80,12 +80,6 @@ local imports = {
     },
   },
   {
-    module = "custom.plugins.dap",
-    include = {
-      "nvim-dap",
-    },
-  },
-  {
     module = "custom.plugins.opencode",
     include = {
       "opencode.nvim",

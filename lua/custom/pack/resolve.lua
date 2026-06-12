@@ -1,5 +1,7 @@
 local M = {}
 
+-- Backend contract: resolve normalized specs into loader-ready specs without
+-- mutating the input. Every resolved spec must include a runtime_path.
 function M.enrich(spec, fields)
   fields = fields or {}
 

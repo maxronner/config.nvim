@@ -83,6 +83,41 @@ local function mark_available(input, available)
   end
 end
 
+local function dependency_names(dependencies)
+  return vim.tbl_map(function(dependency)
+    if type(dependency) == "string" then
+      return M.plugin_name(dependency)
+    end
+    return M.spec_name(dependency)
+  end, M.as_list(dependencies))
+end
+
+local function is_lazy(input)
+  return input.lazy ~= false and (input.cmd ~= nil or input.keys ~= nil or input.event ~= nil or input.lazy == true)
+end
+
+local function normalize_one(input)
+  local repo = input[1]
+  if not repo then
+    error("pack spec is missing repository at index 1")
+  end
+
+  return {
+    name = M.spec_name(input),
+    source = input.src or M.plugin_source(repo),
+    rev = input.rev or input.version or input.branch,
+    sha256 = input.sha256 or input.hash,
+    dependencies = dependency_names(input.dependencies),
+    lazy = is_lazy(input),
+    cmd = input.cmd,
+    keys = input.keys,
+    event = input.event,
+    config = input.config,
+    opts = input.opts,
+    main = M.main_module_name(input),
+  }
+end
+
 function M.import(module_names, opts)
   opts = opts or {}
 
@@ -131,32 +166,8 @@ function M.normalize(inputs)
 
   local normalized = {}
   for _, input in ipairs(flattened) do
-    local repo = input[1]
-    if not repo then
-      error("pack spec is missing repository at index 1")
-    end
-
     if input.enabled ~= false then
-      table.insert(normalized, {
-        name = M.spec_name(input),
-        source = input.src or M.plugin_source(repo),
-        rev = input.rev or input.version or input.branch,
-        sha256 = input.sha256 or input.hash,
-        dependencies = vim.tbl_map(function(dependency)
-          if type(dependency) == "string" then
-            return M.plugin_name(dependency)
-          end
-          return M.spec_name(dependency)
-        end, M.as_list(input.dependencies)),
-        lazy = input.lazy ~= false
-          and (input.cmd ~= nil or input.keys ~= nil or input.event ~= nil or input.lazy == true),
-        cmd = input.cmd,
-        keys = input.keys,
-        event = input.event,
-        config = input.config,
-        opts = input.opts,
-        main = M.main_module_name(input),
-      })
+      table.insert(normalized, normalize_one(input))
     end
   end
 

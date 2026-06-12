@@ -82,6 +82,16 @@ local function assert_imports_and_normalization()
   for _, name in ipairs(forbidden_specs) do
     assert(not seen[name], ("pack specs should not include %s"):format(name))
   end
+
+  local pinned = pack.normalize({
+    { "owner/versioned.nvim", version = "v1.2.3" },
+    { "owner/branched.nvim", branch = "main" },
+    { "owner/revisioned.nvim", rev = "abcdef" },
+  })
+
+  assert(pinned[1].rev == "v1.2.3", "version pin should populate rev")
+  assert(pinned[2].rev == "main", "branch pin should populate rev for manifests")
+  assert(pinned[3].rev == "abcdef", "revision pin should populate rev")
 end
 
 local function assert_resolved_spec_shape(specs, normalized_before_resolve)
@@ -108,6 +118,26 @@ local function assert_backend_resolution(specs, normalized_before_resolve)
   for _, plugin in ipairs(specs) do
     vim.fn.mkdir(vim.fs.joinpath(pack_root, plugin.name), "p")
   end
+
+  local original_pack_add = vim.pack.add
+  local captured_pack_specs
+  vim.pack.add = function(pack_specs)
+    captured_pack_specs = pack_specs
+  end
+
+  local pinned = pack.normalize({
+    { "owner/versioned.nvim", version = "v1.2.3" },
+    { "owner/branched.nvim", branch = "main" },
+    { "owner/revisioned.nvim", rev = "abcdef" },
+  })
+  local ok, err = pcall(require("custom.pack.backends.vim_pack").resolve, pinned, { sync = true })
+  vim.pack.add = original_pack_add
+  assert(ok, err)
+
+  assert(captured_pack_specs ~= nil, "vim_pack backend should call vim.pack.add during sync")
+  assert(captured_pack_specs[1].version == "v1.2.3", "version pins should be passed to vim.pack")
+  assert(captured_pack_specs[2].version == "main", "branch pins should be passed to vim.pack")
+  assert(captured_pack_specs[3].version == "abcdef", "revision pins should still be passed as exact versions")
 
   local vim_pack_resolved = require("custom.pack.backends.vim_pack").resolve(specs)
   assert_same(specs, normalized_before_resolve, "vim_pack backend should not mutate normalized specs")
